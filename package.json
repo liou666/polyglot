@@ -1,5 +1,5 @@
 {
-  "name": "happy-talk",
+  "name": "polyglot",
   "version": "0.0.0",
   "private": true,
   "description": "Spoken language generation based on OpenAI",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^9.13.0",
+    "eventsource-parser": "^0.1.0",
     "unocss": "^0.50.4",
     "vue": "^3.2.47"
   },

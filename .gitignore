@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+
+
 dist-electron
 release
 *.local
@@ -28,3 +30,5 @@ release
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+.env
