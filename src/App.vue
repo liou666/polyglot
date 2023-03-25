@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Header from './components/Header.vue'
-import Aside from './components/Nav.vue'
-import Content from './components/Content.vue'
+import Aside from '@/components/Nav.vue'
+import Content from '@/components/Content.vue'
+import Header from '@/components/Header.vue'
 console.log('[App.vue]', `Electron ${process.versions.electron}!`)
 </script>
 

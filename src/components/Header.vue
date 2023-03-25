@@ -13,10 +13,9 @@ const openKey = useLocalStorage('openKey', '')
       <i mr-2 rotate-115 i-ic:baseline-key />
       <div v-if="isKeyMode" w-55>
         <input
+          v-model="openKey"
           type="password"
           class="input"
-          :value="openKey"
-          @input="openKey = ($event.target as HTMLInputElement).value"
         >
         <i icon-btn i-carbon-checkmark @click="toggle()" />
         <i icon-btn i-carbon-close @click="toggle()" />
