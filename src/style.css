@@ -1,10 +1,14 @@
 :root {
-  --c-bg: #f5f7fb;
+  --c-bg: #f7f7f7;
   --c-scrollbar: #eee;
   --c-scrollbar-hover: #bbb;
-  --c-header-height: 60px;
-  --c-left-slide-width: 200px;
-  --c-left-slide-close-width: 80px;
+  --accent: 124, 58, 237;
+  --accent-gradient: linear-gradient(45deg, rgb(var(--accent)), #da62c4 30%, #f6c44f 60%);
+  transition: all .1s;
+}
+
+html {
+  background-color: var(--c-bg);
 }
 
 html.dark {
@@ -14,9 +18,7 @@ html.dark {
 }
 
 body {
-  background-color: var(--c-bg);
-  --c-header-height: 60px;
-  --c-left-slide-width: 200px;
+  /* background-color: var(--c-bg); */
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
@@ -56,14 +58,14 @@ body {
 }
 
 #app {
-  max-width: 1280px;
+  /* max-width: 1280px; */
   margin: 0 auto;
   height: 100vh;
   /* padding: 1rem; */
   /* text-align: center; */
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -80,4 +82,4 @@ body {
   code {
     background-color: #f9f9f9;
   }
-}
+} */

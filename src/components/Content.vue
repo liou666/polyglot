@@ -43,7 +43,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div flex flex-col p-2 rounded-md bg-gray-500>
+  <div flex flex-col p-2 rounded-md bg-white dark="bg-#1e1e1e">
     <div ref="el" class="hide-scrollbar flex-1 overflow-auto">
       <div
         v-for="item, i in chatMessages"
