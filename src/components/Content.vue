@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import Button from '@/components/widgets/Button.vue'
-
-import { generateDashboardInfo, generateText } from '@/server/api'
+import { generateText } from '@/server/api'
 import { useScroll } from '@/hooks'
+import { Recognition, getKey, verifyKey } from '@/utils'
+
 // states
 const chatMessages = ref<ChatMessage[]>([])
 const message = ref('')
 const loading = ref(false)
+const text = ref('')
+
+const recognition = new Recognition('en-US')
 
 // hooks
 const { el, scrollToBottom } = useScroll()
+const speech = useSpeechSynthesis(text)
+const { start } = useSpeechRecognition()
 
 // effects
 watch(chatMessages.value, () => nextTick(() => scrollToBottom()))
 
 // methods
+function play(content: string) {
+  text.value = content
+  speech.speak()
+}
 const roleClass = (role: string) => {
   switch (role) {
     case 'user':
@@ -25,7 +35,18 @@ const roleClass = (role: string) => {
       return 'bg-gray-500'
   }
 }
+
+const startTalking = () => {
+  recognition.start()
+  recognition.onResult((value) => {
+    console.log('value', value)
+  })
+}
+
 const onSubmit = async () => {
+  const key = getKey()
+  if (!verifyKey(key)) return alert('请输入正确的API-KEY')
+
   if (!message.value) return
   chatMessages.value.push({
     content: message.value,
@@ -33,9 +54,13 @@ const onSubmit = async () => {
   })
   message.value = ''
   loading.value = true
-  const res = await generateText(chatMessages.value)
+  const res = await generateText(chatMessages.value, key!)
+  if (res.error) {
+    alert(res.error?.message)
+    return loading.value = false
+  }
   chatMessages.value.push({
-    content: res,
+    content: res.choices[0].message.content,
     role: 'assistant',
   })
   loading.value = false
@@ -52,9 +77,21 @@ const onSubmit = async () => {
       >
         <div :class="roleClass(item.role)" />
         <div relative>
-          <p mx-2 px-2 py-1 chat-box>
-            {{ item.content }}
-          </p>
+          <div mx-2>
+            <p px-2 py-1 chat-box>
+              {{ item.content }}
+            </p>
+            <p v-if="item.role === 'assistant'" flex>
+              <span class="bg-gray-100/20  rounded-lg w-4 py-1 px-3 center" @click="play(item.content)">
+                <i icon-btn rotate-90 i-ic:sharp-wifi />
+              </span>
+              <!-- <span
+                class="bg-gray-100/20 ml-1 cursor-pointer rounded-lg w-4 py-1 px-3 center"
+              >
+                <i icon-btn i-carbon:ibm-watson-language-translator />
+              </span> -->
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -63,6 +100,7 @@ const onSubmit = async () => {
       <Button
         mr-1
         i-carbon:microphon
+        @click="startTalking()"
       >
         <i i-carbon:microphone />
       </Button>

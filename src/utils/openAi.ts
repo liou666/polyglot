@@ -11,9 +11,9 @@ export class OpenAi {
   private proxy: string
   private header: Record<string, string>
 
-  constructor(apiKey: string, proxy = 'https://api.openai.com') {
+  constructor(apiKey: string, proxy?: string) {
     this.apiKey = apiKey
-    this.proxy = proxy
+    this.proxy = proxy || 'https://api.openai.com'
     this.header = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.apiKey}`,
@@ -120,4 +120,13 @@ export const parseOpenAIStream = (rawResponse: Response) => {
   })
 
   return stream
+}
+
+// 验证key
+export const verifyKey = (key?: string | null) => key && key.length === 51
+
+// 获取key
+export const getKey = (): string | null => {
+  const openkey = localStorage.getItem('openKey')
+  return openkey
 }
