@@ -10,7 +10,8 @@ const chatMessages = ref<ChatMessage[]>([])
 const message = ref('')
 const loading = ref(false)
 const text = ref('')
-const speechService = new SpeechService(VITE_SCRIPTION_KEY, VITE_REGION)
+const speechService = ref(new SpeechService(VITE_SCRIPTION_KEY, VITE_REGION))
+const isRecognizing = computed(() => speechService.value.isRecognizing)
 
 // hooks
 const { el, scrollToBottom } = useScroll()
@@ -30,24 +31,6 @@ const roleClass = (role: string) => {
       return 'bg-gray-500'
   }
 }
-
-const speak = (content: string) => {
-  text.value = content
-  speechService.textToSpeak(content)
-}
-
-const recognize = async () => {
-  loading.value = true
-  try {
-    const text = await speechService.recognizeSpeech()
-    console.log(text)
-    loading.value = false
-  }
-  catch (error) {
-    loading.value = false
-  }
-}
-
 const onSubmit = async () => {
   const key = getKey()
   if (!verifyKey(key)) return alert('请输入正确的API-KEY')
@@ -69,6 +52,23 @@ const onSubmit = async () => {
     role: 'assistant',
   })
   loading.value = false
+}
+
+function speak(content: string) {
+  text.value = content
+  speechService.value.textToSpeak(content)
+}
+
+const recognize = async () => {
+  console.log(isRecognizing.value)
+  if (isRecognizing.value) {
+    const result = await speechService.value.stopRecognizeSpeech()
+    message.value = result
+    onSubmit()
+  }
+  else {
+    speechService.value.startRecognizeSpeech()
+  }
 }
 </script>
 
@@ -108,15 +108,19 @@ const onSubmit = async () => {
       >
         <i i-carbon:microphone />
       </Button>
+
+      <div v-if="isRecognizing" class="loading-btn">
+        isRecognizing
+      </div>
       <input
-        v-if="!loading"
+        v-else-if="!loading "
         v-model="message"
         type="text"
         placeholder="Type your message here..."
         input-box p-3 flex-1
       >
       <div v-else class="loading-btn">
-        loading...
+        AI Is Thinking...
       </div>
       <Button
         :disabled="loading"

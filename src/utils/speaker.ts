@@ -10,6 +10,9 @@ export class SpeechService {
   private recognizer: SpeechRecognizer
   private synthesizer: SpeechSynthesizer
   private speechConfig: SpeechConfig
+  public isRecognizing = false
+  public isSpeaking = false
+
   constructor(subscriptionKey: string, region: string) {
     const speechConfig = SpeechConfig.fromSubscription(subscriptionKey, region)
     speechConfig.speechRecognitionLanguage = 'en-US'
@@ -23,6 +26,24 @@ export class SpeechService {
     this.synthesizer = new SpeechSynthesizer(this.speechConfig)
   }
 
+  // 语音识别
+  public startRecognizeSpeech() {
+    this.isRecognizing = true
+    this.recognizer.startContinuousRecognitionAsync()
+  }
+
+  // 停止语音识别
+  public stopRecognizeSpeech(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.recognizer.recognized = (s, e) => {
+        this.recognizer.stopContinuousRecognitionAsync()
+        this.isRecognizing = false
+        resolve(e.result.text)
+      }
+    })
+  }
+
+  // 识别一次，无需取消
   public recognizeSpeech(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.recognizer.recognizeOnceAsync((result) => {
@@ -34,11 +55,19 @@ export class SpeechService {
     })
   }
 
-  public textToSpeak(text: string, voice?: string) {
+  // 语音合成
+  public async textToSpeak(text: string, voice?: string) {
+    // this.isSpeaking = true
     this.speechConfig.speechSynthesisVoiceName = voice || this.speechConfig.speechSynthesisVoiceName
     this.synthesizer.speakTextAsync(text)
   }
 
+  // 停止语音合成
+  public stopTextToSpeak() {
+    this.synthesizer.close()
+  }
+
+  // 获取语音列表
   public async getVoices(): Promise<VoiceInfo[]> {
     const res = await this.synthesizer.getVoicesAsync()
     return res.voices
