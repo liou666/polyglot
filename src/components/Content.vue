@@ -2,29 +2,24 @@
 import Button from '@/components/widgets/Button.vue'
 import { generateText } from '@/server/api'
 import { useScroll } from '@/hooks'
-import { Recognition, getKey, verifyKey } from '@/utils'
+import { SpeechService, getKey, verifyKey } from '@/utils'
+const { VITE_REGION, VITE_SCRIPTION_KEY } = import.meta.env
 
 // states
 const chatMessages = ref<ChatMessage[]>([])
 const message = ref('')
 const loading = ref(false)
 const text = ref('')
-
-const recognition = new Recognition('en-US')
+const speechService = new SpeechService(VITE_SCRIPTION_KEY, VITE_REGION)
 
 // hooks
 const { el, scrollToBottom } = useScroll()
-const speech = useSpeechSynthesis(text)
-const { start } = useSpeechRecognition()
 
 // effects
 watch(chatMessages.value, () => nextTick(() => scrollToBottom()))
 
 // methods
-function play(content: string) {
-  text.value = content
-  speech.speak()
-}
+
 const roleClass = (role: string) => {
   switch (role) {
     case 'user':
@@ -36,11 +31,21 @@ const roleClass = (role: string) => {
   }
 }
 
-const startTalking = () => {
-  recognition.start()
-  recognition.onResult((value) => {
-    console.log('value', value)
-  })
+const speak = (content: string) => {
+  text.value = content
+  speechService.textToSpeak(content)
+}
+
+const recognize = async () => {
+  loading.value = true
+  try {
+    const text = await speechService.recognizeSpeech()
+    console.log(text)
+    loading.value = false
+  }
+  catch (error) {
+    loading.value = false
+  }
 }
 
 const onSubmit = async () => {
@@ -82,7 +87,7 @@ const onSubmit = async () => {
               {{ item.content }}
             </p>
             <p v-if="item.role === 'assistant'" flex>
-              <span class="bg-gray-100/20  rounded-lg w-4 py-1 px-3 center" @click="play(item.content)">
+              <span class="bg-gray-100/20  rounded-lg w-4 py-1 px-3 center" @click="speak(item.content)">
                 <i icon-btn rotate-90 i-ic:sharp-wifi />
               </span>
               <!-- <span
@@ -99,8 +104,7 @@ const onSubmit = async () => {
     <div class="flex h-10 w-[-webkit-fill-available] mt-1">
       <Button
         mr-1
-        i-carbon:microphon
-        @click="startTalking()"
+        @click="recognize()"
       >
         <i i-carbon:microphone />
       </Button>
@@ -112,7 +116,7 @@ const onSubmit = async () => {
         input-box p-3 flex-1
       >
       <div v-else class="loading-btn">
-        AI Is Thinking...
+        loading...
       </div>
       <Button
         :disabled="loading"

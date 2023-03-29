@@ -25,6 +25,7 @@
   "dependencies": {
     "@vueuse/core": "^9.13.0",
     "eventsource-parser": "^0.1.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.26.0",
     "unocss": "^0.50.4",
     "vue": "^3.2.47"
   },
