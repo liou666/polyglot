@@ -68,6 +68,9 @@ export default defineConfig(({ command }) => {
         ],
         dts: 'src/auto-imports.d.ts',
         vueTemplate: true,
+        dirs: [
+          'src/hooks',
+        ],
       }),
       Unocss(),
       // Use Node.js API in the Renderer-process
