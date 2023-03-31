@@ -3,24 +3,30 @@ import Button from '@/components/widgets/Button.vue'
 import { generateText } from '@/server/api'
 import { useScroll } from '@/hooks'
 import { SpeechService, getKey, verifyKey } from '@/utils'
+import { useConversationStore } from '@/stores'
+
 const { VITE_REGION, VITE_SCRIPTION_KEY } = import.meta.env
+const systemMessage: SystemMessage = {
+  role: 'system',
+  content: 'I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let\'s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors.',
+}
+const store = useConversationStore()
 
 // states
-const chatMessages = ref<ChatMessage[]>([])
-const message = ref('')
+const message = ref('') // input message
+const text = ref('') // current select message
 const loading = ref(false)
-const text = ref('')
 const speechService = ref(new SpeechService(VITE_SCRIPTION_KEY, VITE_REGION))
 const isRecognizing = computed(() => speechService.value.isRecognizing)
+const messageLength = computed(() => store.currentChatMessages.length)
 
 // hooks
 const { el, scrollToBottom } = useScroll()
 
 // effects
-watch(chatMessages.value, () => nextTick(() => scrollToBottom()))
+watch(messageLength, () => nextTick(() => scrollToBottom()))
 
 // methods
-
 const roleClass = (role: string) => {
   switch (role) {
     case 'user':
@@ -34,24 +40,31 @@ const roleClass = (role: string) => {
 const onSubmit = async () => {
   const key = getKey()
   if (!verifyKey(key)) return alert('请输入正确的API-KEY')
-
   if (!message.value) return
-  chatMessages.value.push({
-    content: message.value,
-    role: 'user',
-  })
+
+  store.changeConversations([
+    ...store.currentChatMessages,
+    { content: message.value, role: 'user' },
+  ])
   message.value = ''
   loading.value = true
-  const res = await generateText(chatMessages.value, key!)
-  if (res.error) {
-    alert(res.error?.message)
-    return loading.value = false
+  try {
+    const res = await generateText(store.currentChatMessages, key!)
+    if (res.error) {
+      alert(res.error?.message)
+      return loading.value = false
+    }
+    store.changeConversations([
+      ...store.currentChatMessages,
+      {
+        content: res.choices[0].message.content, role: 'assistant',
+      },
+    ])
+    loading.value = false
   }
-  chatMessages.value.push({
-    content: res.choices[0].message.content,
-    role: 'assistant',
-  })
-  loading.value = false
+  catch (error) {
+    loading.value = false
+  }
 }
 
 function speak(content: string) {
@@ -60,7 +73,6 @@ function speak(content: string) {
 }
 
 const recognize = async () => {
-  console.log(isRecognizing.value)
   if (isRecognizing.value) {
     const result = await speechService.value.stopRecognizeSpeech()
     message.value = result
@@ -76,7 +88,7 @@ const recognize = async () => {
   <div flex flex-col p-2 rounded-md bg-white dark="bg-#1e1e1e">
     <div ref="el" class="hide-scrollbar flex-1 overflow-auto">
       <div
-        v-for="item, i in chatMessages"
+        v-for="item, i in store.currentChatMessages"
         :key="i"
         center-y odd:flex-row-reverse
       >
@@ -131,7 +143,6 @@ const recognize = async () => {
       </Button>
       <Button
         :disabled="loading"
-        @click="chatMessages = []"
       >
         <i i-carbon:trash-can />
       </Button>

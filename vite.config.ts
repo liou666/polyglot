@@ -64,6 +64,7 @@ export default defineConfig(({ command }) => {
         imports: [
           'vue',
           '@vueuse/core',
+          'pinia',
         ],
         dts: 'src/auto-imports.d.ts',
         vueTemplate: true,

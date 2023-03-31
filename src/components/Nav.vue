@@ -1,14 +1,24 @@
 <script setup lang="ts">
 import Card from './widgets/Card.vue'
+import { useConversationStore } from '@/stores'
+
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
+const store = useConversationStore()
 </script>
 
 <template>
-  <nav class="rounded-md bg-#eaf7fe  dark:bg-#1d262a">
+  <nav class="rounded-md bg-#eaf7fe  dark:bg-#1d262a h-[calc(100vh-78px)]">
     <div h-full flex flex-col p-1>
-      <div flex-1>
-        <Card desc="liou" name="liou">
+      <div class="hide-scrollbar overflow-y-auto flex-1 ">
+        <Card
+          v-for="item, i in store.allPeople"
+          :key="i"
+          :desc="item.desc"
+          :name="item.key"
+          :active="store.currentKey === item.key"
+          @click="store.changeCurrentKey(item.key)"
+        >
           <div rounded-full w-8 h-8 bg-red />
         </Card>
       </div>
