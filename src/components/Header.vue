@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { shell } from 'electron'
 </script>
 
 <template>
-  <header class="bg-#ecf7fd dark:bg-#1f262a">
-    <h3 text-2xl>
-      🤖️ <span class="text-gradient ">Polyglot</span>
+  <header class="bg-#fff dark:bg-#1f262a">
+    <h3 center-y text-2xl>
+      <!-- <img src="" alt=""> -->
+      <div m-2>
+        🤖️
+      </div>
+      <span class="text-gradient ">Polyglot</span>
     </h3>
-    <a class="center-y">
+    <div class="center-y" @click="shell.openExternal('https://github.com/liou666')">
       <i w-6 h-6 icon-btn i-carbon:logo-github />
-    </a>
+    </div>
   </header>
 </template>
 

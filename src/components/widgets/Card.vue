@@ -1,21 +1,24 @@
 <script setup lang="ts">
-const { name, desc, active } = defineProps<{
+const { name, desc, active, avaterUrl } = defineProps<{
   name: string
   desc: string
   active: boolean
+  avaterUrl: string
 }>()
 </script>
 
 <template>
   <div
     p-2 cursor-pointer center-y
-    m-2 rounded duration-300
+    m-2 rounded duration-300 shadow-sm
     dark="bg-gray-700/80 hover:bg-gray-500/80"
-    bg="gray-500/10 hover:gray-500/20"
-    :class="{ 'bg-gray-500/80!': active }"
+    bg="gray-400/10 hover:gray-500/20"
+    :class="{ 'bg-gray-500/20! dark:bg-gray-500/80! shadow-lg': active }"
   >
     <div mr-2>
-      <slot />
+      <div w-10 h-10>
+        <img w-full rounded-full :src="avaterUrl" alt="avater">
+      </div>
     </div>
     <div>
       <div text-lg font-500>
