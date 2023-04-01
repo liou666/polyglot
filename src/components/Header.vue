@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import InputKit from '@/components/widgets/InputKit.vue'
-const openKey = useLocalStorage('openKey', '')
 </script>
 
 <template>
@@ -8,13 +6,9 @@ const openKey = useLocalStorage('openKey', '')
     <h3 text-2xl>
       🤖️ <span class="text-gradient ">Polyglot</span>
     </h3>
-    <div class="center-y">
-      <InputKit v-model="openKey">
-        <template #mainText>
-          Self Key
-        </template>
-      </InputKit>
-    </div>
+    <a class="center-y">
+      <i w-6 h-6 icon-btn i-carbon:logo-github />
+    </a>
   </header>
 </template>
 

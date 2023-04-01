@@ -6,20 +6,26 @@ import {
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
 
-export const useSpeechService = (subscriptionKey: string, region: string) => {
-  const language = ref('en-US')
-  const voiceName = ref('en-US-GuyNeural')
-  const speechConfig = SpeechConfig.fromSubscription(subscriptionKey, region)
+export const useSpeechService = (subscriptionKey: string, region: string, langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']) => {
+  const languages = ref(langs)
+  const language = ref<typeof langs[number]>(langs[0])
+  const languageMap = ref<Partial<Record<typeof langs[number], VoiceInfo[]>>>({})
+  const voiceName = ref('en-US-JennyMultilingualNeural')
+
+  const speechConfig = ref(SpeechConfig.fromSubscription(subscriptionKey, region))
   const isRecognizing = ref(false)
+  const allVoices = ref<VoiceInfo[]>([])
 
   const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
-  const recognizer = new SpeechRecognizer(speechConfig, audioConfig)
-  const synthesizer = new SpeechSynthesizer(speechConfig)
+  const recognizer = ref(new SpeechRecognizer(speechConfig.value, audioConfig))
+  const synthesizer = ref(new SpeechSynthesizer(speechConfig.value))
 
   watch([language, voiceName], ([lang, voice]) => {
-    speechConfig.speechRecognitionLanguage = lang
-    speechConfig.speechSynthesisLanguage = lang
-    speechConfig.speechSynthesisVoiceName = voice
+    speechConfig.value.speechRecognitionLanguage = lang
+    speechConfig.value.speechSynthesisLanguage = lang
+    speechConfig.value.speechSynthesisVoiceName = voice
+    recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)
+    synthesizer.value = new SpeechSynthesizer(speechConfig.value)
   }, {
     immediate: true,
   })
@@ -27,14 +33,14 @@ export const useSpeechService = (subscriptionKey: string, region: string) => {
   // 语音识别
   const startRecognizeSpeech = () => {
     isRecognizing.value = true
-    recognizer.startContinuousRecognitionAsync()
+    recognizer.value.startContinuousRecognitionAsync()
   }
 
   // 停止语音识别
   const stopRecognizeSpeech = (): Promise<string> => {
     return new Promise((resolve, reject) => {
-      recognizer.recognized = (s, e) => {
-        recognizer.stopContinuousRecognitionAsync()
+      recognizer.value.recognized = (s, e) => {
+        recognizer.value.stopContinuousRecognitionAsync()
         isRecognizing.value = false
         resolve(e.result.text)
       }
@@ -45,7 +51,7 @@ export const useSpeechService = (subscriptionKey: string, region: string) => {
   const recognizeSpeech = (): Promise<string> => {
     isRecognizing.value = true
     return new Promise((resolve, reject) => {
-      recognizer.recognizeOnceAsync((result) => {
+      recognizer.value.recognizeOnceAsync((result) => {
         if (result.text) {
           isRecognizing.value = false
           resolve(result.text)
@@ -61,22 +67,37 @@ export const useSpeechService = (subscriptionKey: string, region: string) => {
 
   // 语音合成
   const textToSpeak = async (text: string, voice?: string) => {
-    speechConfig.speechSynthesisVoiceName = voice || speechConfig.speechSynthesisVoiceName
-    synthesizer.speakTextAsync(text)
+    speechConfig.value.speechSynthesisVoiceName = voice || speechConfig.value.speechSynthesisVoiceName
+    synthesizer.value.speakTextAsync(text)
   }
 
   // 停止语音合成
   const stopTextToSpeak = () => {
-    synthesizer.close()
+    synthesizer.value.close()
   }
 
   // 获取语音列表
   const getVoices = async (): Promise<VoiceInfo[]> => {
-    const res = await synthesizer.getVoicesAsync()
+    const res = await synthesizer.value.getVoicesAsync()
     return res.voices
   }
 
+  onMounted(async () => {
+    try {
+      allVoices.value = await getVoices()
+      // fr-FR 法语 ja-JP 日语 en-US 英语 zh-CN 中文 zh-HK 粤语 ko-KR 韩语 de-DE 德语
+      for (const lang of languages.value)
+        languageMap.value[lang] = allVoices.value.filter(x => lang === x.locale)
+      console.log(languageMap)
+    }
+    catch (error) {
+      allVoices.value = []
+    }
+  })
+
   return {
+    languageMap,
+    languages,
     language,
     voiceName,
     isRecognizing,
@@ -86,5 +107,6 @@ export const useSpeechService = (subscriptionKey: string, region: string) => {
     textToSpeak,
     stopTextToSpeak,
     getVoices,
+    allVoices,
   }
 }

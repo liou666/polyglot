@@ -7,9 +7,9 @@ const [isShowInput, toggle] = useToggle(false)
 
 <template>
   <slot name="mainIcon">
-    <i mr-2 rotate-115 i-ic:baseline-key />
+    <i icon-btn rotate-115 i-ic:baseline-key />
   </slot>
-  <div v-if="isShowInput">
+  <div v-if="isShowInput" class="wrapper">
     <input
       v-model="tempValue"
       :type="props.inputType || 'password'"
@@ -33,3 +33,10 @@ const [isShowInput, toggle] = useToggle(false)
     </slot>
   </div>
 </template>
+
+<style scoped>
+.wrapper{
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+}
+</style>

@@ -123,10 +123,5 @@ export const parseOpenAIStream = (rawResponse: Response) => {
 }
 
 // 验证key
-export const verifyKey = (key?: string | null) => key && key.length === 51
+export const verifyOpenKey = (key?: string | null) => key && key.length === 51
 
-// 获取key
-export const getKey = (): string | null => {
-  const openkey = localStorage.getItem('openKey')
-  return openkey
-}

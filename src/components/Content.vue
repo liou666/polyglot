@@ -1,30 +1,38 @@
 <script setup lang="ts">
 import Button from '@/components/widgets/Button.vue'
 import { generateText } from '@/server/api'
-import { useScroll } from '@/hooks'
-import { SpeechService, getKey, verifyKey } from '@/utils'
+import { getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
-const { VITE_REGION, VITE_SCRIPTION_KEY } = import.meta.env
-const systemMessage: SystemMessage = {
-  role: 'system',
-  content: 'I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let\'s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors.',
-}
+// const systemMessage: SystemMessage = {
+//   role: 'system',
+//   content: 'I want you to act as a spoken English teacher and improver. I will speak to you in English and you will reply to me in English to practice my spoken English. I want you to keep your reply neat, limiting the reply to 100 words. I want you to strictly correct my grammar mistakes, typos, and factual errors. I want you to ask me a question in your reply. Now let\'s start practicing, you could ask me a question first. Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors.',
+// }
+// hooks
 const store = useConversationStore()
+const { el, scrollToBottom } = useScroll()
+const {
+  language,
+  voiceName,
+  isRecognizing,
+  startRecognizeSpeech,
+  stopRecognizeSpeech,
+  textToSpeak,
+} = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
 
 // states
 const message = ref('') // input message
 const text = ref('') // current select message
 const loading = ref(false)
-const speechService = ref(new SpeechService(VITE_SCRIPTION_KEY, VITE_REGION))
-const isRecognizing = computed(() => speechService.value.isRecognizing)
 const messageLength = computed(() => store.currentChatMessages.length)
-
-// hooks
-const { el, scrollToBottom } = useScroll()
+const currentKey = computed(() => store.currentKey)
 
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
+watch(currentKey, () => {
+  language.value = store.currentLanguage as any
+  voiceName.value = store.currentVoice as any
+})
 
 // methods
 const roleClass = (role: string) => {
@@ -38,8 +46,8 @@ const roleClass = (role: string) => {
   }
 }
 const onSubmit = async () => {
-  const key = getKey()
-  if (!verifyKey(key)) return alert('请输入正确的API-KEY')
+  const key = getOpenKey()
+  if (!verifyOpenKey(key)) return alert('请输入正确的API-KEY')
   if (!message.value) return
 
   store.changeConversations([
@@ -49,7 +57,7 @@ const onSubmit = async () => {
   message.value = ''
   loading.value = true
   try {
-    const res = await generateText(store.currentChatMessages, key!)
+    const res = await generateText(store.currentChatMessages, key!, getOpenProxy())
     if (res.error) {
       alert(res.error?.message)
       return loading.value = false
@@ -69,17 +77,17 @@ const onSubmit = async () => {
 
 function speak(content: string) {
   text.value = content
-  speechService.value.textToSpeak(content)
+  textToSpeak(content)
 }
 
 const recognize = async () => {
   if (isRecognizing.value) {
-    const result = await speechService.value.stopRecognizeSpeech()
+    const result = await stopRecognizeSpeech()
     message.value = result
     onSubmit()
   }
   else {
-    speechService.value.startRecognizeSpeech()
+    startRecognizeSpeech()
   }
 }
 </script>
@@ -102,11 +110,11 @@ const recognize = async () => {
               <span class="bg-gray-100/20  rounded-lg w-4 py-1 px-3 center" @click="speak(item.content)">
                 <i icon-btn rotate-90 i-ic:sharp-wifi />
               </span>
-              <!-- <span
+              <span
                 class="bg-gray-100/20 ml-1 cursor-pointer rounded-lg w-4 py-1 px-3 center"
               >
                 <i icon-btn i-carbon:ibm-watson-language-translator />
-              </span> -->
+              </span>
             </p>
           </div>
         </div>
@@ -143,6 +151,7 @@ const recognize = async () => {
       </Button>
       <Button
         :disabled="loading"
+        @click="store.changeConversations([])"
       >
         <i i-carbon:trash-can />
       </Button>

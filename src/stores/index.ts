@@ -1,14 +1,20 @@
 const defaultConversations = [{
-  key: 'Tom',
-  desc: 'as a teacher',
+  key: 'Jenny',
+  desc: '美国',
+  language: 'en-US',
+  voice: 'en-US-JennyMultilingualNeural',
   chatMessages: [],
 }, {
-  key: 'Jarry',
-  desc: 'as a classrooms',
+  key: '碧衣',
+  desc: '日本',
+  language: 'ja-JP',
+  voice: 'ja-JP-AoiNeural',
   chatMessages: [],
 }, {
-  key: 'Lilei',
-  desc: 'as a basketball paly',
+  key: '선히',
+  desc: '韩国',
+  language: 'ko-KR',
+  voice: 'ko-KR-SunHiNeural',
   chatMessages: [],
 }] as const
 
@@ -18,6 +24,8 @@ export interface Conversation {
   key: Key
   desc: string
   chatMessages: ChatMessage[]
+  language: string
+  voice: string
 }
 
 export interface State{
@@ -41,6 +49,12 @@ export const useConversationStore = defineStore('conversation', {
     },
     currentChatMessages(state) {
       return state.conversations.find(x => x.key === state.currentKey)!.chatMessages
+    },
+    currentVoice(state) {
+      return state.conversations.find(x => x.key === state.currentKey)!.voice
+    },
+    currentLanguage(state) {
+      return state.conversations.find(x => x.key === state.currentKey)!.language
     },
   },
   actions: {

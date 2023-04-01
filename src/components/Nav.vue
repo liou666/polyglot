@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import Card from './widgets/Card.vue'
 import { useConversationStore } from '@/stores'
+import InputKit from '@/components/widgets/InputKit.vue'
+import { OPEN_KEY, OPEN_PROXY } from '@/constant'
 
+const openKey = useLocalStorage(OPEN_KEY, '')
+const proxy = useLocalStorage(OPEN_PROXY, '')
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
+
 const store = useConversationStore()
 </script>
 
@@ -33,8 +38,21 @@ const store = useConversationStore()
           <span v-else>Dark Mode</span>
         </div>
         <div nav-item>
-          <i icon-btn i-carbon:settings />
-          <span>Setting</span>
+          <InputKit v-model="proxy" input-type="text">
+            <template #mainIcon>
+              <i i-carbon:server-proxy />
+            </template>
+            <template #mainText>
+              Proxy
+            </template>
+          </InputKit>
+        </div>
+        <div nav-item>
+          <InputKit v-model="openKey">
+            <template #mainText>
+              OpenAi Key
+            </template>
+          </InputKit>
         </div>
       </div>
     </div>

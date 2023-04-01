@@ -10,6 +10,7 @@ console.log('[App.vue]', `Electron ${process.versions.electron}!`)
     <Header />
     <Aside />
     <Content class="chat-wrap hide-scrollbar" />
+    <!-- <Aside /> -->
   </div>
 </template>
 

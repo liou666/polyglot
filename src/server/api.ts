@@ -1,10 +1,6 @@
 import { OpenAi } from '@/utils'
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-const proxy = import.meta.env.VITE_SERVE_PROXY
 
-// const openai = new OpenAi(apiKey, proxy)
-
-export const generateText = async (messages: ChatMessage[], apiKey: string) => {
+export const generateText = async (messages: ChatMessage[], apiKey: string, proxy?: string) => {
   const openai = new OpenAi(apiKey, proxy)
 
   const { url, initOptions } = openai.generateTurboPayload({ messages })
@@ -18,7 +14,7 @@ export const generateText = async (messages: ChatMessage[], apiKey: string) => {
   }
 }
 
-export const generateDashboardInfo = async (apiKey: string) => {
+export const generateDashboardInfo = async (apiKey: string, proxy?: string) => {
   const openai = new OpenAi(apiKey, proxy)
 
   const { url, initOptions } = openai.generateDashboardPayload()
