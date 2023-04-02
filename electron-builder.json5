@@ -2,7 +2,8 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "YourAppID",
+  "appId": "Polyglot",
+  "productName": "Polyglot",
   "asar": true,
   "icon": "public/favicon.ico",
   "directories": {
@@ -34,5 +35,5 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  }
+  },
 }
