@@ -5,11 +5,11 @@ import { shell } from 'electron'
 <template>
   <header class="bg-#fff dark:bg-#1f262a">
     <h3 center-y text-2xl>
-      <!-- <img src="" alt=""> -->
-      <div m-2>
-        🤖️
+      <div w-10 m-1 mt-2>
+        <!-- 🤖️ -->
+        <img w-full src="/favicon.ico" alt="">
       </div>
-      <span class="text-gradient ">Polyglot</span>
+      <span select-none class="text-gradient ">Polyglot</span>
     </h3>
     <div class="center-y" @click="shell.openExternal('https://github.com/liou666')">
       <i w-6 h-6 icon-btn i-carbon:logo-github />

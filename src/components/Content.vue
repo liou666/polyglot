@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/widgets/Button.vue'
 import { generateText } from '@/server/api'
-import { getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
+import { getAvatarUrl, getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
 // hooks
@@ -102,7 +102,7 @@ const translate = (text: string) => {
           center-y odd:flex-row-reverse
         >
           <div class="w-10">
-            <img w-full rounded-full :src="item.role === 'user' ? '/avatars/self.png' : store.currentAvatar" alt="">
+            <img w-full rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : store.currentAvatar" alt="">
           </div>
 
           <div style="flex-basis:fit-content" mx-2>

@@ -1,10 +1,10 @@
-import { generatePrompt } from '@/utils'
+import { generatePrompt, getAvatarUrl } from '@/utils'
 const defaultConversations = [{
   key: 'Jenny',
   desc: '美国',
   language: 'en-US',
   voice: 'en-US-JennyMultilingualNeural',
-  avatar: '/avatars/en.jpg',
+  avatar: getAvatarUrl('en.jpg'),
   chatMessages: [{
     role: 'system',
     content: generatePrompt('English'),
@@ -12,7 +12,7 @@ const defaultConversations = [{
 }, {
   key: '碧衣',
   desc: '日本',
-  avatar: '/avatars/jp1.webp',
+  avatar: getAvatarUrl('jp1.webp'),
   language: 'ja-JP',
   voice: 'ja-JP-AoiNeural',
   chatMessages: [{
@@ -22,7 +22,7 @@ const defaultConversations = [{
 }, {
   key: '선히',
   desc: '韩国',
-  avatar: '/avatars/ko1.jpeg',
+  avatar: getAvatarUrl('ko1.jpeg'),
   language: 'ko-KR',
   voice: 'ko-KR-SunHiNeural',
   chatMessages: [{
@@ -33,7 +33,7 @@ const defaultConversations = [{
 {
   key: 'Brigitte',
   desc: '法国',
-  avatar: '/avatars/fr.webp',
+  avatar: getAvatarUrl('fr.webp'),
   language: 'fr-FR',
   voice: 'fr-FR-BrigitteNeural',
   chatMessages: [{
