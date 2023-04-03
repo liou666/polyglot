@@ -1,6 +1,3 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
   "appId": "com.liou666.polyglot",
   "productName": "Polyglot",
@@ -10,6 +7,13 @@
     "output": "release/${version}"
   },
   "files": ["dist-electron", "dist"],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "liou666",
+      "repo": "polyglot"
+    }
+  ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
     "target": ["dmg"]
@@ -29,4 +33,5 @@
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
   }
+
 }
