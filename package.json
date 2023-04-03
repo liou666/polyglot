@@ -22,7 +22,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s 0"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s 0",
+    "release:app": "electron-builder --publish always",
+    "release:version": "npx standard-version"
   },
   "dependencies": {
     "@vueuse/core": "^9.13.0",
