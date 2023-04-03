@@ -47,6 +47,7 @@ const onSubmit = async () => {
     const res = await generateText(store.currentChatMessages, key!, getOpenProxy())
     if (res.error) {
       alert(res.error?.message)
+      store.changeConversations(store.currentChatMessages.slice(-1))
       return store.changeLoading(false)
     }
     const content = res.choices[0].message.content
@@ -60,6 +61,7 @@ const onSubmit = async () => {
     store.changeLoading(false)
   }
   catch (error) {
+    store.changeConversations(store.currentChatMessages.slice(-1))
     store.changeLoading(false)
   }
 }
@@ -93,7 +95,7 @@ const translate = (text: string) => {
 </script>
 
 <template>
-  <div flex flex-col p-2 rounded-md bg-white dark="bg-#1e1e1e">
+  <div flex flex-col p-2 rounded-md bg-white dark="bg-#1e1e1e" shadow-sm>
     <div ref="el" class="hide-scrollbar flex-1 overflow-auto">
       <template v-if="chatMessages.length">
         <div
@@ -146,7 +148,7 @@ const translate = (text: string) => {
         v-else-if="!store.loading"
         v-model="message"
         type="text"
-        text-p
+        @keyup.enter="onSubmit"
         placeholder="Type your message here..."
         input-box p-3 flex-1
       >

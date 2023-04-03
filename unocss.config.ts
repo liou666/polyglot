@@ -23,6 +23,9 @@ export default defineConfig({
     ['input-box', 'bg-slate-300/50 dark:text-slate-400 dark:placeholder:text-slate-400 dark:placeholder:opacity-30 dark:bg-slate-500/40 border-0 text-lg outline-none rounded px-3;'],
     ['chat-box', ' bg-slate/30 dark:bg-slate-500/40 dark:text-slate-200 rounded'],
     ['nav-item', 'flex h-6 cursor-pointer items-center gap-3 rounded-md py-2 px-3  transition-colors duration-200 hover:bg-gray-500/10'],
+    ['base-shadow', 'shadow-pink/10 shadow'],
+  
+    
   ],
   presets: [
     presetUno(),
