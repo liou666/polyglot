@@ -2,7 +2,7 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "Polyglot",
+  "appId": "com.liou666.polyglot",
   "productName": "Polyglot",
   "asar": true,
   "icon": "public/favicon.ico",
