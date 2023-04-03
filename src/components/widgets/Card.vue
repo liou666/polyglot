@@ -12,8 +12,8 @@ const { name, desc, active, avaterUrl } = defineProps<{
     p-2 cursor-pointer center-y
     m-2 rounded duration-300 shadow-sm
     dark="bg-gray-700/80 hover:bg-gray-500/80"
-    bg="gray-400/10 hover:gray-500/20"
-    :class="{ 'bg-gray-500/20! dark:bg-gray-500/80! shadow-lg': active }"
+    bg="gray-400/20 hover:gray-500/20"
+    :class="{ 'bg-gradient-to-r from-purple-400 via-pink-500 to-pink-500 dark:bg-gray-500/80! shadow-lg': active }"
   >
     <div mr-2>
       <div w-10 h-10>

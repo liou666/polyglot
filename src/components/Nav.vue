@@ -19,7 +19,7 @@ const handleCardClick = (key: Key) => {
 </script>
 
 <template>
-  <nav class="rounded-md bg-#fff dark:bg-#1d262a h-[calc(100vh-78px)]">
+  <nav class="rounded-md bg-#fff dark:bg-#1d262a h-[calc(100vh-78px)] shadow-sm">
     <div h-full flex flex-col p-1>
       <div class="hide-scrollbar overflow-y-auto flex-1 ">
         <Card
