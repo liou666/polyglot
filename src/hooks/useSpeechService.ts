@@ -58,9 +58,12 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
         }
         else {
           isRecognizing.value = false
-          reject(new Error('语音识别失败'),
+          reject(new Error(`未识别到任何内容-${language.value}`),
           )
         }
+      }, err => {
+        isRecognizing.value = false
+        reject(err)
       })
     })
   }

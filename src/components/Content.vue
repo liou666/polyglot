@@ -83,7 +83,7 @@ const recognize = async () => {
   }
   catch (error) {
     isRecognizing.value = false
-    store.changeLoading(true)
+    store.changeLoading(false)
     alert(error)
   }
 }
