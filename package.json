@@ -21,7 +21,8 @@
     "build": "vue-tsc --noEmit && vite build && electron-builder",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s 0"
   },
   "dependencies": {
     "@vueuse/core": "^9.13.0",
@@ -36,6 +37,7 @@
     "@iconify-json/ic": "^1.1.13",
     "@liou666/eslint-config-vue": "^0.0.1",
     "@vitejs/plugin-vue": "^4.0.0",
+    "conventional-changelog-cli": "^2.2.2",
     "electron": "^23.1.1",
     "electron-builder": "^23.6.0",
     "eslint": "^8.36.0",
