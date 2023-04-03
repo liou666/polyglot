@@ -31,6 +31,19 @@ watch(currentKey, () => {
 })
 
 // methods
+const fetchResponse = async (key: string) => {
+  let res
+  try {
+    res = await generateText(store.currentChatMessages, key, getOpenProxy())
+  }
+  catch (error: any) {
+    return alert('[Error] 网络请求超时, 请检查网络或代理')
+  }
+  if (res.error) return alert(res.error?.message)
+
+  return res.choices[0].message.content
+}
+
 const onSubmit = async () => {
   const key = getOpenKey()
   if (!verifyOpenKey(key)) return alert('请输入正确的API-KEY')
@@ -43,14 +56,8 @@ const onSubmit = async () => {
   message.value = ''
   store.changeLoading(true)
 
-  try {
-    const res = await generateText(store.currentChatMessages, key!, getOpenProxy())
-    if (res.error) {
-      alert(res.error?.message)
-      store.changeConversations(store.currentChatMessages.slice(-1))
-      return store.changeLoading(false)
-    }
-    const content = res.choices[0].message.content
+  const content = await fetchResponse(key)
+  if (content) {
     store.changeConversations([
       ...store.currentChatMessages,
       {
@@ -58,12 +65,12 @@ const onSubmit = async () => {
       },
     ])
     speak(content)
-    store.changeLoading(false)
   }
-  catch (error) {
-    store.changeConversations(store.currentChatMessages.slice(-1))
-    store.changeLoading(false)
+  else {
+    store.changeConversations(store.currentChatMessages.slice(0, -1))
   }
+
+  store.changeLoading(false)
 }
 
 function speak(content: string) {
@@ -148,9 +155,9 @@ const translate = (text: string) => {
         v-else-if="!store.loading"
         v-model="message"
         type="text"
-        @keyup.enter="onSubmit"
         placeholder="Type your message here..."
-        input-box p-3 flex-1
+        input-box
+        p-3 flex-1 @keyup.enter="onSubmit"
       >
       <div v-else class="loading-btn">
         AI Is Thinking...
