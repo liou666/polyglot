@@ -24,8 +24,6 @@ export default defineConfig({
     ['chat-box', ' bg-slate/30 dark:bg-slate-500/40 dark:text-slate-200 rounded'],
     ['nav-item', 'flex h-6 cursor-pointer items-center gap-3 rounded-md py-2 px-3  transition-colors duration-200 hover:bg-gray-500/10'],
     ['base-shadow', 'shadow-pink/10 shadow'],
-  
-    
   ],
   presets: [
     presetUno(),

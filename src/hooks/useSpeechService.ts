@@ -61,7 +61,7 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
           reject(new Error(`未识别到任何内容-${language.value}`),
           )
         }
-      }, err => {
+      }, (err) => {
         isRecognizing.value = false
         reject(err)
       })
