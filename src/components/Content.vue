@@ -6,6 +6,7 @@ import { useConversationStore } from '@/stores'
 
 // hooks
 const store = useConversationStore()
+
 const { el, scrollToBottom } = useScroll()
 const {
   language,
@@ -20,8 +21,9 @@ const message = ref('') // input message
 const text = ref('') // current select message
 const messageLength = computed(() => store.currentChatMessages.length)
 const chatMessages = computed(() => store.currentChatMessages.slice(1))
-
 const currentKey = computed(() => store.currentKey)
+useTitle(currentKey)
+
 
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
