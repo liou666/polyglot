@@ -19,6 +19,7 @@
     "target": ["dmg"]
   },
   "win": {
+    "icon": "public/favicon.ico",
     "target": [
       {
         "target": "nsis",
