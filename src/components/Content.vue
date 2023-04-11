@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import Button from '@/components/widgets/Button.vue'
-import { generateText } from '@/server/api'
-import { getAvatarUrl, getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
+import { generatTranslate, generateText } from '@/server/api'
+import { getAvatarUrl, getAzureTranslateKey, getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
+
+interface Translates {
+  [key: string]: {
+    isShow: boolean
+    result: string | boolean
+  }
+}
 
 // hooks
 const store = useConversationStore()
@@ -19,11 +26,11 @@ const {
 // states
 const message = ref('') // input message
 const text = ref('') // current select message
+const translates = ref<Translates>({}) // translate result
 const messageLength = computed(() => store.currentChatMessages.length)
 const chatMessages = computed(() => store.currentChatMessages.slice(1))
 const currentKey = computed(() => store.currentKey)
 useTitle(currentKey)
-
 
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
@@ -97,9 +104,18 @@ const recognize = async () => {
   }
 }
 
-const translate = (text: string) => {
-  // todo
-  console.log(text)
+const translate = async (text: string, i: number) => {
+  const key = text + i
+  if (translates.value[key])
+    return translates.value[key].isShow = !translates.value[key].isShow
+
+  store.changeLoading(true)
+  const result = await generatTranslate({ text, translateKey: getAzureTranslateKey(), toLanguage: 'zh-Hans' })
+  translates.value = {
+    ...translates.value,
+    [key]: { result, isShow: true },
+  }
+  store.changeLoading(false)
 }
 </script>
 
@@ -117,16 +133,20 @@ const translate = (text: string) => {
           </div>
 
           <div style="flex-basis:fit-content" mx-2>
-            <p mb-1 p-2 chat-box>
+            <p p-2 my-2 chat-box>
               {{ item.content }}
             </p>
+            <p v-show="item.role === 'assistant' && translates[item.content + i]?.isShow " p-2 my-2 chat-box>
+              {{ translates[item.content + i]?.result }}
+            </p>
+
             <p v-if="item.role === 'assistant'" mt-2 flex>
               <span class="chat-btn" @click="speak(item.content)">
                 <i icon-btn rotate-90 i-ic:sharp-wifi />
               </span>
               <span
                 class="chat-btn ml-1"
-                @click="translate(item.content)"
+                @click="translate(item.content, i)"
               >
                 <i icon-btn i-carbon:ibm-watson-language-translator />
               </span>
@@ -152,6 +172,7 @@ const translate = (text: string) => {
 
       <div v-if="isRecognizing" class="loading-btn">
         isRecognizing
+        <i icon-btn i-eos-icons:three-dots-loading />
       </div>
       <input
         v-else-if="!store.loading"
@@ -162,7 +183,8 @@ const translate = (text: string) => {
         p-3 flex-1 @keyup.enter="onSubmit"
       >
       <div v-else class="loading-btn">
-        AI Is Thinking...
+        AI Is Thinking
+        <i icon-btn i-eos-icons:three-dots-loading />
       </div>
       <Button
         :disabled="store.loading"

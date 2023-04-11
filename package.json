@@ -32,12 +32,14 @@
     "microsoft-cognitiveservices-speech-sdk": "^1.26.0",
     "pinia": "^2.0.33",
     "unocss": "^0.50.4",
+    "uuid": "^9.0.0",
     "vue": "^3.2.47"
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.1.16",
     "@iconify-json/ic": "^1.1.13",
     "@liou666/eslint-config-vue": "^0.0.1",
+    "@types/uuid": "^9.0.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "conventional-changelog-cli": "^2.2.2",
     "electron": "^23.1.1",
