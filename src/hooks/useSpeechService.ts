@@ -15,12 +15,15 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
   const speechConfig = ref(SpeechConfig.fromSubscription(subscriptionKey, region))
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
+  const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
+
   const allVoices = ref<VoiceInfo[]>([])
 
   const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
-  const recognizer = ref(new SpeechRecognizer(speechConfig.value, audioConfig))
-  const synthesizer = ref(new SpeechSynthesizer(speechConfig.value))
+  const audioConfiga = AudioConfig.fromDefaultSpeakerOutput()
 
+  const recognizer = ref(new SpeechRecognizer(speechConfig.value, audioConfig))
+  const synthesizer = ref(new SpeechSynthesizer(speechConfig.value, audioConfiga))
   watch([language, voiceName], ([lang, voice]) => {
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
@@ -95,13 +98,16 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
 
   onMounted(async () => {
     try {
+      isFetchAllVoices.value = true
       allVoices.value = await getVoices()
       // fr-FR 法语 ja-JP 日语 en-US 英语 zh-CN 中文 zh-HK 粤语 ko-KR 韩语 de-DE 德语
       for (const lang of languages.value)
         languageMap.value[lang] = allVoices.value.filter(x => lang === x.locale)
       console.log(languageMap)
+      isFetchAllVoices.value = false
     }
     catch (error) {
+      isFetchAllVoices.value = false
       allVoices.value = []
     }
   })
@@ -120,5 +126,6 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     getVoices,
     allVoices,
     isSynthesizing,
+    isFetchAllVoices,
   }
 }

@@ -66,7 +66,7 @@ const visible = ref(false)
           nav-item
           @click="visible = true"
         >
-          <i icon-btn i-ic:outline-add-circle />
+          <i icon-btn i-ic:baseline-person-add-alt />
           <span>New Chat</span>
         </div>
       </div>
