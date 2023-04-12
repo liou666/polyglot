@@ -30,7 +30,9 @@ const translates = ref<Translates>({}) // translate result
 const messageLength = computed(() => store.currentChatMessages.length)
 const chatMessages = computed(() => store.currentChatMessages.slice(1))
 const currentKey = computed(() => store.currentKey)
-useTitle(currentKey)
+const currentName = computed(() => store.currentName)
+
+useTitle(currentName)
 
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))

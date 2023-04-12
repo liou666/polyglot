@@ -1,6 +1,9 @@
+import { v4 as uuid } from 'uuid'
 import { generatePrompt, getAvatarUrl } from '@/utils'
+
 const defaultConversations = [{
-  key: 'Jenny',
+  key: uuid(),
+  name: 'Jenny',
   desc: '美国',
   language: 'en-US',
   voice: 'en-US-JennyMultilingualNeural',
@@ -10,7 +13,8 @@ const defaultConversations = [{
     content: generatePrompt('English'),
   }],
 }, {
-  key: '碧衣',
+  key: uuid(),
+  name: '碧衣',
   desc: '日本',
   avatar: getAvatarUrl('jp1.webp'),
   language: 'ja-JP',
@@ -20,7 +24,8 @@ const defaultConversations = [{
     content: generatePrompt('Japanese'),
   }],
 }, {
-  key: '선히',
+  key: uuid(),
+  name: '선히',
   desc: '韩国',
   avatar: getAvatarUrl('ko1.jpeg'),
   language: 'ko-KR',
@@ -31,7 +36,8 @@ const defaultConversations = [{
   }],
 },
 {
-  key: 'Brigitte',
+  key: uuid(),
+  name: 'Brigitte',
   desc: '法国',
   avatar: getAvatarUrl('fr.webp'),
   language: 'fr-FR',
@@ -44,10 +50,12 @@ const defaultConversations = [{
 
 ] as const
 
-export type Key = typeof defaultConversations[number]['key']
+// export type Key = typeof defaultConversations[number]['key']
+export type Key = string
 
 export interface Conversation {
   key: Key // 名称 唯一标识
+  name: string // 名称
   desc: string
   chatMessages: ChatMessage[] // 聊天信息
   language: string // tts stt
@@ -74,7 +82,7 @@ export const useConversationStore = defineStore('conversation', {
       return (key: Key) => state.conversations.find(x => x.key === key)
     },
     allPeople(state) {
-      return state.conversations.map(x => ({ key: x.key, desc: x.desc, avatar: x.avatar }))
+      return state.conversations.map(x => ({ key: x.key, desc: x.desc, avatar: x.avatar, name: x.name }))
     },
     allLanguage(state) {
       return state.conversations.map(x => (x.language))
@@ -91,6 +99,9 @@ export const useConversationStore = defineStore('conversation', {
     currentAvatar(state) {
       return state.conversations.find(x => x.key === state.currentKey)!.avatar
     },
+    currentName(state) {
+      return state.conversations.find(x => x.key === state.currentKey)!.name
+    },
   },
   actions: {
     changeConversations(chatMessages: ChatMessage[]) {
@@ -104,6 +115,15 @@ export const useConversationStore = defineStore('conversation', {
     },
     cleanConversations() {
       this.chatMessages(this.currentKey)!.chatMessages.length = 1
+    },
+    addConversation(conversation: Omit<Conversation, 'chatMessages'>) {
+      this.conversations.push({
+        ...conversation,
+        chatMessages: [{
+          role: 'system',
+          content: generatePrompt(conversation.language),
+        }],
+      })
     },
   },
 })

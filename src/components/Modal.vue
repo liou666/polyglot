@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script lang="ts" setup inherit-attrs="false">
 export interface Props {
   /**
    * level of depth

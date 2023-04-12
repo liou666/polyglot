@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Card from './widgets/Card.vue'
+import Modal from './Modal.vue'
+import NewChat from './NewChat.vue'
 import type { Key } from '@/stores'
 import { useConversationStore } from '@/stores'
 import InputKit from '@/components/widgets/InputKit.vue'
 import { OPEN_KEY, OPEN_PROXY } from '@/constant'
-
 const openKey = useLocalStorage(OPEN_KEY, '')
 const proxy = useLocalStorage(OPEN_PROXY, '')
 const isDark = useDark()
@@ -16,6 +17,8 @@ const handleCardClick = (key: Key) => {
     return alert('Please wait for the current operation to complete')
   store.changeCurrentKey(key)
 }
+
+const visible = ref(false)
 </script>
 
 <template>
@@ -27,7 +30,7 @@ const handleCardClick = (key: Key) => {
           :key="i"
           :avater-url="item.avatar"
           :desc="item.desc"
-          :name="item.key"
+          :name="item.name"
           :active="store.currentKey === item.key"
           @click="handleCardClick(item.key)"
         />
@@ -59,7 +62,17 @@ const handleCardClick = (key: Key) => {
             </template>
           </InputKit>
         </div>
+        <div
+          nav-item
+          @click="visible = true"
+        >
+          <i icon-btn i-ic:outline-add-circle />
+          <span>New Chat</span>
+        </div>
       </div>
+      <Modal v-model:visible="visible" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
+        <NewChat @close="visible = false" />
+      </Modal>
     </div>
   </nav>
 </template>
