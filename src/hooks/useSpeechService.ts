@@ -13,7 +13,8 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
   const voiceName = ref('en-US-JennyMultilingualNeural')
 
   const speechConfig = ref(SpeechConfig.fromSubscription(subscriptionKey, region))
-  const isRecognizing = ref(false)
+  const isRecognizing = ref(false) // 语音识别中
+  const isSynthesizing = ref(false) // 语音合成中
   const allVoices = ref<VoiceInfo[]>([])
 
   const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
@@ -70,8 +71,15 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
 
   // 语音合成
   const textToSpeak = async (text: string, voice?: string) => {
+    isSynthesizing.value = true
     speechConfig.value.speechSynthesisVoiceName = voice || speechConfig.value.speechSynthesisVoiceName
-    synthesizer.value.speakTextAsync(text)
+    synthesizer.value.speakTextAsync(text, (result) => {
+      // if (result.errorDetails)
+      //   console.error(`语音播放失败：${result.errorDetails}`)
+      // else
+      //   console.log('语音播放完成')
+      isSynthesizing.value = false
+    })
   }
 
   // 停止语音合成
@@ -111,5 +119,6 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     stopTextToSpeak,
     getVoices,
     allVoices,
+    isSynthesizing,
   }
 }

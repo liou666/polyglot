@@ -21,12 +21,15 @@ const {
   isRecognizing,
   recognizeSpeech,
   textToSpeak,
+  isSynthesizing,
 } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion(), store.allLanguage as any)
 
 // states
 const message = ref('') // input message
 const text = ref('') // current select message
 const translates = ref<Translates>({}) // translate result
+const isTranslating = ref(false) // translate loading
+
 const messageLength = computed(() => store.currentChatMessages.length)
 const chatMessages = computed(() => store.currentChatMessages.slice(1))
 const currentKey = computed(() => store.currentKey)
@@ -111,13 +114,13 @@ const translate = async (text: string, i: number) => {
   if (translates.value[key])
     return translates.value[key].isShow = !translates.value[key].isShow
 
-  store.changeLoading(true)
+  isTranslating.value = true
   const result = await generatTranslate({ text, translateKey: getAzureTranslateKey(), toLanguage: 'zh-Hans' })
   translates.value = {
     ...translates.value,
     [key]: { result, isShow: true },
   }
-  store.changeLoading(false)
+  isTranslating.value = false
 }
 </script>
 
@@ -143,14 +146,15 @@ const translate = async (text: string, i: number) => {
             </p>
 
             <p v-if="item.role === 'assistant'" mt-2 flex>
-              <span class="chat-btn" @click="speak(item.content)">
-                <i icon-btn rotate-90 i-ic:sharp-wifi />
+              <span class="chat-btn">
+                <i v-if="!isSynthesizing" icon-btn rotate-90 i-ic:sharp-wifi @click="speak(item.content)" />
+                <i v-else icon-btn i-eos-icons:bubble-loading />
               </span>
               <span
                 class="chat-btn ml-1"
-                @click="translate(item.content, i)"
               >
-                <i icon-btn i-carbon:ibm-watson-language-translator />
+                <i v-if="!isTranslating" icon-btn i-carbon:ibm-watson-language-translator @click="translate(item.content, i)" />
+                <i v-else icon-btn i-eos-icons:bubble-loading />
               </span>
             </p>
           </div>

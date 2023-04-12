@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.1.16",
+    "@iconify-json/eos-icons": "^1.1.6",
     "@iconify-json/ic": "^1.1.13",
     "@liou666/eslint-config-vue": "^0.0.1",
     "@types/uuid": "^9.0.1",
