@@ -31,7 +31,7 @@ cd polyglot
 pnpm install
 
 # 3.配置环境变量
-mv .env_example .env
+mv .env.example .env
 
 # 4. 启动服务
 pnpm dev
