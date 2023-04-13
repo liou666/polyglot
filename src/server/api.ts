@@ -5,7 +5,7 @@ export const generateText = async (messages: ChatMessage[], apiKey: string, prox
   const openai = new OpenAi(apiKey, proxy)
 
   const { url, initOptions } = openai.generateTurboPayload({ messages })
-  const response = await fetchWithTimeout(url, 20000, initOptions)
+  const response = await fetchWithTimeout(url, 30000, initOptions)
   const data = await response.json()
   return data
 }

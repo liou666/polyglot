@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
-import { getAvatarUrl, getOpenAzureKey, getOpenAzureRegion } from '@/utils'
+import { getAvatarUrl } from '@/utils'
 import { useConversationStore } from '@/stores'
 import { supportLanguageMap } from '@/config'
+const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
-// const avatarPath = '../assets/avatars/'
+
 const modules = import.meta.glob(['../assets/avatars/*', '!../assets/avatars/self.png'])
 const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
 
-const { allVoices, isFetchAllVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
-
 const store = useConversationStore()
 
-const allLanguages = computed(() => [...new Set(allVoices.value.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
-
+const allLanguages = computed(() => [...new Set(allVoices.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
 const selectLanguage = ref('')
 const filterVoices = ref<VoiceInfo[]>([])
 const selectVoiceName = ref('')
@@ -24,14 +22,17 @@ const name = ref('')
 
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
-watch([selectLanguage, allLanguages], ([newSelectLanguage]) => {
-  filterVoices.value = allVoices.value.filter(v => v.locale === newSelectLanguage)
-  selectVoiceName.value = filterVoices.value[0]?.shortName
+onBeforeMount(() => {
+  selectLanguage.value = allLanguages.value[0]
+  changeSelectLanguage(selectLanguage.value)
 })
 
-watch(allLanguages, (newAllLanguages) => {
-  selectLanguage.value = newAllLanguages[0]
-})
+watch(selectLanguage, changeSelectLanguage)
+
+function changeSelectLanguage(newSelectLanguage: string) {
+  filterVoices.value = allVoices.filter(v => v.locale === newSelectLanguage)
+  selectVoiceName.value = filterVoices.value[0]?.shortName
+}
 
 const addChat = (event: any) => {
   event.preventDefault()
@@ -56,52 +57,46 @@ const changeAvatar = () => {
     <!-- <div text-lg font-bold>
       自定义对话
     </div> -->
-    <div v-if="isFetchAllVoices" h-56 flex="~" items-center>
-      <!-- <span>loading</span>  -->
-      <i text-6 icon-btn i-eos-icons:three-dots-loading />
+    <div flex>
+      <img w-14 h-14 rounded-full :src="getAvatarUrl(avatarList[currentAvatarIndex])" alt="" @click="changeAvatar()">
     </div>
-    <template v-else>
-      <div flex>
-        <img w-14 h-14 rounded-full :src="getAvatarUrl(avatarList[currentAvatarIndex])" alt="" @click="changeAvatar()">
-      </div>
-      <div flex>
-        <label center-y justify-end mr-2 for="">姓名</label>
-        <input v-model="name" w-50 p-2 type="text">
-      </div>
-      <div flex>
-        <label center-y justify-end mr-2 for="">备注</label>
-        <input v-model="desc" w-50 p-2 type="text">
-      </div>
-      <div flex>
-        <label center-y justify-end mr-2 for="">语言</label>
-        <select v-model="selectLanguage" w-55 select-settings>
-          <option v-for="item in allLanguages" :key="item" :value="item">
-            {{ supportLanguageMap[item] }}
-          </option>
-        </select>
-      </div>
-      <div flex>
-        <label center-y justify-end mr-2 for="">音色</label>
-        <select v-model="selectVoiceName" w-55 select-settings>
-          <option v-for="item in filterVoices" :key="item.shortName" :value="item.shortName">
-            {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
-          </option>
-        </select>
-      </div>
-      <!-- todo -->
-      <!-- <div flex>
+    <div flex>
+      <label center-y justify-end mr-2 for="">姓名</label>
+      <input v-model="name" w-50 p-2 type="text">
+    </div>
+    <div flex>
+      <label center-y justify-end mr-2 for="">备注</label>
+      <input v-model="desc" w-50 p-2 type="text">
+    </div>
+    <div flex>
+      <label center-y justify-end mr-2 for="">语言</label>
+      <select v-model="selectLanguage" w-55 select-settings>
+        <option v-for="item in allLanguages" :key="item" :value="item">
+          {{ supportLanguageMap[item] }}
+        </option>
+      </select>
+    </div>
+    <div flex>
+      <label center-y justify-end mr-2 for="">音色</label>
+      <select v-model="selectVoiceName" w-55 select-settings>
+        <option v-for="item in filterVoices" :key="item.shortName" :value="item.shortName">
+          {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
+        </option>
+      </select>
+    </div>
+    <!-- todo -->
+    <!-- <div flex>
         <label center-y justify-end mr-2 for="">预设</label>
         <textarea id="message" resize-none w-50 block p-2 text-sm placeholder="Write your thoughts here..." />
       </div> -->
-      <div center-y text-sm text-gray-500>
-        <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />
-        点击头像可更换头像
-      </div>
-      <button w-20 btn center p-2 mt2 :disabled="!canAdd" @click="addChat($event)">
-        <i mr-1 i-ic:outline-add-circle />
-        submit
-      </button>
-    </template>
+    <div center-y text-sm text-gray-500>
+      <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />
+      点击头像可更换头像
+    </div>
+    <button w-20 btn center p-2 mt2 :disabled="!canAdd" @click="addChat($event)">
+      <i mr-1 i-ic:outline-add-circle />
+      submit
+    </button>
   </div>
 </template>
 

@@ -2,10 +2,13 @@
 import Modal from './widgets/Modal.vue'
 import NewChat from './NewChat.vue'
 import Setting from './Setting.vue'
+import { getOpenAzureKey, getOpenAzureRegion } from '@/utils'
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const addVisible = ref(false)
 const settingVisible = ref(false)
+
+const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
 </script>
 
 <template>
@@ -32,7 +35,7 @@ const settingVisible = ref(false)
   </div>
 
   <Modal v-model:visible="addVisible" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
-    <NewChat @close="addVisible = false" />
+    <NewChat :all-voices="allVoices as any" @close="addVisible = false" />
   </Modal>
 
   <Modal v-model:visible="settingVisible" h20 class="dark:bg-[#111111] bg-white" center max-w-80 p6>

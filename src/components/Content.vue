@@ -29,6 +29,8 @@ const message = ref('') // input message
 const text = ref('') // current select message
 const translates = ref<Translates>({}) // translate result
 const isTranslating = ref(false) // translate loading
+const speakIndex = ref(0) // record speak
+const translateIndex = ref(0) // record translate
 
 const messageLength = computed(() => store.getConversationsByCurrentProps('chatMessages').length)
 const chatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages').slice(1))
@@ -82,7 +84,7 @@ const onSubmit = async () => {
         content, role: 'assistant',
       },
     ])
-    speak(content)
+    speak(content, chatMessages.value.length - 1)
   }
   else {
     store.changeConversations(currentChatMessages.value.slice(0, -1))
@@ -91,7 +93,8 @@ const onSubmit = async () => {
   store.changeLoading(false)
 }
 
-function speak(content: string) {
+function speak(content: string, index: number) {
+  speakIndex.value = index
   text.value = content
   textToSpeak(content)
 }
@@ -114,6 +117,7 @@ const recognize = async () => {
 }
 
 const translate = async (text: string, i: number) => {
+  translateIndex.value = i
   const key = text + i
   if (translates.value[key])
     return translates.value[key].isShow = !translates.value[key].isShow
@@ -150,15 +154,18 @@ const translate = async (text: string, i: number) => {
             </p>
 
             <p v-if="item.role === 'assistant'" mt-2 flex>
-              <span class="chat-btn">
-                <i v-if="!isSynthesizing" icon-btn rotate-90 i-ic:sharp-wifi @click="speak(item.content)" />
-                <i v-else icon-btn i-eos-icons:bubble-loading />
+              <span v-if="!isSynthesizing || speakIndex !== i" class="chat-btn" @click="speak(item.content, i)">
+                <i icon-btn rotate-90 i-ic:sharp-wifi />
               </span>
-              <span
-                class="chat-btn ml-1"
-              >
-                <i v-if="!isTranslating" icon-btn i-carbon:ibm-watson-language-translator @click="translate(item.content, i)" />
-                <i v-else icon-btn i-eos-icons:bubble-loading />
+              <span v-else class="chat-btn">
+                <i icon-btn i-eos-icons:bubble-loading />
+              </span>
+
+              <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
+                <i icon-btn i-carbon:ibm-watson-language-translator />
+              </span>
+              <span v-else ml-1 class="chat-btn">
+                <i icon-btn i-eos-icons:bubble-loading />
               </span>
             </p>
           </div>

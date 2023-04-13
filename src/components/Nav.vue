@@ -12,6 +12,8 @@ const handleCardClick = (key: Key) => {
 }
 
 const handleDelete = (key: Key) => {
+  if (store.loading)
+    return alert('Please wait for the current operation to complete')
   store.deleteConversation(key)
 }
 </script>
