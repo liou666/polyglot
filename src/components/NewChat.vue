@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import { getAvatarUrl, getOpenAzureKey, getOpenAzureRegion } from '@/utils'
 import { useConversationStore } from '@/stores'
+import { supportLanguageMap } from '@/config'
 const emits = defineEmits(['close'])
 // const avatarPath = '../assets/avatars/'
 const modules = import.meta.glob(['../assets/avatars/*', '!../assets/avatars/self.png'])
@@ -13,7 +14,7 @@ const { allVoices, isFetchAllVoices } = useSpeechService(getOpenAzureKey(), getO
 
 const store = useConversationStore()
 
-const allLanguages = computed(() => [...new Set(allVoices.value.map(v => v.locale))])
+const allLanguages = computed(() => [...new Set(allVoices.value.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
 
 const selectLanguage = ref('')
 const filterVoices = ref<VoiceInfo[]>([])
@@ -75,7 +76,7 @@ const changeAvatar = () => {
         <label center-y justify-end mr-2 for="">语言</label>
         <select v-model="selectLanguage" w-55 select-settings>
           <option v-for="item in allLanguages" :key="item" :value="item">
-            {{ item }}
+            {{ supportLanguageMap[item] }}
           </option>
         </select>
       </div>
