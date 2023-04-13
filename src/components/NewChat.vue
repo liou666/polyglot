@@ -88,9 +88,10 @@ const changeAvatar = () => {
           </option>
         </select>
       </div>
-      <!-- <div center-y text-sm text-gray-500>
-        <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />
-        按 esc 键或点击空白处可关闭弹框
+      <!-- todo -->
+      <!-- <div flex>
+        <label center-y justify-end mr-2 for="">预设</label>
+        <textarea id="message" resize-none w-50 block p-2 text-sm placeholder="Write your thoughts here..." />
       </div> -->
       <div center-y text-sm text-gray-500>
         <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />

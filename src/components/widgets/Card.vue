@@ -5,11 +5,19 @@ const { name, desc, active, avaterUrl } = defineProps<{
   active: boolean
   avaterUrl: string
 }>()
+const emit = defineEmits<{
+  (event: 'delete',): void
+}>()
+
+const handleWidgetClick = (event: MouseEvent) => {
+  event.stopPropagation()
+  emit('delete')
+}
 </script>
 
 <template>
   <div
-    p-2 cursor-pointer center-y
+    p-2 cursor-pointer center-y relative
     m-2 rounded duration-300 shadow-sm
     dark="bg-gray-700/80 hover:bg-gray-500/80"
     bg="gray-400/20 hover:gray-500/20"
@@ -27,6 +35,9 @@ const { name, desc, active, avaterUrl } = defineProps<{
       <div truncate :title="desc" max-w-28 text-sm font-300>
         {{ desc }}
       </div>
+    </div>
+    <div v-if="active" absolute right-2 top-2 @click=" handleWidgetClick($event)">
+      <i w-4 h-4 icon-btn i-carbon:trash-can />
     </div>
   </div>
 </template>

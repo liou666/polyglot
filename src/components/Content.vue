@@ -30,25 +30,29 @@ const text = ref('') // current select message
 const translates = ref<Translates>({}) // translate result
 const isTranslating = ref(false) // translate loading
 
-const messageLength = computed(() => store.currentChatMessages.length)
-const chatMessages = computed(() => store.currentChatMessages.slice(1))
+const messageLength = computed(() => store.getConversationsByCurrentProps('chatMessages').length)
+const chatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages').slice(1))
+const currentChatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages'))
 const currentKey = computed(() => store.currentKey)
-const currentName = computed(() => store.currentName)
+const currentName = computed(() => store.getConversationsByCurrentProps('name'))
+const currentAvatar = computed(() => store.getConversationsByCurrentProps('avatar'))
+const currentLanguage = computed(() => store.getConversationsByCurrentProps('language'))
+const currentVoice = computed(() => store.getConversationsByCurrentProps('voice'))
 
 useTitle(currentName)
 
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
 watch(currentKey, () => {
-  language.value = store.currentLanguage as any
-  voiceName.value = store.currentVoice as any
+  language.value = currentLanguage.value as any
+  voiceName.value = currentVoice.value as any
 })
 
 // methods
 const fetchResponse = async (key: string) => {
   let res
   try {
-    res = await generateText(store.currentChatMessages, key, getOpenProxy())
+    res = await generateText(currentChatMessages.value, key, getOpenProxy())
   }
   catch (error: any) {
     return alert('[Error] 网络请求超时, 请检查网络或代理')
@@ -64,7 +68,7 @@ const onSubmit = async () => {
   if (!message.value) return
 
   store.changeConversations([
-    ...store.currentChatMessages,
+    ...currentChatMessages.value,
     { content: message.value, role: 'user' },
   ])
   message.value = ''
@@ -73,7 +77,7 @@ const onSubmit = async () => {
   const content = await fetchResponse(key)
   if (content) {
     store.changeConversations([
-      ...store.currentChatMessages,
+      ...currentChatMessages.value,
       {
         content, role: 'assistant',
       },
@@ -81,7 +85,7 @@ const onSubmit = async () => {
     speak(content)
   }
   else {
-    store.changeConversations(store.currentChatMessages.slice(0, -1))
+    store.changeConversations(currentChatMessages.value.slice(0, -1))
   }
 
   store.changeLoading(false)
@@ -134,7 +138,7 @@ const translate = async (text: string, i: number) => {
           center-y odd:flex-row-reverse
         >
           <div class="w-10">
-            <img w-full rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : store.currentAvatar" alt="">
+            <img w-full rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : currentAvatar" alt="">
           </div>
 
           <div style="flex-basis:fit-content" mx-2>
@@ -201,7 +205,7 @@ const translate = async (text: string, i: number) => {
       </Button>
       <Button
         :disabled="store.loading"
-        @click="store.cleanConversations()"
+        @click="store.cleanCurrentConversations()"
       >
         <i i-carbon:trash-can />
       </Button>
