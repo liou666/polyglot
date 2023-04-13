@@ -21,10 +21,10 @@ const { name, desc, active, avaterUrl } = defineProps<{
       </div>
     </div>
     <div>
-      <div text-lg font-500>
+      <div max-w-28 :title="name" truncate text-lg font-500>
         {{ name }}
       </div>
-      <div :title="desc" max-w-28 truncate text-sm font-300>
+      <div truncate :title="desc" max-w-28 text-sm font-300>
         {{ desc }}
       </div>
     </div>
