@@ -29,7 +29,7 @@ git clone https://github.com/liou666/polyglot.git
 # 2.安装依赖；
 cd polyglot
 pnpm install 
-# 安装 electron 时, 执行 node install.js 失败时使用：
+# 安装 electron 失败时尝试使用淘宝镜像源安装👇：
 # export ELECTRON_MIRROR=http://npm.taobao.org/mirrors/electron/ && pnpm i
 
 # 3.配置环境变量
