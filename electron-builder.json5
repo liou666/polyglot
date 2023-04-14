@@ -16,7 +16,12 @@
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "target": ["dmg"]
+    "target": ["dmg"],
+    "entitlements": "entitlements.mac.plist",
+    "hardenedRuntime": true,
+    "extendInfo": {
+      "NSMicrophoneUsageDescription": "请允许本程序访问您的麦克风"
+    }
   },
   "win": {
     "icon": "public/win.ico",
