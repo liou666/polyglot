@@ -18,9 +18,11 @@ const { el, scrollToBottom } = useScroll()
 const {
   language,
   voiceName,
+  rate,
   isRecognizing,
   recognizeSpeech,
   textToSpeak,
+  ssmlToSpeak,
   isSynthesizing,
 } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion(), store.allLanguage as any)
 
@@ -33,13 +35,14 @@ const speakIndex = ref(0) // record speak
 const translateIndex = ref(0) // record translate
 
 const messageLength = computed(() => store.getConversationsByCurrentProps('chatMessages').length)
-const chatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages').slice(1))
+const chatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages').slice(1))// 除去第一条系统设置的消息
 const currentChatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages'))
 const currentKey = computed(() => store.currentKey)
 const currentName = computed(() => store.getConversationsByCurrentProps('name'))
 const currentAvatar = computed(() => store.getConversationsByCurrentProps('avatar'))
 const currentLanguage = computed(() => store.getConversationsByCurrentProps('language'))
 const currentVoice = computed(() => store.getConversationsByCurrentProps('voice'))
+const currentRate = computed(() => store.getConversationsByCurrentProps('rate'))
 
 useTitle(currentName)
 
@@ -47,7 +50,8 @@ useTitle(currentName)
 watch(messageLength, () => nextTick(() => scrollToBottom()))
 watch(currentKey, () => {
   language.value = currentLanguage.value as any
-  voiceName.value = currentVoice.value as any
+  voiceName.value = currentVoice.value
+  rate.value = currentRate.value
 })
 
 // methods
@@ -66,6 +70,7 @@ const fetchResponse = async (key: string) => {
 
 const onSubmit = async () => {
   const key = getOpenKey()
+
   if (!verifyOpenKey(key)) return alert('请输入正确的API-KEY')
   if (!message.value) return
 
@@ -96,7 +101,7 @@ const onSubmit = async () => {
 function speak(content: string, index: number) {
   speakIndex.value = index
   text.value = content
-  textToSpeak(content)
+  ssmlToSpeak(content)
 }
 
 const recognize = async () => {

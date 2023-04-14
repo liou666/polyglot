@@ -8,6 +8,7 @@ const defaultConversations = [{
   language: 'en-US',
   voice: 'en-US-JennyMultilingualNeural',
   avatar: getAvatarUrl('en.jpg'),
+  rate: 1,
   chatMessages: [{
     role: 'system',
     content: generatePrompt('English'),
@@ -26,6 +27,7 @@ export interface Conversation {
   language: string // tts stt
   voice: string // 参考 https://aka.ms/speech/tts-languages
   avatar: string // 用户头像
+  rate: number // 语速
 }
 
 export interface State{

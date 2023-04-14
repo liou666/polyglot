@@ -16,6 +16,7 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
   const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
+  const rate = ref(1) // 语速 (0,2]
 
   const allVoices = ref<VoiceInfo[]>([])
 
@@ -28,6 +29,7 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
+
     recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)
     synthesizer.value = new SpeechSynthesizer(speechConfig.value)
   }, {
@@ -85,6 +87,27 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     })
   }
 
+  const ssmlToSpeak = async (text: string) => {
+    isSynthesizing.value = true
+
+    const lang = speechConfig.value.speechSynthesisLanguage
+    const voice = speechConfig.value.speechSynthesisVoiceName
+
+    const ssml = `
+    <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${lang}">
+      <voice name="${voice}">
+        <prosody rate="${rate.value}">
+          ${text}
+        </prosody>
+      </voice>
+    </speak>`
+
+    synthesizer.value.speakSsmlAsync(ssml, () => {
+      isSynthesizing.value = false
+    },
+    )
+  }
+
   // 停止语音合成
   const stopTextToSpeak = () => {
     synthesizer.value.close()
@@ -122,10 +145,12 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     stopRecognizeSpeech,
     recognizeSpeech,
     textToSpeak,
+    ssmlToSpeak,
     stopTextToSpeak,
     getVoices,
     allVoices,
     isSynthesizing,
     isFetchAllVoices,
+    rate,
   }
 }

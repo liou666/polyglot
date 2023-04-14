@@ -19,6 +19,7 @@ const filterVoices = ref<VoiceInfo[]>([])
 const selectVoiceName = ref('')
 const desc = ref('')
 const name = ref('')
+const rate = ref('1.0')
 
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
@@ -43,6 +44,7 @@ const addChat = (event: any) => {
     name: name.value,
     key: uuid(),
     avatar: getAvatarUrl(avatarList.value[currentAvatarIndex.value]),
+    rate: +rate.value,
   })
   emits('close')
 }
@@ -83,6 +85,13 @@ const changeAvatar = () => {
           {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
         </option>
       </select>
+    </div>
+    <div flex>
+      <label center-y justify-end mr-2 for="">语速</label>
+      <div w-55 flex>
+        <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
+        <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
+      </div>
     </div>
     <!-- todo -->
     <!-- <div flex>
