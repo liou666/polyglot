@@ -37,15 +37,17 @@ function changeSelectLanguage(newSelectLanguage: string) {
 
 const addChat = (event: any) => {
   event.preventDefault()
+  const uid = uuid()
   store.addConversation({
     language: selectLanguage.value,
     voice: selectVoiceName.value,
     desc: desc.value,
     name: name.value,
-    key: uuid(),
+    key: uid,
     avatar: getAvatarUrl(avatarList.value[currentAvatarIndex.value]),
     rate: +rate.value,
   })
+  store.changeCurrentKey(uid)
   emits('close')
 }
 
