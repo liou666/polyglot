@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/liou666/polyglot/compare/v0.0.0...v0.1.1) (2023-04-15)
+
+
+### Features
+
+* 封装弹窗组件 ([2afa8d8](https://github.com/liou666/polyglot/commit/2afa8d8537d438c5830cb00ef96c9b78c05361be))
+* 根据人物显示标题 ([fc0641c](https://github.com/liou666/polyglot/commit/fc0641cc1cd43723ea1e2a25d5de6431f667891c))
+* 添加对话 ([1fbb9f3](https://github.com/liou666/polyglot/commit/1fbb9f38f76af620b9e3b9b2e20c0473d8879061))
+* 语音合成 翻译 增加loading ([23965d5](https://github.com/liou666/polyglot/commit/23965d556e92258c3c40ab561fd647fa882f7df2))
+* 增加删除逻辑与公共配置 ([47f5b09](https://github.com/liou666/polyglot/commit/47f5b09fe414c6fbc4df9171a68adf9f4fe238e7))
+* 增加文本翻译功能 ([028c02e](https://github.com/liou666/polyglot/commit/028c02ec018965f7fc83ce4bcc974112120fd36b))
+* 增加azure语言映射表 ([dbbf61d](https://github.com/liou666/polyglot/commit/dbbf61d5bdcbe597be282edc7797da1ab46cd180))
+* 支持设置语速 ([d54a12e](https://github.com/liou666/polyglot/commit/d54a12e360aaaade04e361ccccf8f20b1cd4fefd))
+* 自定义对话 ([e9cad94](https://github.com/liou666/polyglot/commit/e9cad944c7fb2c4181fb5a840b68553230a407d7))
+
+
+### Bug Fixes
+
+* 新建对话后跳转到当前对话 ([d1060f9](https://github.com/liou666/polyglot/commit/d1060f9787b63a0cca377b0d91bcebabdcfefd7c))
+* loading 时机调整 ([386af51](https://github.com/liou666/polyglot/commit/386af51c5d5260c039008401d9f1efa84c66c8bc))
+* Mac系统增加访问权限 ([52d85a7](https://github.com/liou666/polyglot/commit/52d85a75c2176d8664f6b1e3471124397da36de5))
+
 ## 0.0.0 (2023-04-03)
 
 
