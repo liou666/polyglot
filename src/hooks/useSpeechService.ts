@@ -1,6 +1,8 @@
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
+  ResultReason,
+  SpeakerAudioDestination,
   SpeechConfig,
   SpeechRecognizer,
   SpeechSynthesizer,
@@ -15,37 +17,63 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
   const speechConfig = ref(SpeechConfig.fromSubscription(subscriptionKey, region))
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
+  const isPlaying = ref(false) // 语音播放中
+  const isPlayend = ref(false) // 语音播放结束
+
   const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
   const rate = ref(1) // 语速 (0,2]
 
   const allVoices = ref<VoiceInfo[]>([])
 
-  const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
-  const audioConfiga = AudioConfig.fromDefaultSpeakerOutput()
+  const recognizer = ref<SpeechRecognizer>(new SpeechRecognizer(speechConfig.value))
+  const synthesizer = ref<SpeechSynthesizer>(new SpeechSynthesizer(speechConfig.value))
 
-  const recognizer = ref(new SpeechRecognizer(speechConfig.value, audioConfig))
-  const synthesizer = ref(new SpeechSynthesizer(speechConfig.value, audioConfiga))
-  watch([language, voiceName], ([lang, voice]) => {
+  // 引入变量，触发 SpeechSynthesizer 实例的重新创建
+  const count = ref(0)
+
+  watch([language, voiceName, count], ([lang, voice]) => {
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
 
+    // 通过playback结束事件来判断播放结束
+    const player = new SpeakerAudioDestination()
+    player.onAudioStart = function (_) {
+      isPlaying.value = true
+      isPlayend.value = false
+      console.log('playback started')
+    }
+    player.onAudioEnd = function (_) {
+      isPlaying.value = false
+      isPlayend.value = true
+      console.log('playback finished')
+    }
+    const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
+    const audioConfiga = AudioConfig.fromSpeakerOutput(player)
     recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)
-    synthesizer.value = new SpeechSynthesizer(speechConfig.value)
+    synthesizer.value = new SpeechSynthesizer(speechConfig.value, audioConfiga)
   }, {
     immediate: true,
   })
 
   // 语音识别
   const startRecognizeSpeech = () => {
-    isRecognizing.value = true
-    recognizer.value.startContinuousRecognitionAsync()
+    recognizer.value.startContinuousRecognitionAsync(() => {
+      isRecognizing.value = true
+      console.log('Recognize...')
+    },
+    (error) => {
+      isRecognizing.value = false
+      console.error(`Error: ${error}`)
+      recognizer.value.stopContinuousRecognitionAsync()
+    })
   }
 
   // 停止语音识别
   const stopRecognizeSpeech = (): Promise<string> => {
     return new Promise((resolve, reject) => {
       recognizer.value.recognized = (s, e) => {
+        console.log('Recognize End')
         recognizer.value.stopContinuousRecognitionAsync()
         isRecognizing.value = false
         resolve(e.result.text)
@@ -63,12 +91,14 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
           resolve(result.text)
         }
         else {
+          console.log(result)
           isRecognizing.value = false
           reject(new Error(`未识别到任何内容-${language.value}`),
           )
         }
       }, (err) => {
         isRecognizing.value = false
+        console.log('recognizeSpeech error', err)
         reject(err)
       })
     })
@@ -104,13 +134,18 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
 
     synthesizer.value.speakSsmlAsync(ssml, () => {
       isSynthesizing.value = false
-    },
-    )
+      stopTextToSpeak()
+    }, (err) => {
+      isSynthesizing.value = false
+      console.error(err)
+      stopTextToSpeak()
+    })
   }
 
   // 停止语音合成
-  const stopTextToSpeak = () => {
+  function stopTextToSpeak() {
     synthesizer.value.close()
+    count.value++ // 触发实例的重新创建
   }
 
   // 获取语音列表
@@ -141,6 +176,8 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
     language,
     voiceName,
     isRecognizing,
+    isPlaying,
+    isPlayend,
     startRecognizeSpeech,
     stopRecognizeSpeech,
     recognizeSpeech,

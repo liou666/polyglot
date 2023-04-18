@@ -22,6 +22,8 @@ const {
   isRecognizing,
   recognizeSpeech,
   textToSpeak,
+  startRecognizeSpeech,
+  stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
 } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion(), store.allLanguage as any)

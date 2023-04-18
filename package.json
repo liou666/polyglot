@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^9.13.0",
+    "element-plus": "^2.3.3",
     "eventsource-parser": "^0.1.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.26.0",
     "pinia": "^2.0.33",
@@ -51,6 +52,7 @@
     "rimraf": "^5.0.0",
     "typescript": "^4.9.5",
     "unplugin-auto-import": "^0.15.1",
+    "unplugin-vue-components": "^0.24.1",
     "vite": "^4.1.4",
     "vite-plugin-electron": "^0.11.1",
     "vite-plugin-electron-renderer": "^0.12.1",

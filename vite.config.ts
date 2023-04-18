@@ -7,6 +7,8 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import Unocss from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import pkg from './package.json'
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -71,6 +73,10 @@ export default defineConfig(({ command }) => {
         dirs: [
           'src/hooks',
         ],
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
       }),
       Unocss(),
       // Use Node.js API in the Renderer-process

@@ -34,11 +34,11 @@ const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
     </div>
   </div>
 
-  <Modal v-model:visible="addVisible" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
+  <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
     <NewChat :all-voices="allVoices as any" @close="addVisible = false" />
   </Modal>
 
-  <Modal v-model:visible="settingVisible" h20 class="dark:bg-[#111111] bg-white" center max-w-80 p6>
+  <Modal v-model:visible="settingVisible" class="dark:bg-[#111111] bg-white" center p6>
     <Setting />
   </Modal>
 </template>

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
-import { getAvatarUrl } from '@/utils'
-import { useConversationStore } from '@/stores'
+
 import { supportLanguageMap } from '@/config'
+import { useConversationStore } from '@/stores'
+import { getAvatarUrl } from '@/utils'
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
-
 const modules = import.meta.glob(['../assets/avatars/*', '!../assets/avatars/self.png'])
 const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
+const inputFileElement = ref<HTMLInputElement | null>(null)
 
 const store = useConversationStore()
 
@@ -34,6 +35,8 @@ function changeSelectLanguage(newSelectLanguage: string) {
   filterVoices.value = allVoices.filter(v => v.locale === newSelectLanguage)
   selectVoiceName.value = filterVoices.value[0]?.shortName
 }
+const randomAvatar = getAvatarUrl(avatarList.value[Math.random() * avatarList.value.length | 0]) // 随机默认选择一个头像
+const imageUrl = ref(randomAvatar)
 
 const addChat = (event: any) => {
   event.preventDefault()
@@ -44,7 +47,7 @@ const addChat = (event: any) => {
     desc: desc.value,
     name: name.value,
     key: uid,
-    avatar: getAvatarUrl(avatarList.value[currentAvatarIndex.value]),
+    avatar: imageUrl.value,
     rate: +rate.value,
   })
   store.changeCurrentKey(uid)
@@ -54,6 +57,29 @@ const addChat = (event: any) => {
 const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
+
+const fileChange = (event: Event) => {
+  const maxFileSize = 2 * 1024 * 1024 // 2MB
+  const file = (event.target as HTMLInputElement).files![0]
+  if (!file || ['image/png', 'image/jpeg'].includes(file.type)) {
+    alert('仅支持上传png、jpg格式的图片')
+    return
+  }
+  if (file.size > maxFileSize) {
+    alert('图片大小不能超过2MB')
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = function () {
+    imageUrl.value = reader.result as string
+  }
+  reader.readAsDataURL(file)
+}
+</script>
+
+<script>
+
 </script>
 
 <template>
@@ -61,8 +87,11 @@ const changeAvatar = () => {
     <!-- <div text-lg font-bold>
       自定义对话
     </div> -->
+
     <div flex>
-      <img w-14 h-14 rounded-full :src="getAvatarUrl(avatarList[currentAvatarIndex])" alt="" @click="changeAvatar()">
+      <img object-fill w-14 h-14 rounded-full :src="imageUrl" alt="" @click="inputFileElement?.click()">
+      <input ref="inputFileElement" type="file" name="avatar" class="hidden" accept=".jpg,.png" @change="fileChange($event)">
+      <!-- <img w-14 h-14 rounded-full :src="getAvatarUrl(avatarList[currentAvatarIndex])" alt="" @click="changeAvatar()"> -->
     </div>
     <div flex>
       <label center-y justify-end mr-2 for="">姓名</label>
@@ -110,4 +139,3 @@ const changeAvatar = () => {
     </button>
   </div>
 </template>
-

@@ -12,6 +12,14 @@ const defaultConversations = [{
   chatMessages: [{
     role: 'system',
     content: generatePrompt('English'),
+  },
+  {
+    role: 'user',
+    content: generatePrompt('English'),
+  },
+  {
+    role: 'assistant',
+    content: 'hello world',
   }],
 },
 ] as const

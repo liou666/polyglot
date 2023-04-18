@@ -1,6 +1,7 @@
 import { release } from 'node:os'
 import { join } from 'node:path'
-import { BrowserWindow, app, ipcMain, shell } from 'electron'
+import fs from 'fs'
+import { BrowserWindow, app, contextBridge, ipcMain, ipcRenderer, shell } from 'electron'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -105,3 +106,9 @@ ipcMain.handle('open-win', (_, arg) => {
   else
     childWindow.loadFile(indexHtml, { hash: arg })
 })
+
+ipcMain.handle('uploadAvatar', (_, filePath) => {
+  const fileContent = fs.readFileSync(filePath).toString('base64')
+  return `data:image/png;base64,${fileContent}`
+})
+
