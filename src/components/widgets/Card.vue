@@ -25,7 +25,7 @@ const handleWidgetClick = (event: MouseEvent) => {
   >
     <div mr-2>
       <div w-10 h-10>
-        <img w-full rounded-full :src="avaterUrl" alt="avater">
+        <img object-fill h-full w-full rounded-full :src="avaterUrl" alt="avater">
       </div>
     </div>
     <div>

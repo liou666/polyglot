@@ -54,19 +54,25 @@ const addChat = (event: any) => {
   emits('close')
 }
 
+// 使用本地内置头像
 const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 
 const fileChange = (event: Event) => {
-  const maxFileSize = 2 * 1024 * 1024 // 2MB
+  const baseSize = 2
+
+  const maxFileSize = baseSize * 1024 * 1024 // 2MB
+
   const file = (event.target as HTMLInputElement).files![0]
-  if (!file || ['image/png', 'image/jpeg'].includes(file.type)) {
+  const acceptImageType = ['image/png', 'image/jpeg']
+
+  if (!file || !acceptImageType.includes(file.type)) {
     alert('仅支持上传png、jpg格式的图片')
     return
   }
   if (file.size > maxFileSize) {
-    alert('图片大小不能超过2MB')
+    alert(`图片大小不能超过${baseSize}MB`)
     return
   }
 

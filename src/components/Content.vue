@@ -148,8 +148,8 @@ const translate = async (text: string, i: number) => {
           :key="i"
           center-y odd:flex-row-reverse
         >
-          <div class="w-10">
-            <img w-full rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : currentAvatar" alt="">
+          <div class="w-10 h-10">
+            <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : currentAvatar" alt="">
           </div>
 
           <div style="flex-basis:fit-content" mx-2>
