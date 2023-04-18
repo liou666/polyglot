@@ -131,8 +131,10 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
         </prosody>
       </voice>
     </speak>`
-
+    console.log('isSynthesizing')
     synthesizer.value.speakSsmlAsync(ssml, () => {
+      console.log('isSynthesiz end')
+
       isSynthesizing.value = false
       stopTextToSpeak()
     }, (err) => {

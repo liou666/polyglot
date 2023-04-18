@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Button from '@/components/widgets/Button.vue'
+import Button from '@/components/Button.vue'
 import { generatTranslate, generateText } from '@/server/api'
 import { getAvatarUrl, getAzureTranslateKey, getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'

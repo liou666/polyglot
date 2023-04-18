@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import Modal from './widgets/Modal.vue'
-import NewChat from './NewChat.vue'
-import Setting from './Setting.vue'
+import { ipcRenderer } from 'electron'
 import { getOpenAzureKey, getOpenAzureRegion } from '@/utils'
+
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 const addVisible = ref(false)
@@ -28,7 +27,10 @@ const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
       <i icon-btn i-ic:baseline-person-add-alt />
       <span>New Chat</span>
     </div>
-    <div nav-item @click="settingVisible = true">
+    <div
+      nav-item @click=" ipcRenderer.send('open-settings-window')
+      "
+    >
       <i icon-btn i-carbon:settings />
       <span>Setting</span>
     </div>

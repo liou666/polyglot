@@ -1,7 +1,6 @@
 import { release } from 'node:os'
 import { join } from 'node:path'
-import fs from 'fs'
-import { BrowserWindow, app, contextBridge, ipcMain, ipcRenderer, shell } from 'electron'
+import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -67,8 +66,35 @@ async function createWindow() {
     return { action: 'deny' }
   })
 }
+let settingsWindow: BrowserWindow | null = null
 
-app.whenReady().then(createWindow)
+ipcMain.on('open-settings-window', (event) => {
+  if (settingsWindow === null) {
+    settingsWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      x: 600,
+      y: 100,
+      parent: win!,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    })
+    settingsWindow.on('closed', () => {
+      settingsWindow = null
+    })
+    if (process.env.VITE_DEV_SERVER_URL) {
+      settingsWindow.webContents.openDevTools()
+      settingsWindow.loadURL(`${url}#/setting`)
+    }
+
+    else { settingsWindow.loadFile(indexHtml, { hash: '/setting' }) }
+  }
+  else {
+    settingsWindow.show()
+  }
+})
 
 app.on('window-all-closed', () => {
   win = null
@@ -105,10 +131,5 @@ ipcMain.handle('open-win', (_, arg) => {
     childWindow.loadURL(`${url}#${arg}`)
   else
     childWindow.loadFile(indexHtml, { hash: arg })
-})
-
-ipcMain.handle('uploadAvatar', (_, filePath) => {
-  const fileContent = fs.readFileSync(filePath).toString('base64')
-  return `data:image/png;base64,${fileContent}`
 })
 

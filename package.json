@@ -36,7 +36,8 @@
     "pinia": "^2.0.33",
     "unocss": "^0.50.4",
     "uuid": "^9.0.0",
-    "vue": "^3.2.47"
+    "vue": "^3.2.47",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.1.16",
