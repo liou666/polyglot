@@ -1,7 +1,7 @@
 # <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
 >  AI语言练习应用
 
-Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。
+Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV1sM411L7cU/?share_source=copy_web&vd_source=da2f1bfceb26ae614cbaa8d4453a6c80)
 
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.1.0.png">
@@ -10,6 +10,7 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 ## 下载
 - **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.1.1/Polyglot_0.1.1.dmg)
 - **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.1.1/Polyglot_0.1.1.exe)
+
 
 ## 功能
 - [x] 多国语言口语练习 （~~目前内置四个不同国家的AI人物，分别来自美国、日本、韩国和法国。后续将考虑增加更多的语种。~~）（内置了英语，其他语言现在支持自定义）
@@ -20,6 +21,7 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 - [x] 支持用户自定义语种和AI人物
 - [ ] 支持用户配置自定义对话场景
 - [ ] 支持Azure openai api服务
+- [ ] 用户自定义配置Azure key
 ## 使用方法
 + 设置OpenAI Key
 + 设置代理（非必须）
