@@ -1,6 +1,6 @@
 import { release } from 'node:os'
 import { join } from 'node:path'
-import { BrowserWindow, Menu, app, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, ipcMain, shell } from 'electron'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -76,6 +76,7 @@ ipcMain.on('open-settings-window', (event) => {
       x: 600,
       y: 100,
       parent: win!,
+      modal: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
@@ -108,7 +109,7 @@ app.on('second-instance', () => {
     win.focus()
   }
 })
-
+app.whenReady().then(createWindow)
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length)

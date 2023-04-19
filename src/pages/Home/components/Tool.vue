@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
+import Setting from '../../Setting/Setting.vue'
+import NewChat from './NewChat.vue'
 import { getOpenAzureKey, getOpenAzureRegion } from '@/utils'
 
 const isDark = useDark()
