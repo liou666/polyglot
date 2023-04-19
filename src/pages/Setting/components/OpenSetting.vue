@@ -6,9 +6,9 @@ const chatRememberCount = ref('10')
 </script>
 
 <template>
-  <div border border-gray-500 border-style-solid>
-    <section border-0 border-gray-500 border-b-1 border-style-solid>
-      <div center-y justify-between m-2 pr-2>
+  <div border text-3.6 border-gray-500 border-style-solid>
+    <section class="bg-gray-500/20" rounded border-0 border-gray-500 border-b-1 border-style-solid>
+      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
         <div center-y>
           <label mr-1 for="">Chat API 服务</label>
           <el-tooltip
@@ -22,8 +22,7 @@ const chatRememberCount = ref('10')
         </div>
         <select
           v-model="sk"
-          select-settings
-          w-180px
+          class="input-select select-settings py-1 px-2 "
           placeholder="sk-xxxxxxxxxx"
         >
           <option value="3.5">
@@ -32,33 +31,32 @@ const chatRememberCount = ref('10')
         </select>
       </div>
 
-      <div center-y justify-between m-2 pr-2>
+      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
         <div center-y>
           <label mr-1 for="">OpenAI API 密钥</label>
         </div>
         <input
           v-model="sk"
           type="password"
-          rounded border-gray-500 border-1 block p-2
+          class="input-select py-1 px-2  box-border rounded border-gray-500 border-1 block"
           placeholder="sk-xxxxxxxxxx"
         >
       </div>
-      <div center-y justify-between m-2 pr-2>
+      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
         <div center-y>
           <label mr-1 for="">OpenAI API 代理地址</label>
         </div>
         <input
           v-model="sk"
-          rounded border-gray-500 border-1 block p-2
+          class="input-select box-border rounded border-gray-500 border-1 block py-1 px-2 "
           placeholder="https://api.openai.com"
         >
       </div>
-      <div center-y justify-between m-2 pr-2>
+      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
         <label my-1 for="">OpenAI 模型</label>
         <select
           v-model="sk"
-          select-settings
-          w-180px
+          class="input-select py-1 px-2 select-settings"
           placeholder="sk-xxxxxxxxxx"
         >
           <option v-for="item in openaiModels" :key="item" :value="item">
@@ -88,3 +86,9 @@ const chatRememberCount = ref('10')
     </section>
   </div>
 </template>
+
+<style scoped>
+  .input-select{
+    width: 180px;
+  }
+</style>

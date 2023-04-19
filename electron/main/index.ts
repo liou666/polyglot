@@ -71,12 +71,17 @@ let settingsWindow: BrowserWindow | null = null
 ipcMain.on('open-settings-window', (event) => {
   if (settingsWindow === null) {
     settingsWindow = new BrowserWindow({
-      width: 800,
+      title: 'Setting',
+      width: 700,
       height: 600,
       x: 600,
-      y: 100,
+      y: 200,
+      frame: true,
+      titleBarStyle: 'default',
+      // modal: true, // 模态窗口，会阻塞父窗口 (macOS 不支持)
       parent: win!,
-      modal: true,
+      resizable: false,
+      fullscreenable: false,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
@@ -85,6 +90,8 @@ ipcMain.on('open-settings-window', (event) => {
     settingsWindow.on('closed', () => {
       settingsWindow = null
     })
+    const w = BrowserWindow.getFocusedWindow()
+    w!.setWindowButtonVisibility(true)
     if (process.env.VITE_DEV_SERVER_URL) {
       settingsWindow.webContents.openDevTools()
       settingsWindow.loadURL(`${url}#/setting`)

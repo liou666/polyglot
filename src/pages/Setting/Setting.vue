@@ -29,35 +29,27 @@ const currentSettingIndex = ref(0)
 
 <template>
   <div flex h-full box-border p-2>
-    <aside p-2 class="dark:bg-gray-500/20 bg-#fff" w-34 mr-1 rounded>
+    <aside p-2 class="dark:bg-gray-500/20 bg-#fff" w-38 mr-1 rounded>
       <div
         v-for="item, i in settings"
         :key="i"
         class="hover:bg-gray-500/10"
-        :class="{ 'bg-gray-500/10 dark:bg-gray-5 dark:shadow-lg ': currentSettingIndex === i }"
-        hover:dark:bg-gray-500 p-2 center-y rounded cursor-pointer my-1
+        :class="{ 'bg-gray-500/10 dark:bg-gray-5/30 dark:shadow-lg ': currentSettingIndex === i }"
+        p-2 center-y rounded cursor-pointer my-1
         @click="currentSettingIndex = i"
       >
         <i mr-2 :class="item.icon" />
         <span>{{ item.label }}</span>
       </div>
     </aside>
-    <section class="dark:bg-gray-500/10 bg-#fff" rounded p-2 flex-1>
+    <section class="dark:bg-gray-500/10 bg-#fff" rounded flex-1>
+      <header class="border-b-1 mb-5 border-b-solid border-gray-500/20">
+        <div class="text-2xl p-4 font-bold">
+          {{ settings[currentSettingIndex].label }}
+        </div>
+      </header>
       <OpenSetting v-if="currentSettingIndex === 0" />
       <TTSSetting v-if="currentSettingIndex === 1" />
     </section>
   </div>
 </template>
-
-<style>
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.el-tabs--left .el-tabs__content {
-  height: 100%;
-}
-</style>
