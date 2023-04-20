@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import Modal from './widgets/Modal.vue'
+import { ipcRenderer } from 'electron'
 import NewChat from './NewChat.vue'
-import Setting from './Setting.vue'
-import { getOpenAzureKey, getOpenAzureRegion } from '@/utils'
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
+import Setting from '@/pages/Setting/Setting.vue'
+
 const addVisible = ref(false)
 const settingVisible = ref(false)
 
-const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+const { allVoices } = useSpeechService()
 </script>
 
 <template>
@@ -28,17 +28,20 @@ const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
       <i icon-btn i-ic:baseline-person-add-alt />
       <span>New Chat</span>
     </div>
-    <div nav-item @click="settingVisible = true">
+    <div
+      nav-item @click=" ipcRenderer.send('open-settings-window')
+      "
+    >
       <i icon-btn i-carbon:settings />
       <span>Setting</span>
     </div>
   </div>
 
-  <Modal v-model:visible="addVisible" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
+  <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
     <NewChat :all-voices="allVoices as any" @close="addVisible = false" />
   </Modal>
 
-  <Modal v-model:visible="settingVisible" h20 class="dark:bg-[#111111] bg-white" center max-w-80 p6>
+  <Modal v-model:visible="settingVisible" class="dark:bg-[#111111] bg-white" center p6>
     <Setting />
   </Modal>
 </template>

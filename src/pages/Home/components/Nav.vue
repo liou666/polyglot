@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Card from './widgets/Card.vue'
+import Card from './Card.vue'
 import Tool from './Tool.vue'
 import type { Key } from '@/stores'
 import { useConversationStore } from '@/stores'

@@ -1,6 +1,7 @@
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
+  SpeakerAudioDestination,
   SpeechConfig,
   SpeechRecognizer,
   SpeechSynthesizer,
@@ -21,9 +22,20 @@ export class SpeechService {
 
     this.speechConfig = speechConfig
 
+    const player = new SpeakerAudioDestination()
+
+    player.onAudioStart = function (_) {
+      window.console.log('playback started')
+    }
+    player.onAudioEnd = function (_) {
+      window.console.log('playback finished')
+    }
+
     const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
+    const audioConfiga = AudioConfig.fromSpeakerOutput(player)
+
     this.recognizer = new SpeechRecognizer(this.speechConfig, audioConfig)
-    this.synthesizer = new SpeechSynthesizer(this.speechConfig)
+    this.synthesizer = new SpeechSynthesizer(this.speechConfig, audioConfiga)
   }
 
   // 语音识别
@@ -59,7 +71,9 @@ export class SpeechService {
   public async textToSpeak(text: string, voice?: string) {
     // this.isSpeaking = true
     this.speechConfig.speechSynthesisVoiceName = voice || this.speechConfig.speechSynthesisVoiceName
-    this.synthesizer.speakTextAsync(text)
+    this.synthesizer.speakTextAsync(text, () => {
+      this.synthesizer.close()
+    })
   }
 
   // 停止语音合成

@@ -66,8 +66,43 @@ async function createWindow() {
     return { action: 'deny' }
   })
 }
+let settingsWindow: BrowserWindow | null = null
 
-app.whenReady().then(createWindow)
+ipcMain.on('open-settings-window', (event) => {
+  if (settingsWindow === null) {
+    settingsWindow = new BrowserWindow({
+      title: 'Setting',
+      width: 700,
+      height: 800,
+      x: 600,
+      y: 200,
+      frame: true,
+      titleBarStyle: 'default',
+      // modal: true, // 模态窗口，会阻塞父窗口 (macOS 不支持)
+      parent: win!,
+      resizable: false,
+      fullscreenable: false,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    })
+    settingsWindow.on('closed', () => {
+      settingsWindow = null
+    })
+    // const w = BrowserWindow.getFocusedWindow()
+    // w!.setWindowButtonVisibility(true)
+    if (process.env.VITE_DEV_SERVER_URL) {
+      settingsWindow.webContents.openDevTools()
+      settingsWindow.loadURL(`${url}#/setting`)
+    }
+
+    else { settingsWindow.loadFile(indexHtml, { hash: '/setting' }) }
+  }
+  else {
+    settingsWindow.show()
+  }
+})
 
 app.on('window-all-closed', () => {
   win = null
@@ -81,7 +116,7 @@ app.on('second-instance', () => {
     win.focus()
   }
 })
-
+app.whenReady().then(createWindow)
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length)
@@ -105,3 +140,4 @@ ipcMain.handle('open-win', (_, arg) => {
   else
     childWindow.loadFile(indexHtml, { hash: arg })
 })
+

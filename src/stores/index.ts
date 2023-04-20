@@ -12,6 +12,14 @@ const defaultConversations = [{
   chatMessages: [{
     role: 'system',
     content: generatePrompt('English'),
+  },
+  {
+    role: 'user',
+    content: generatePrompt('English'),
+  },
+  {
+    role: 'assistant',
+    content: 'hello world',
   }],
 },
 ] as const
@@ -44,6 +52,7 @@ export const useConversationStore = defineStore('conversation', {
       loading: false,
     }
   },
+  persist: true, // 临时方案，可能会出现存储空间不足，后续改成IndexDB存储
   getters: {
     chatMessages(state) {
       return (key: Key) => state.conversations.find(x => x.key === key)
