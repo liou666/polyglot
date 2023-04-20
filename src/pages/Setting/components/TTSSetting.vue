@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { azureRegions } from '@/config'
-const sk = ref('')
-const chatRememberCount = ref('10')
+import { AZURE_KEY, AZURE_REGION, IS_ALWAYS_RECOGNITION, VOICE_API_NAME } from '@/constant'
 
-const isAlwaysRecognition = ref(false)
+const voiceApiName = useLocalStorage(VOICE_API_NAME, 'Azure')
+const azureRegion = useLocalStorage(AZURE_REGION, 'eastasia')
+const azureKey = useLocalStorage(AZURE_KEY, '')
+const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
 </script>
 
 <template>
-  <div border border-gray-500 border-style-solid>
-    <section border-0 border-gray-500 border-b-1 border-style-solid>
-      <div center-y justify-between m-2 pr-2>
+  <div>
+    <section class="main-section">
+      <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">语音服务</label>
           <el-tooltip
@@ -22,37 +24,33 @@ const isAlwaysRecognition = ref(false)
           </el-tooltip>
         </div>
         <select
-          v-model="sk"
-          select-settings
-          w-180px
+          v-model="voiceApiName"
           placeholder="sk-xxxxxxxxxx"
         >
-          <option value="3.5">
+          <option value="Azure">
             Azure
           </option>
         </select>
       </div>
-      <div center-y justify-between m-2 pr-2>
+      <div class="section-item">
         <label my-1 block for="">Azure 区域</label>
         <select
-          v-model="sk"
-          w-180px
-          select-settings
+          v-model="azureRegion"
         >
           <option v-for="item in azureRegions" :key="item" :value="item">
             {{ item }}
           </option>
         </select>
       </div>
-      <div center-y justify-between m-2 pr-2>
+      <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">Azure Access Key</label>
         </div>
-        <input placeholder="xxxxxxxxxx" rounded border-gray-500 border-1 block p-2 type="text" class="">
+        <input v-model="azureKey" type="password" placeholder="azure key">
       </div>
     </section>
 
-    <section>
+    <section class="main-section">
       <div center-y justify-between m-2 pr-2>
         <div center-y>
           <label mr-1 for="">沉浸式对话模式</label>
@@ -70,3 +68,24 @@ const isAlwaysRecognition = ref(false)
     </section>
   </div>
 </template>
+
+<style scoped>
+  .main-section{
+   @apply bg-gray-500/10 rounded
+  }
+  .main-section .section-item{
+    @apply rounded center-y justify-between m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid
+  }
+
+  .main-section .section-item:last-child{
+    @apply border-0
+  }
+
+  .main-section input {
+   @apply w-180px py-1 px-2  box-border rounded border-gray-500 border-1 block
+  }
+  .main-section select {
+    @apply w-180px py-1 px-2 select-settings
+
+  }
+</style>

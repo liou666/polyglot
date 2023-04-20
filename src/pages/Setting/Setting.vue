@@ -1,28 +1,21 @@
 <script setup lang="ts">
 import OpenSetting from './components/OpenSetting.vue'
 import TTSSetting from './components/TTSSetting.vue'
-import { OPEN_KEY, OPEN_PROXY } from '@/constant'
-const openKey = useLocalStorage(OPEN_KEY, '')
-const proxy = useLocalStorage(OPEN_PROXY, '')
-const isAlwaysRecognition = useLocalStorage('isAlwaysRecognition', false)
-const isDark = useDark()
-const sk = ref('')
 
-useTitle('setting')
+useDark()
+useTitle('设置界面')
 
 const settings = [{
   icon: 'i-ic:round-chat',
-  label: 'Api',
+  label: '聊天',
 }, {
   icon: 'i-ic:outline-deblur',
-  label: 'TTS',
+  label: '语音',
 },
 {
   icon: 'i-ic:round-emoji-people',
   label: '关于',
 }]
-
-const chatRememberCount = ref('10')
 
 const currentSettingIndex = ref(0)
 </script>
@@ -42,14 +35,21 @@ const currentSettingIndex = ref(0)
         <span>{{ item.label }}</span>
       </div>
     </aside>
-    <section class="dark:bg-gray-500/10 bg-#fff" rounded flex-1>
-      <header class="border-b-1 mb-5 border-b-solid border-gray-500/20">
-        <div class="text-2xl p-4 font-bold">
+    <section class="dark:bg-gray-500/10 bg-#fff rounded flex-1">
+      <header class="border-b-1 border-b-solid border-gray-500/20">
+        <div class="text-2xl p-3 font-bold">
           {{ settings[currentSettingIndex].label }}
         </div>
       </header>
-      <OpenSetting v-if="currentSettingIndex === 0" />
-      <TTSSetting v-if="currentSettingIndex === 1" />
+      <OpenSetting v-if="currentSettingIndex === 0" class="setting-wrapper" />
+      <TTSSetting v-if="currentSettingIndex === 1" class="setting-wrapper" />
     </section>
   </div>
 </template>
+
+<style>
+  .setting-wrapper{
+      @apply text-3.6 p-2
+  }
+</style>
+

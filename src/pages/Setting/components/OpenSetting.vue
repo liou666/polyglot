@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { openaiModels } from '@/config'
-const sk = ref('')
+import { CHAT_API_NAME, CHAT_REMEMBER_COUNT, OPEN_KEY, OPEN_MODEL, OPEN_PROXY } from '@/constant'
 
-const chatRememberCount = ref('10')
+const openKey = useLocalStorage(OPEN_KEY, '')
+const proxy = useLocalStorage(OPEN_PROXY, '')
+const openModel = useLocalStorage(OPEN_MODEL, 'gpt-3.5-turbo')
+const chatApiName = useLocalStorage(CHAT_API_NAME, 'openAI')
+const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
 </script>
 
 <template>
-  <div border text-3.6 border-gray-500 border-style-solid>
-    <section class="bg-gray-500/20" rounded border-0 border-gray-500 border-b-1 border-style-solid>
-      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
+  <div>
+    <section class="main-section">
+      <div class="section-item">
         <div center-y>
           <label mr-1 for="">Chat API 服务</label>
           <el-tooltip
@@ -21,42 +25,37 @@ const chatRememberCount = ref('10')
           </el-tooltip>
         </div>
         <select
-          v-model="sk"
-          class="input-select select-settings py-1 px-2 "
-          placeholder="sk-xxxxxxxxxx"
+          v-model="chatApiName"
         >
-          <option value="3.5">
+          <option value="openAI">
             openAI
           </option>
         </select>
       </div>
 
-      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
+      <div class="section-item">
         <div center-y>
           <label mr-1 for="">OpenAI API 密钥</label>
         </div>
         <input
-          v-model="sk"
+          v-model="openKey"
           type="password"
-          class="input-select py-1 px-2  box-border rounded border-gray-500 border-1 block"
           placeholder="sk-xxxxxxxxxx"
         >
       </div>
-      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
+      <div class="section-item">
         <div center-y>
           <label mr-1 for="">OpenAI API 代理地址</label>
         </div>
         <input
-          v-model="sk"
-          class="input-select box-border rounded border-gray-500 border-1 block py-1 px-2 "
+          v-model="proxy"
           placeholder="https://api.openai.com"
         >
       </div>
-      <div class="bg-gray-500/20" rounded center-y justify-between m-2 p2>
+      <div class="section-item">
         <label my-1 for="">OpenAI 模型</label>
         <select
-          v-model="sk"
-          class="input-select py-1 px-2 select-settings"
+          v-model="openModel"
           placeholder="sk-xxxxxxxxxx"
         >
           <option v-for="item in openaiModels" :key="item" :value="item">
@@ -66,21 +65,23 @@ const chatRememberCount = ref('10')
       </div>
     </section>
 
-    <section>
+    <section class="main-section">
       <div m-2 pr-2>
         <div center-y>
           <label mr-1 my-1 for="">联系上下文次数</label>
           <el-tooltip
-            class="box-item"
             effect="dark"
             content="设置越高，回复的准确率也高，同时也会消耗更多的token"
             placement="bottom"
           >
             <i icon-btn i-carbon:information-square />
           </el-tooltip>
+          <span ml-auto>
+            {{ chatRememberCount }}
+          </span>
         </div>
         <div>
-          <input v-model="chatRememberCount" min="1" max="100" type="range"> {{ chatRememberCount }}
+          <input v-model="chatRememberCount" class="w-full! " min="1" max="100" type="range">
         </div>
       </div>
     </section>
@@ -88,7 +89,18 @@ const chatRememberCount = ref('10')
 </template>
 
 <style scoped>
-  .input-select{
-    width: 180px;
+  .main-section{
+   @apply bg-gray-500/10 rounded
+  }
+  .main-section .section-item{
+    @apply rounded center-y justify-between m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid
+  }
+
+  .main-section input {
+   @apply w-180px py-1 px-2  box-border rounded border-gray-500 border-1 block
+  }
+  .main-section select {
+    @apply w-180px py-1 px-2 select-settings
+
   }
 </style>
