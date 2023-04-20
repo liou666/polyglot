@@ -13,7 +13,7 @@ const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
 
 const store = useConversationStore()
-
+const { ssmlToSpeak, isSynthesizing } = useSpeechService({ isFetchAllVoice: false })
 const allLanguages = computed(() => [...new Set(allVoices.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
 const selectLanguage = ref('')
 const filterVoices = ref<VoiceInfo[]>([])
@@ -21,6 +21,7 @@ const selectVoiceName = ref('')
 const desc = ref('')
 const name = ref('')
 const rate = ref('1.0')
+const previewText = ref('hello wrold')
 
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
@@ -58,6 +59,9 @@ const addChat = (event: any) => {
 const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
+const previewSpeech = () => {
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate })
+}
 </script>
 
 <script>
@@ -74,31 +78,45 @@ const changeAvatar = () => {
       <Avatar v-model:image-url="imageUrl" />
     </div>
     <div flex>
-      <label center-y justify-end mr-2 for="">姓名</label>
-      <input v-model="name" w-50 p-2 type="text">
+      <label for="">姓名</label>
+      <input v-model="name" type="text">
     </div>
     <div flex>
-      <label center-y justify-end mr-2 for="">备注</label>
-      <input v-model="desc" w-50 p-2 type="text">
+      <label for="">备注</label>
+      <input v-model="desc" type="text">
     </div>
     <div flex>
-      <label center-y justify-end mr-2 for="">语言</label>
-      <select v-model="selectLanguage" w-55 select-settings>
+      <label for="">语言</label>
+      <select v-model="selectLanguage">
         <option v-for="item in allLanguages" :key="item" :value="item">
           {{ supportLanguageMap[item] }}
         </option>
       </select>
     </div>
     <div flex>
-      <label center-y justify-end mr-2 for="">音色</label>
-      <select v-model="selectVoiceName" w-55 select-settings>
+      <label for="">音色</label>
+      <select v-model="selectVoiceName">
         <option v-for="item in filterVoices" :key="item.shortName" :value="item.shortName">
           {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
         </option>
       </select>
     </div>
+    <div relative center-y>
+      <div flex>
+        <label for="">语音预览</label>
+        <input v-model="previewText" placeholder="输入文字预览语音" type="text">
+      </div>
+      <div absolute left-77>
+        <button v-if="!isSynthesizing" :disabled="!previewText" center-y ml-2 @click="previewSpeech()">
+          <i icon-btn i-ic:baseline-volume-up />
+        </button>
+        <button v-else center-y ml-2>
+          <i icon-btn i-eos-icons:bubble-loading />
+        </button>
+      </div>
+    </div>
     <div flex>
-      <label center-y justify-end mr-2 for="">语速</label>
+      <label for="">语速</label>
       <div w-55 flex>
         <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
         <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
@@ -119,3 +137,15 @@ const changeAvatar = () => {
     </button>
   </div>
 </template>
+
+<style scoped>
+  label{
+    @apply center-y justify-end mr-2 w-20
+  }
+  input{
+    @apply w-50 p-2
+  }
+  select{
+    @apply w-55 select-settings
+  }
+</style>

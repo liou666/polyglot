@@ -27,7 +27,7 @@ const {
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
-} = useSpeechService(store.allLanguage as any)
+} = useSpeechService({ langs: store.allLanguage as any })
 
 // states
 const message = ref('') // input message

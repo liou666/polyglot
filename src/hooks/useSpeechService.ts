@@ -6,8 +6,11 @@ import {
   SpeechRecognizer,
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
-
-export const useSpeechService = (langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']) => {
+interface Config {
+  langs?: readonly['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']
+  isFetchAllVoice?: boolean
+}
+export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE'], isFetchAllVoice = true }: Config = {}) => {
   const { azureKey, azureRegion } = useGlobalSetting()
   const languages = ref(langs)
   const language = ref<typeof langs[number]>(langs[0])
@@ -118,16 +121,17 @@ export const useSpeechService = (langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-
     })
   }
 
-  const ssmlToSpeak = async (text: string) => {
+  const ssmlToSpeak = async (text: string, { voice, voiceRate, lang }: { voice?: string; voiceRate?: number; lang?: string } = {}) => {
     isSynthesizing.value = true
 
-    const lang = speechConfig.value.speechSynthesisLanguage
-    const voice = speechConfig.value.speechSynthesisVoiceName
+    const targetLang = lang || speechConfig.value.speechSynthesisLanguage
+    const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
+    const targetRate = voiceRate || rate.value
 
     const ssml = `
-    <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${lang}">
-      <voice name="${voice}">
-        <prosody rate="${rate.value}">
+    <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
+      <voice name="${targetVoice}">
+        <prosody rate="${targetRate}">
           ${text}
         </prosody>
       </voice>
@@ -158,18 +162,20 @@ export const useSpeechService = (langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-
   }
 
   onMounted(async () => {
-    try {
-      isFetchAllVoices.value = true
-      allVoices.value = await getVoices()
-      // fr-FR 法语 ja-JP 日语 en-US 英语 zh-CN 中文 zh-HK 粤语 ko-KR 韩语 de-DE 德语
-      for (const lang of languages.value)
-        languageMap.value[lang] = allVoices.value.filter(x => lang === x.locale)
-      console.log(languageMap)
-      isFetchAllVoices.value = false
-    }
-    catch (error) {
-      isFetchAllVoices.value = false
-      allVoices.value = []
+    if (isFetchAllVoice) {
+      try {
+        isFetchAllVoices.value = true
+        allVoices.value = await getVoices()
+        // fr-FR 法语 ja-JP 日语 en-US 英语 zh-CN 中文 zh-HK 粤语 ko-KR 韩语 de-DE 德语
+        for (const lang of languages.value)
+          languageMap.value[lang] = allVoices.value.filter(x => lang === x.locale)
+        console.log(languageMap)
+        isFetchAllVoices.value = false
+      }
+      catch (error) {
+        isFetchAllVoices.value = false
+        allVoices.value = []
+      }
     }
   })
 
