@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { openaiModels } from '@/config'
-import { CHAT_API_NAME, CHAT_REMEMBER_COUNT, OPEN_KEY, OPEN_MODEL, OPEN_PROXY } from '@/constant'
+import Avatar from '@/components/Avatar.vue'
 
-const openKey = useLocalStorage(OPEN_KEY, '')
-const proxy = useLocalStorage(OPEN_PROXY, '')
-const openModel = useLocalStorage(OPEN_MODEL, 'gpt-3.5-turbo')
-const chatApiName = useLocalStorage(CHAT_API_NAME, 'openAI')
-const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
+import { openaiModels } from '@/config'
+
+const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvatar } = useGlobalSetting()
 </script>
 
 <template>
@@ -48,7 +45,7 @@ const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
           <label mr-1 for="">OpenAI API 代理地址</label>
         </div>
         <input
-          v-model="proxy"
+          v-model="openProxy"
           placeholder="https://api.openai.com"
         >
       </div>
@@ -66,7 +63,7 @@ const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
     </section>
 
     <section class="main-section">
-      <div m-2 pr-2>
+      <div m-2 p2>
         <div center-y>
           <label mr-1 my-1 for="">联系上下文次数</label>
           <el-tooltip
@@ -82,6 +79,24 @@ const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
         </div>
         <div>
           <input v-model="chatRememberCount" class="w-full! " min="1" max="100" type="range">
+        </div>
+      </div>
+    </section>
+
+    <section class="main-section">
+      <div m-2 p2>
+        <div center-y>
+          <label mr-1 my-1 for="">头像</label>
+          <el-tooltip
+            effect="dark"
+            content="点击图片更换喜欢的头像"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
+          <span ml-auto>
+            <Avatar v-model:image-url="selfAvatar" />
+          </span>
         </div>
       </div>
     </section>

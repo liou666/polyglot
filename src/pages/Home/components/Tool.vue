@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
-import Setting from '../../Setting/Setting.vue'
 import NewChat from './NewChat.vue'
-import { getOpenAzureKey, getOpenAzureRegion } from '@/utils'
+import Setting from '@/pages/Setting/Setting.vue'
 
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
 const addVisible = ref(false)
 const settingVisible = ref(false)
 
-const { allVoices } = useSpeechService(getOpenAzureKey(), getOpenAzureRegion())
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+const { allVoices } = useSpeechService()
 </script>
 
 <template>

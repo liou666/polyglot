@@ -51,7 +51,7 @@ const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
     </section>
 
     <section class="main-section">
-      <div center-y justify-between m-2 pr-2>
+      <div class="section-item">
         <div center-y>
           <label mr-1 for="">沉浸式对话模式</label>
           <el-tooltip

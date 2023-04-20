@@ -78,7 +78,7 @@ ipcMain.on('open-settings-window', (event) => {
       y: 200,
       frame: true,
       titleBarStyle: 'default',
-      modal: true, // 模态窗口，会阻塞父窗口 (macOS 不支持)
+      // modal: true, // 模态窗口，会阻塞父窗口 (macOS 不支持)
       parent: win!,
       resizable: false,
       fullscreenable: false,

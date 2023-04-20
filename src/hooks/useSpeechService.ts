@@ -1,20 +1,20 @@
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
-  ResultReason,
   SpeakerAudioDestination,
   SpeechConfig,
   SpeechRecognizer,
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
 
-export const useSpeechService = (subscriptionKey: string, region: string, langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']) => {
+export const useSpeechService = (langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']) => {
+  const { azureKey, azureRegion } = useGlobalSetting()
   const languages = ref(langs)
   const language = ref<typeof langs[number]>(langs[0])
   const languageMap = ref<Partial<Record<typeof langs[number], VoiceInfo[]>>>({})
   const voiceName = ref('en-US-JennyMultilingualNeural')
 
-  const speechConfig = ref(SpeechConfig.fromSubscription(subscriptionKey, region))
+  const speechConfig = ref(SpeechConfig.fromSubscription(azureKey.value, azureRegion.value))
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
   const isPlaying = ref(false) // 语音播放中
@@ -31,11 +31,11 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
   // 引入变量，触发 SpeechSynthesizer 实例的重新创建
   const count = ref(0)
 
-  watch([language, voiceName, count], ([lang, voice]) => {
+  watch([language, voiceName, count, azureKey, azureRegion], ([lang, voice]) => {
+    speechConfig.value = SpeechConfig.fromSubscription(azureKey.value, azureRegion.value)
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
-
     // 通过playback结束事件来判断播放结束
     const player = new SpeakerAudioDestination()
     player.onAudioStart = function (_) {
@@ -48,6 +48,7 @@ export const useSpeechService = (subscriptionKey: string, region: string, langs 
       isPlayend.value = true
       console.log('playback finished')
     }
+
     const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
     const audioConfiga = AudioConfig.fromSpeakerOutput(player)
     recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)

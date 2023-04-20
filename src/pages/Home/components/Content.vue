@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/Button.vue'
 import { generatTranslate, generateText } from '@/server/api'
-import { getAvatarUrl, getAzureTranslateKey, getOpenAzureKey, getOpenAzureRegion, getOpenKey, getOpenProxy, verifyOpenKey } from '@/utils'
+import { getAzureTranslateKey, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
 interface Translates {
@@ -13,8 +13,9 @@ interface Translates {
 
 // hooks
 const store = useConversationStore()
-
 const { el, scrollToBottom } = useScroll()
+const { selfAvatar, openKey, openProxy } = useGlobalSetting()
+
 const {
   language,
   voiceName,
@@ -26,7 +27,7 @@ const {
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
-} = useSpeechService(getOpenAzureKey(), getOpenAzureRegion(), store.allLanguage as any)
+} = useSpeechService(store.allLanguage as any)
 
 // states
 const message = ref('') // input message
@@ -60,7 +61,7 @@ watch(currentKey, () => {
 const fetchResponse = async (key: string) => {
   let res
   try {
-    res = await generateText(currentChatMessages.value, key, getOpenProxy())
+    res = await generateText(currentChatMessages.value, key, openProxy.value)
   }
   catch (error: any) {
     return alert('[Error] 网络请求超时, 请检查网络或代理')
@@ -71,9 +72,7 @@ const fetchResponse = async (key: string) => {
 }
 
 const onSubmit = async () => {
-  const key = getOpenKey()
-
-  if (!verifyOpenKey(key)) return alert('请输入正确的API-KEY')
+  if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
   if (!message.value) return
 
   store.changeConversations([
@@ -83,7 +82,7 @@ const onSubmit = async () => {
   message.value = ''
   store.changeLoading(true)
 
-  const content = await fetchResponse(key)
+  const content = await fetchResponse(openKey.value)
   if (content) {
     store.changeConversations([
       ...currentChatMessages.value,
@@ -149,7 +148,7 @@ const translate = async (text: string, i: number) => {
           center-y odd:flex-row-reverse
         >
           <div class="w-10 h-10">
-            <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? getAvatarUrl('self.png') : currentAvatar" alt="">
+            <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
           </div>
 
           <div style="flex-basis:fit-content" mx-2>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
+import Avatar from '@/components/Avatar.vue'
 
 import { supportLanguageMap } from '@/config'
 import { useConversationStore } from '@/stores'
 import { getAvatarUrl } from '@/utils'
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
-const modules = import.meta.glob(['../assets/avatars/*', '!../assets/avatars/self.png'])
-const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../assets/avatars/', '')))
+const modules = import.meta.glob(['../../../assets/avatars/*', '!../../../assets/avatars/self.png'])
+const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../../../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
-const inputFileElement = ref<HTMLInputElement | null>(null)
 
 const store = useConversationStore()
 
@@ -58,30 +58,6 @@ const addChat = (event: any) => {
 const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
-
-const fileChange = (event: Event) => {
-  const baseSize = 2
-
-  const maxFileSize = baseSize * 1024 * 1024 // 2MB
-
-  const file = (event.target as HTMLInputElement).files![0]
-  const acceptImageType = ['image/png', 'image/jpeg']
-
-  if (!file || !acceptImageType.includes(file.type)) {
-    alert('仅支持上传png、jpg格式的图片')
-    return
-  }
-  if (file.size > maxFileSize) {
-    alert(`图片大小不能超过${baseSize}MB`)
-    return
-  }
-
-  const reader = new FileReader()
-  reader.onload = function () {
-    imageUrl.value = reader.result as string
-  }
-  reader.readAsDataURL(file)
-}
 </script>
 
 <script>
@@ -95,9 +71,7 @@ const fileChange = (event: Event) => {
     </div> -->
 
     <div flex>
-      <img object-fill w-14 h-14 rounded-full :src="imageUrl" alt="" @click="inputFileElement?.click()">
-      <input ref="inputFileElement" type="file" name="avatar" class="hidden" accept=".jpg,.png" @change="fileChange($event)">
-      <!-- <img w-14 h-14 rounded-full :src="getAvatarUrl(avatarList[currentAvatarIndex])" alt="" @click="changeAvatar()"> -->
+      <Avatar v-model:image-url="imageUrl" />
     </div>
     <div flex>
       <label center-y justify-end mr-2 for="">姓名</label>
