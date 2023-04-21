@@ -29,6 +29,7 @@
     "release:version": "npx standard-version && git push origin --follow-tags"
   },
   "dependencies": {
+    "@iconify-json/svg-spinners": "^1.1.1",
     "@vueuse/core": "^9.13.0",
     "dexie": "^3.2.3",
     "element-plus": "^2.3.3",

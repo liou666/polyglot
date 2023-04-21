@@ -6,6 +6,9 @@ import {
   SpeechRecognizer,
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
+
+const defaultAzureRegion = import.meta.env.VITE_REGION
+const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
 interface Config {
   langs?: readonly['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']
   isFetchAllVoice?: boolean
@@ -16,10 +19,11 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const language = ref<typeof langs[number]>(langs[0])
   const languageMap = ref<Partial<Record<typeof langs[number], VoiceInfo[]>>>({})
   const voiceName = ref('en-US-JennyMultilingualNeural')
-
-  const speechConfig = ref(SpeechConfig.fromSubscription(azureKey.value, azureRegion.value))
+  const speechConfig = ref(SpeechConfig.fromSubscription(azureKey.value || defaultAzureKey, azureRegion.value || defaultAzureRegion))
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
+  const isSynthesError = ref(false) // 语音失败
+
   const isPlaying = ref(false) // 语音播放中
   const isPlayend = ref(false) // 语音播放结束
 
@@ -35,17 +39,19 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const count = ref(0)
 
   watch([language, voiceName, count, azureKey, azureRegion], ([lang, voice]) => {
-    speechConfig.value = SpeechConfig.fromSubscription(azureKey.value, azureRegion.value)
+    speechConfig.value = SpeechConfig.fromSubscription(azureKey.value || defaultAzureKey, azureRegion.value || defaultAzureRegion)
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
     // 通过playback结束事件来判断播放结束
     const player = new SpeakerAudioDestination()
     player.onAudioStart = function (_) {
+      if (isSynthesError.value) return
       isPlaying.value = true
       isPlayend.value = false
       console.log('playback started')
     }
+    console.log(player.isClosed)
     player.onAudioEnd = function (_) {
       isPlaying.value = false
       isPlayend.value = true
@@ -123,7 +129,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
   const ssmlToSpeak = async (text: string, { voice, voiceRate, lang }: { voice?: string; voiceRate?: number; lang?: string } = {}) => {
     isSynthesizing.value = true
-
+    isSynthesError.value = false
     const targetLang = lang || speechConfig.value.speechSynthesisLanguage
     const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
     const targetRate = voiceRate || rate.value
@@ -136,21 +142,27 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
         </prosody>
       </voice>
     </speak>`
+    synthesizer.value.SynthesisCanceled = (s, e) => {
+      isSynthesError.value = true
+      console.error('语音合成失败', e.result.errorDetails)
+    }
+
     console.log('isSynthesizing')
     synthesizer.value.speakSsmlAsync(ssml, () => {
       console.log('isSynthesiz end')
 
-      isSynthesizing.value = false
       stopTextToSpeak()
     }, (err) => {
-      isSynthesizing.value = false
-      console.error(err)
+      console.error('播放失败', err)
       stopTextToSpeak()
     })
   }
 
   // 停止语音合成
   function stopTextToSpeak() {
+    isSynthesizing.value = false
+    isPlaying.value = false
+    isPlayend.value = true
     synthesizer.value.close()
     count.value++ // 触发实例的重新创建
   }

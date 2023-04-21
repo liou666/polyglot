@@ -22,8 +22,11 @@ const {
   rate,
   isRecognizing,
   recognizeSpeech,
+  isPlaying,
+  isPlayend,
   textToSpeak,
   startRecognizeSpeech,
+  stopTextToSpeak,
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
@@ -100,6 +103,7 @@ const onSubmit = async () => {
 }
 
 function speak(content: string, index: number) {
+  if (isPlaying.value) return
   speakIndex.value = index
   text.value = content
   ssmlToSpeak(content)
@@ -160,12 +164,19 @@ const translate = async (text: string, i: number) => {
             </p>
 
             <p v-if="item.role === 'assistant'" mt-2 flex>
-              <span v-if="!isSynthesizing || speakIndex !== i" class="chat-btn" @click="speak(item.content, i)">
-                <i icon-btn rotate-90 i-ic:sharp-wifi />
-              </span>
-              <span v-else class="chat-btn">
-                <i icon-btn i-eos-icons:bubble-loading />
-              </span>
+              <template v-if="speakIndex !== i">
+                <span class="chat-btn" @click="speak(item.content, i)">
+                  <i icon-btn rotate-90 i-ic:sharp-wifi />
+                </span>
+              </template>
+              <template v-else>
+                <span v-if="isSynthesizing || isPlaying" class="chat-btn">
+                  <i icon-btn rotate-90 i-svg-spinners:wifi-fade />
+                </span>
+                <span v-else class="chat-btn" @click="speak(item.content, i)">
+                  <i icon-btn rotate-90 i-ic:sharp-wifi />
+                </span>
+              </template>
 
               <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
                 <i icon-btn i-carbon:ibm-watson-language-translator />
