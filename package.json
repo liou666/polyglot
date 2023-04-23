@@ -31,6 +31,7 @@
   "dependencies": {
     "@iconify-json/svg-spinners": "^1.1.1",
     "@vueuse/core": "^9.13.0",
+    "api2d": "^0.1.18",
     "dexie": "^3.2.3",
     "element-plus": "^2.3.3",
     "eventsource-parser": "^0.1.0",
