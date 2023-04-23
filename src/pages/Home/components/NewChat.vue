@@ -13,7 +13,7 @@ const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
 
 const store = useConversationStore()
-const { ssmlToSpeak, isSynthesizing } = useSpeechService({ isFetchAllVoice: false })
+const { ssmlToSpeak, isSynthesizing, isPlaying } = useSpeechService({ isFetchAllVoice: false })
 const allLanguages = computed(() => [...new Set(allVoices.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
 const selectLanguage = ref('')
 const filterVoices = ref<VoiceInfo[]>([])
@@ -60,7 +60,7 @@ const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 const previewSpeech = () => {
-  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate })
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value })
 }
 </script>
 
@@ -107,11 +107,11 @@ const previewSpeech = () => {
         <input v-model="previewText" placeholder="输入文字预览语音" type="text">
       </div>
       <div absolute left-77>
-        <button v-if="!isSynthesizing" :disabled="!previewText" center-y ml-2 @click="previewSpeech()">
-          <i icon-btn i-ic:baseline-volume-up />
+        <button v-if="!isSynthesizing && !isPlaying " cursor-pointer :disabled="!previewText" center-y ml-2 @click="previewSpeech()">
+          <i icon-btn rotate-90 i-ic:sharp-wifi />
         </button>
         <button v-else center-y ml-2>
-          <i icon-btn i-eos-icons:bubble-loading />
+          <i rotate-90 icon-btn i-svg-spinners:wifi-fade />
         </button>
       </div>
     </div>

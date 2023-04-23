@@ -9,8 +9,6 @@ const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
 const defaultAzureTranslateKey = import.meta.env.VITE_TRANSLATE_KEY
 
 export const useGlobalSetting = () => {
-  console.log('useGlobalSetting')
-
   const openKey = useLocalStorage(OPEN_KEY, defaultOpenKey)
   const openProxy = useLocalStorage(OPEN_PROXY, defaultOpenProxy)
   const azureRegion = useLocalStorage(AZURE_REGION, defaultAzureRegion)

@@ -21,9 +21,9 @@ const {
   voiceName,
   rate,
   isRecognizing,
-  recognizeSpeech,
-  textToSpeak,
+  isPlaying,
   startRecognizeSpeech,
+  isRecognizReadying,
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
@@ -49,6 +49,22 @@ const currentRate = computed(() => store.getConversationsByCurrentProps('rate'))
 
 useTitle(currentName)
 
+// 设置空格快捷键
+useEventListener(document, 'keydown', (e) => {
+  if (isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
+  message.value = ''
+  startRecognizeSpeech()
+})
+
+useEventListener(document, 'keyup', async (e) => {
+  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space') return
+  await stopRecognizeSpeech((textSlice) => {
+    message.value += textSlice || ''
+  })
+  onSubmit()
+  console.log('submit', message.value)
+})
+
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
 watch(currentKey, () => {
@@ -71,7 +87,7 @@ const fetchResponse = async (key: string) => {
   return res.choices[0].message.content
 }
 
-const onSubmit = async () => {
+async function onSubmit() {
   if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
   if (!message.value) return
 
@@ -100,6 +116,8 @@ const onSubmit = async () => {
 }
 
 function speak(content: string, index: number) {
+  console.log(isPlaying.value)
+  if (isPlaying.value) return
   speakIndex.value = index
   text.value = content
   ssmlToSpeak(content)
@@ -107,17 +125,19 @@ function speak(content: string, index: number) {
 
 const recognize = async () => {
   try {
-    isRecognizing.value = true
-    store.changeLoading(true)
-    const result = await recognizeSpeech()
-    isRecognizing.value = false
-    store.changeLoading(false)
-    message.value = result
-    onSubmit()
+    console.log('isRecognizing', isRecognizing.value)
+    if (isRecognizing.value) {
+      await stopRecognizeSpeech((textSlice) => {
+        message.value += textSlice || ''
+      })
+      onSubmit()
+      console.log('submit', message.value)
+      return
+    }
+    message.value = ''
+    startRecognizeSpeech()
   }
   catch (error) {
-    isRecognizing.value = false
-    store.changeLoading(false)
     alert(error)
   }
 }
@@ -160,13 +180,19 @@ const translate = async (text: string, i: number) => {
             </p>
 
             <p v-if="item.role === 'assistant'" mt-2 flex>
-              <span v-if="!isSynthesizing || speakIndex !== i" class="chat-btn" @click="speak(item.content, i)">
-                <i icon-btn rotate-90 i-ic:sharp-wifi />
-              </span>
-              <span v-else class="chat-btn">
-                <i icon-btn i-eos-icons:bubble-loading />
-              </span>
-
+              <template v-if="speakIndex !== i">
+                <span class="chat-btn" @click="speak(item.content, i)">
+                  <i icon-btn rotate-90 i-ic:sharp-wifi />
+                </span>
+              </template>
+              <template v-else>
+                <span v-if="isSynthesizing || isPlaying" class="chat-btn">
+                  <i icon-btn rotate-90 i-svg-spinners:wifi-fade />
+                </span>
+                <span v-else class="chat-btn" @click="speak(item.content, i)">
+                  <i icon-btn rotate-90 i-ic:sharp-wifi />
+                </span>
+              </template>
               <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
                 <i icon-btn i-carbon:ibm-watson-language-translator />
               </span>
@@ -187,14 +213,19 @@ const translate = async (text: string, i: number) => {
     <div class="flex h-10 w-[-webkit-fill-available] mt-1">
       <Button
         mr-1
-        :disabled="isRecognizing || store.loading"
+        :disabled="isRecognizReadying"
         @click="recognize()"
       >
-        <i i-carbon:microphone />
+        <i v-if="isRecognizReadying" i-eos-icons:bubble-loading />
+        <i v-else i-carbon:microphone />
       </Button>
 
       <div v-if="isRecognizing" class="loading-btn">
-        isRecognizing
+        识别中，请讲话
+        <i icon-btn i-eos-icons:three-dots-loading />
+      </div>
+      <div v-else-if="isRecognizReadying" class="loading-btn">
+        录音设备准备中
         <i icon-btn i-eos-icons:three-dots-loading />
       </div>
       <input
