@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/Button.vue'
 import { generatTranslate, generateText } from '@/server/api'
-import { getAzureTranslateKey, verifyOpenKey } from '@/utils'
+import { verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
 interface Translates {
@@ -51,13 +51,13 @@ useTitle(currentName)
 
 // 设置空格快捷键
 useEventListener(document, 'keydown', (e) => {
-  if (isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
+  if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
   message.value = ''
   startRecognizeSpeech()
 })
 
 useEventListener(document, 'keyup', async (e) => {
-  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space') return
+  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading) return
   await stopRecognizeSpeech((textSlice) => {
     message.value += textSlice || ''
   })
@@ -74,17 +74,26 @@ watch(currentKey, () => {
 })
 
 // methods
-const fetchResponse = async (key: string) => {
-  let res
+const fetchResponse = async (prompt: ChatMessage[] | string) => {
+  let content
   try {
-    res = await generateText(currentChatMessages.value, key, openProxy.value)
+    let result
+    if (typeof prompt === 'string') { // 翻译
+      result = await generatTranslate(prompt) as any
+    }
+    else { // chat
+      result = await generateText(prompt) as any
+    }
+    if (result.error) alert(result.error?.message)
+    else content = result.choices[0].message.content
   }
   catch (error: any) {
-    return alert('[Error] 网络请求超时, 请检查网络或代理')
+    if (error.code === 20)
+      alert('[Error] 请求超时，请检查网络连接或代理')
+    else
+      alert(error.message)
   }
-  if (res.error) return alert(res.error?.message)
-
-  return res.choices[0].message.content
+  return content
 }
 
 async function onSubmit() {
@@ -98,7 +107,8 @@ async function onSubmit() {
   message.value = ''
   store.changeLoading(true)
 
-  const content = await fetchResponse(openKey.value)
+  const content = await fetchResponse(currentChatMessages.value)
+
   if (content) {
     store.changeConversations([
       ...currentChatMessages.value,
@@ -149,10 +159,14 @@ const translate = async (text: string, i: number) => {
     return translates.value[key].isShow = !translates.value[key].isShow
 
   isTranslating.value = true
-  const result = await generatTranslate({ text, translateKey: getAzureTranslateKey(), toLanguage: 'zh-Hans' })
+
+  const content = await fetchResponse(text)
+
+  if (!content) return (isTranslating.value = false)
+
   translates.value = {
     ...translates.value,
-    [key]: { result, isShow: true },
+    [key]: { result: content, isShow: true },
   }
   isTranslating.value = false
 }
@@ -213,7 +227,7 @@ const translate = async (text: string, i: number) => {
     <div class="flex h-10 w-[-webkit-fill-available] mt-1">
       <Button
         mr-1
-        :disabled="isRecognizReadying"
+        :disabled="isRecognizReadying || store.loading"
         @click="recognize()"
       >
         <i v-if="isRecognizReadying" i-eos-icons:bubble-loading />

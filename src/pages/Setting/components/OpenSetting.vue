@@ -3,7 +3,7 @@ import Avatar from '@/components/Avatar.vue'
 
 import { openaiModels } from '@/config'
 
-const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvatar } = useGlobalSetting()
+const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvatar, openMaxTokens } = useGlobalSetting()
 </script>
 
 <template>
@@ -79,6 +79,24 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
         </div>
         <div>
           <input v-model="chatRememberCount" class="w-full! " min="1" max="100" type="range">
+        </div>
+      </div>
+      <div m-2 p2>
+        <div center-y>
+          <label mr-1 my-1 for="">max_tokens</label>
+          <el-tooltip
+            effect="dark"
+            content="单次交互所用的最大Token数"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
+          <span ml-auto>
+            {{ openMaxTokens }}
+          </span>
+        </div>
+        <div>
+          <input v-model="openMaxTokens" class="w-full! " step="50" min="100" max="32000" type="range">
         </div>
       </div>
     </section>

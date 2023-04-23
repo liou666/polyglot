@@ -1,4 +1,4 @@
-import { AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, OPEN_KEY, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL } from '@/constant'
+import { AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, OPEN_KEY, OPEN_MAX_TOKEN, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL } from '@/constant'
 
 import { getAvatarUrl } from '@/utils'
 
@@ -18,6 +18,7 @@ export const useGlobalSetting = () => {
   const selfAvatar = useLocalStorage(SELF_AVATAR_URL, getAvatarUrl('self.png'))
   const chatApiName = useLocalStorage(CHAT_API_NAME, 'openai')
   const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
+  const openMaxTokens = useLocalStorage(OPEN_MAX_TOKEN, '2000')
 
   return {
     openKey,
@@ -29,6 +30,7 @@ export const useGlobalSetting = () => {
     selfAvatar,
     chatApiName,
     chatRememberCount,
+    openMaxTokens,
   }
 }
 

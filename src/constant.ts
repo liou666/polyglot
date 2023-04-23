@@ -9,3 +9,5 @@ export const OPEN_MODEL = 'openModel'
 export const CHAT_API_NAME = 'chatApiName'
 export const CHAT_REMEMBER_COUNT = 'chatRememberCount'
 export const SELF_AVATAR_URL = 'selfAvatarUrl'
+export const OPEN_MAX_TOKEN = 'openMaxToken'
+
