@@ -53,16 +53,15 @@ useTitle(currentName)
 useEventListener(document, 'keydown', (e) => {
   if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
   message.value = ''
-  startRecognizeSpeech()
+  startRecognizeSpeech((textSlice) => {
+    message.value += textSlice || ''
+  })
 })
 
 useEventListener(document, 'keyup', async (e) => {
   if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading) return
-  await stopRecognizeSpeech((textSlice) => {
-    message.value += textSlice || ''
-  })
+  await stopRecognizeSpeech()
   onSubmit()
-  console.log('submit', message.value)
 })
 
 // effects
@@ -137,15 +136,16 @@ const recognize = async () => {
   try {
     console.log('isRecognizing', isRecognizing.value)
     if (isRecognizing.value) {
-      await stopRecognizeSpeech((textSlice) => {
-        message.value += textSlice || ''
-      })
+      await stopRecognizeSpeech()
       onSubmit()
       console.log('submit', message.value)
       return
     }
     message.value = ''
-    startRecognizeSpeech()
+
+    startRecognizeSpeech((textSlice) => {
+      message.value += textSlice || ''
+    })
   }
   catch (error) {
     alert(error)
@@ -179,7 +179,8 @@ const translate = async (text: string, i: number) => {
         <div
           v-for="item, i in chatMessages"
           :key="i"
-          center-y odd:flex-row-reverse
+          center-y
+          :class="item.role === 'user' ? 'flex-row-reverse' : ''"
         >
           <div class="w-10 h-10">
             <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">

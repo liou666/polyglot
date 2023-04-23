@@ -67,8 +67,23 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   })
 
   // 语音识别
-  const startRecognizeSpeech = () => {
+  const startRecognizeSpeech = (cb?: (text: string) => void) => {
     isRecognizReadying.value = true
+
+    recognizer.value.canceled = () => {
+      console.log('Recognize canceled')
+    }
+    recognizer.value.recognized = (s, e) => {
+      console.log('Recognize result: ', e.result.text)
+      cb && cb(e.result.text)
+    }
+    recognizer.value.recognizing = (s, e) => {
+      console.log('Recognize recognizing', e.result.text)
+    }
+    recognizer.value.sessionStopped = (s, e) => {
+      console.log('\n    Session stopped event.')
+      recognizer.value.stopContinuousRecognitionAsync()
+    }
     recognizer.value.canceled = (s, e) => {
       if (e.errorCode === CancellationErrorCode.AuthenticationFailure)
         console.error('Invalid or incorrect subscription key')
@@ -84,26 +99,19 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     },
     (error) => {
       isRecognizing.value = false
+      isRecognizReadying.value = false
       console.error(`Error: ${error}`)
       recognizer.value.stopContinuousRecognitionAsync()
     })
   }
 
   // 停止语音识别
-  const stopRecognizeSpeech = (cb?: (result: string) => unknown): Promise<void> => {
-    recognizer.value.canceled = () => {
-      console.log('Recognize canceled')
-    }
-    recognizer.value.recognized = (s, e) => {
-      console.log('Recognize result: ', e.result.text)
-      cb && cb(e.result.text)
-    }
+  const stopRecognizeSpeech = (): Promise<void> => {
     return new Promise((resolve, reject) => {
       recognizer.value.stopContinuousRecognitionAsync(() => {
-        console.log('Recognize End:')
         isRecognizing.value = false
         resolve()
-      })
+      }, reject)
     })
   }
 
