@@ -51,7 +51,7 @@ useTitle(currentName)
 
 // 设置空格快捷键
 useEventListener(document, 'keydown', (e) => {
-  if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
+  if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space' || !store.isMainActive) return
   message.value = ''
   startRecognizeSpeech((textSlice) => {
     message.value += textSlice || ''
@@ -59,7 +59,7 @@ useEventListener(document, 'keydown', (e) => {
 })
 
 useEventListener(document, 'keyup', async (e) => {
-  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading) return
+  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading || !store.isMainActive) return
   await stopRecognizeSpeech()
   onSubmit()
 })
@@ -249,7 +249,8 @@ const translate = async (text: string, i: number) => {
         type="text"
         placeholder="Type your message here..."
         input-box
-        p-3 flex-1 @keyup.enter="onSubmit"
+        p-3 flex-1
+        @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)" @keyup.enter="onSubmit"
       >
       <div v-else class="loading-btn">
         AI Is Thinking

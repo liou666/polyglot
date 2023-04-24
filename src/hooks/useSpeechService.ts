@@ -84,6 +84,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       console.log('\n    Session stopped event.')
       recognizer.value.stopContinuousRecognitionAsync()
     }
+
     recognizer.value.canceled = (s, e) => {
       if (e.errorCode === CancellationErrorCode.AuthenticationFailure)
         console.error('Invalid or incorrect subscription key')
@@ -92,12 +93,14 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       isRecognizReadying.value = false
       isRecognizing.value = false
     }
+
     recognizer.value.startContinuousRecognitionAsync(() => {
       isRecognizing.value = true
       isRecognizReadying.value = false
       console.log('Recognize...')
     },
     (error) => {
+      console.error(`Error: ${error}`)
       isRecognizing.value = false
       isRecognizReadying.value = false
       console.error(`Error: ${error}`)
