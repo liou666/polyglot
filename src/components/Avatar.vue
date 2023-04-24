@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" inherit-attrs="false">
 const { maxSize = 2, imageUrl } = defineProps<{ maxSize?: number; imageUrl: string }>()
 const emit = defineEmits<{
   (event: 'change', value: string): void
@@ -31,6 +31,6 @@ const fileChange = (event: Event) => {
 </script>
 
 <template>
-  <img object-fill w-14 h-14 rounded-full :src="imageUrl" alt="" @click="inputFileElement?.click()">
+  <img v-bind="$attrs" object-fill w-14 h-14 rounded-full :src="imageUrl" alt="" @click="inputFileElement?.click()">
   <input ref="inputFileElement" type="file" name="avatar" class="hidden" accept=".jpg,.png" @change="fileChange($event)">
 </template>

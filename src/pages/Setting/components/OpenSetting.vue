@@ -63,7 +63,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
     </section>
 
     <section class="main-section">
-      <div m-2 p2>
+      <div class="m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid">
         <div center-y>
           <label mr-1 my-1 for="">联系上下文次数</label>
           <el-tooltip
@@ -113,7 +113,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
             <i icon-btn i-carbon:information-square />
           </el-tooltip>
           <span ml-auto>
-            <Avatar v-model:image-url="selfAvatar" />
+            <Avatar v-model:image-url="selfAvatar" w-9 h-9 />
           </span>
         </div>
       </div>
@@ -128,7 +128,6 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
   .main-section .section-item{
     @apply rounded center-y justify-between m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid
   }
-
   .main-section input {
    @apply w-180px py-1 px-2  box-border rounded border-gray-500 border-1 block
   }

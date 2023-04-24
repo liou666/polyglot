@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar, openKey, openProxy } = useGlobalSetting()
+const { selfAvatar, openKey, chatRememberCount } = useGlobalSetting()
 
 const {
   language,
@@ -103,10 +103,14 @@ async function onSubmit() {
     ...currentChatMessages.value,
     { content: message.value, role: 'user' },
   ])
+  const systemMessage = currentChatMessages.value[0]
+  const relativeMessage = [...chatMessages.value, { content: message.value, role: 'user' }].slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
+  const prompts = [systemMessage, ...relativeMessage] as ChatMessage[]
+
   message.value = ''
   store.changeLoading(true)
 
-  const content = await fetchResponse(currentChatMessages.value)
+  const content = await fetchResponse(prompts)
 
   if (content) {
     store.changeConversations([
