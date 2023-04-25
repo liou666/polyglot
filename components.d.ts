@@ -14,7 +14,9 @@ declare module '@vue/runtime-core' {
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     InputKit: typeof import('./src/components/InputKit.vue')['default']
+    InputPassword: typeof import('./src/components/Password.vue')['default']
     Modal: typeof import('./src/components/Modal.vue')['default']
+    Password: typeof import('./src/components/Password.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

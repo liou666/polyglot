@@ -6,14 +6,12 @@ const defaultOpenKey = import.meta.env.VITE_OPENAI_API_KEY
 const defaultOpenProxy = import.meta.env.VITE_SERVE_PROXY
 const defaultAzureRegion = import.meta.env.VITE_REGION
 const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
-const defaultAzureTranslateKey = import.meta.env.VITE_TRANSLATE_KEY
 
 export const useGlobalSetting = () => {
-  const openKey = useLocalStorage(OPEN_KEY, defaultOpenKey)
-  const openProxy = useLocalStorage(OPEN_PROXY, defaultOpenProxy)
-  const azureRegion = useLocalStorage(AZURE_REGION, defaultAzureRegion)
-  const azureKey = useLocalStorage(AZURE_KEY, defaultAzureKey)
-  const azureTranslateKey = useLocalStorage(AZURE_TRANSLATE_KEY, defaultAzureTranslateKey)
+  const openKey = useLocalStorage(OPEN_KEY, '')
+  const openProxy = useLocalStorage(OPEN_PROXY, '')
+  const azureRegion = useLocalStorage(AZURE_REGION, '')
+  const azureKey = useLocalStorage(AZURE_KEY, '')
   const openModel = useLocalStorage(OPEN_MODEL, 'gpt-3.5-turbo')
   const selfAvatar = useLocalStorage(SELF_AVATAR_URL, getAvatarUrl('self.png'))
   const chatApiName = useLocalStorage(CHAT_API_NAME, 'openai')
@@ -26,7 +24,6 @@ export const useGlobalSetting = () => {
     openModel,
     azureRegion,
     azureKey,
-    azureTranslateKey,
     selfAvatar,
     chatApiName,
     chatRememberCount,

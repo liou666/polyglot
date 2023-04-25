@@ -6,11 +6,26 @@ const voiceApiName = useLocalStorage(VOICE_API_NAME, 'Azure')
 const azureRegion = useLocalStorage(AZURE_REGION, 'eastasia')
 const azureKey = useLocalStorage(AZURE_KEY, '')
 const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
+const ttsPassword = useLocalStorage('ttsPassword', '')
 </script>
 
 <template>
   <div>
     <section class="main-section">
+      <div class="section-item">
+        <div center-y>
+          <label mr-1 my-1 block for="">访问密码</label>
+          <el-tooltip
+            effect="dark"
+            content="输入访问密码后可直接使用语音服务"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
+        </div>
+        <Password v-model:value="ttsPassword" placeholder="access password" />
+      </div>
+
       <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">语音服务</label>
@@ -46,7 +61,7 @@ const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
         <div center-y>
           <label mr-1 my-1 block for="">Azure Access Key</label>
         </div>
-        <input v-model="azureKey" type="password" placeholder="azure key">
+        <Password v-model:value="azureKey" placeholder="azure key" />
       </div>
     </section>
 
@@ -80,12 +95,12 @@ const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
   .main-section .section-item:last-child{
     @apply border-0
   }
-
-  .main-section input {
+  .main-section input{
    @apply w-180px py-1 px-2  box-border rounded border-gray-500 border-1 block
-  }
+}
   .main-section select {
     @apply w-180px py-1 px-2 select-settings
 
   }
 </style>
+

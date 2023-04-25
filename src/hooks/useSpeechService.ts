@@ -16,6 +16,7 @@ interface Config {
 }
 export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE'], isFetchAllVoice = true }: Config = {}) => {
   const { azureKey, azureRegion } = useGlobalSetting()
+  console.log(azureKey.value)
   const languages = ref(langs)
   const language = ref<typeof langs[number]>(langs[0])
   const languageMap = ref<Partial<Record<typeof langs[number], VoiceInfo[]>>>({})

@@ -33,12 +33,16 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
       <div class="section-item">
         <div center-y>
           <label mr-1 for="">OpenAI API 密钥</label>
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            content="兼容api2d的密钥格式"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
         </div>
-        <input
-          v-model="openKey"
-          type="password"
-          placeholder="sk-xxxxxxxxxx"
-        >
+        <Password v-model:value="openKey" placeholder="sk-xxxxxxxxxx" />
       </div>
       <div class="section-item">
         <div center-y>
@@ -136,3 +140,4 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
 
   }
 </style>
+
