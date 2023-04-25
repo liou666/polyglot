@@ -82,7 +82,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
           </span>
         </div>
         <div>
-          <input v-model="chatRememberCount" class="w-full! " min="1" max="100" type="range">
+          <input v-model="chatRememberCount" class="w-full! " min="1" max="50" type="range">
         </div>
       </div>
       <div m-2 p2>
@@ -100,7 +100,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
           </span>
         </div>
         <div>
-          <input v-model="openMaxTokens" class="w-full! " step="50" min="100" max="32000" type="range">
+          <input v-model="openMaxTokens" class="w-full! " step="10" min="50" max="4096" type="range">
         </div>
       </div>
     </section>

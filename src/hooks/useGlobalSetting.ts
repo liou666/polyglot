@@ -1,11 +1,6 @@
-import { AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, OPEN_KEY, OPEN_MAX_TOKEN, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL } from '@/constant'
+import { AUTO_PLAY, AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, IS_ALWAYS_RECOGNITION, OPEN_KEY, OPEN_MAX_TOKEN, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL, TTS_PASSWORD, VOICE_API_NAME } from '@/constant'
 
 import { getAvatarUrl } from '@/utils'
-
-const defaultOpenKey = import.meta.env.VITE_OPENAI_API_KEY
-const defaultOpenProxy = import.meta.env.VITE_SERVE_PROXY
-const defaultAzureRegion = import.meta.env.VITE_REGION
-const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
 
 export const useGlobalSetting = () => {
   const openKey = useLocalStorage(OPEN_KEY, '')
@@ -18,6 +13,11 @@ export const useGlobalSetting = () => {
   const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
   const openMaxTokens = useLocalStorage(OPEN_MAX_TOKEN, '2000')
 
+  const voiceApiName = useLocalStorage(VOICE_API_NAME, 'Azure')
+  const isAlwaysRecognition = useLocalStorage(IS_ALWAYS_RECOGNITION, false)
+  const ttsPassword = useLocalStorage(TTS_PASSWORD, '')
+  const autoPlay = useLocalStorage(AUTO_PLAY, true)
+
   return {
     openKey,
     openProxy,
@@ -28,6 +28,10 @@ export const useGlobalSetting = () => {
     chatApiName,
     chatRememberCount,
     openMaxTokens,
+    voiceApiName,
+    isAlwaysRecognition,
+    ttsPassword,
+    autoPlay,
   }
 }
 

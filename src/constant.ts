@@ -10,4 +10,6 @@ export const CHAT_API_NAME = 'chatApiName'
 export const CHAT_REMEMBER_COUNT = 'chatRememberCount'
 export const SELF_AVATAR_URL = 'selfAvatarUrl'
 export const OPEN_MAX_TOKEN = 'openMaxToken'
+export const TTS_PASSWORD = 'ttsPassword'
+export const AUTO_PLAY = 'autoPlay'
 

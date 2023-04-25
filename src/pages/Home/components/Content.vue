@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar, openKey, chatRememberCount } = useGlobalSetting()
+const { selfAvatar, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
 
 const {
   language,
@@ -27,7 +27,7 @@ const {
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
-} = useSpeechService({ langs: store.allLanguage as any })
+} = useSpeechService({ langs: store.allLanguage as any, isFetchAllVoice: false })
 
 // states
 const message = ref('') // input message
@@ -60,6 +60,7 @@ useEventListener(document, 'keydown', (e) => {
 
 useEventListener(document, 'keyup', async (e) => {
   if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading || !store.isMainActive) return
+  console.log('stop')
   await stopRecognizeSpeech()
   onSubmit()
 })
@@ -70,6 +71,8 @@ watch(currentKey, () => {
   language.value = currentLanguage.value as any
   voiceName.value = currentVoice.value
   rate.value = currentRate.value
+}, {
+  immediate: true,
 })
 
 // methods
@@ -84,6 +87,7 @@ const fetchResponse = async (prompt: ChatMessage[] | string) => {
       result = await generateText(prompt) as any
     }
     if (result.error) alert(result.error?.message)
+    else if (result?.object === 'error') alert(result?.message) // 兼容 api2d
     else content = result.choices[0].message.content
   }
   catch (error: any) {
@@ -119,7 +123,8 @@ async function onSubmit() {
         content, role: 'assistant',
       },
     ])
-    speak(content, chatMessages.value.length - 1)
+    if (autoPlay.value)
+      speak(content, chatMessages.value.length - 1)
   }
   else {
     store.changeConversations(currentChatMessages.value.slice(0, -1))
@@ -129,8 +134,7 @@ async function onSubmit() {
 }
 
 function speak(content: string, index: number) {
-  console.log(isPlaying.value)
-  if (isPlaying.value) return
+  if (isPlaying.value || isSynthesizing.value) return
   speakIndex.value = index
   text.value = content
   ssmlToSpeak(content)
