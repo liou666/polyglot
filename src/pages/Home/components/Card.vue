@@ -1,9 +1,10 @@
 <script setup lang="ts">
-const { name, desc, active, avaterUrl } = defineProps<{
+const { name, desc, active, avaterUrl, canEdit } = defineProps<{
   name: string
   desc: string
   active: boolean
   avaterUrl: string
+  canEdit: boolean
 }>()
 const emit = defineEmits<{
   (event: 'delete',): void
@@ -36,8 +37,10 @@ const handleWidgetClick = (event: MouseEvent) => {
         {{ desc }}
       </div>
     </div>
-    <div v-if="active" absolute right-2 top-2 @click=" handleWidgetClick($event)">
-      <i w-4 h-4 icon-btn i-carbon:trash-can />
-    </div>
+    <template v-if="canEdit">
+      <div v-if="active" absolute right-2 top-2 @click=" handleWidgetClick($event)">
+        <i w-4 h-4 icon-btn i-carbon:trash-can />
+      </div>
+    </template>
   </div>
 </template>

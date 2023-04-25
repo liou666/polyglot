@@ -50,6 +50,7 @@ const addChat = (event: any) => {
     key: uid,
     avatar: imageUrl.value,
     rate: +rate.value,
+    isDefault: false,
   })
   store.changeCurrentKey(uid)
   emits('close')

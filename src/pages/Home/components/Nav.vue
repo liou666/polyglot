@@ -29,6 +29,7 @@ const handleDelete = (key: Key) => {
           :desc="item.desc"
           :name="item.name"
           :active="store.currentKey === item.key"
+          :can-edit="!item.isDefault"
           @click="handleCardClick(item.key)"
           @delete="handleDelete(item.key)"
         />

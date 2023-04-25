@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar, openKey, openProxy } = useGlobalSetting()
+const { selfAvatar, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
 
 const {
   language,
@@ -27,7 +27,7 @@ const {
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
-} = useSpeechService({ langs: store.allLanguage as any })
+} = useSpeechService({ langs: store.allLanguage as any, isFetchAllVoice: false })
 
 // states
 const message = ref('') // input message
@@ -51,18 +51,18 @@ useTitle(currentName)
 
 // 设置空格快捷键
 useEventListener(document, 'keydown', (e) => {
-  if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space') return
+  if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space' || !store.isMainActive) return
   message.value = ''
-  startRecognizeSpeech()
+  startRecognizeSpeech((textSlice) => {
+    message.value += textSlice || ''
+  })
 })
 
 useEventListener(document, 'keyup', async (e) => {
-  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading) return
-  await stopRecognizeSpeech((textSlice) => {
-    message.value += textSlice || ''
-  })
+  if ((!isRecognizing.value && !isRecognizReadying.value) || e.code !== 'Space' || store.loading || !store.isMainActive) return
+  console.log('stop')
+  await stopRecognizeSpeech()
   onSubmit()
-  console.log('submit', message.value)
 })
 
 // effects
@@ -71,6 +71,8 @@ watch(currentKey, () => {
   language.value = currentLanguage.value as any
   voiceName.value = currentVoice.value
   rate.value = currentRate.value
+}, {
+  immediate: true,
 })
 
 // methods
@@ -85,6 +87,7 @@ const fetchResponse = async (prompt: ChatMessage[] | string) => {
       result = await generateText(prompt) as any
     }
     if (result.error) alert(result.error?.message)
+    else if (result?.object === 'error') alert(result?.message) // 兼容 api2d
     else content = result.choices[0].message.content
   }
   catch (error: any) {
@@ -104,10 +107,14 @@ async function onSubmit() {
     ...currentChatMessages.value,
     { content: message.value, role: 'user' },
   ])
+  const systemMessage = currentChatMessages.value[0]
+  const relativeMessage = [...chatMessages.value, { content: message.value, role: 'user' }].slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
+  const prompts = [systemMessage, ...relativeMessage] as ChatMessage[]
+
   message.value = ''
   store.changeLoading(true)
 
-  const content = await fetchResponse(currentChatMessages.value)
+  const content = await fetchResponse(prompts)
 
   if (content) {
     store.changeConversations([
@@ -116,7 +123,8 @@ async function onSubmit() {
         content, role: 'assistant',
       },
     ])
-    speak(content, chatMessages.value.length - 1)
+    if (autoPlay.value)
+      speak(content, chatMessages.value.length - 1)
   }
   else {
     store.changeConversations(currentChatMessages.value.slice(0, -1))
@@ -126,8 +134,7 @@ async function onSubmit() {
 }
 
 function speak(content: string, index: number) {
-  console.log(isPlaying.value)
-  if (isPlaying.value) return
+  if (isPlaying.value || isSynthesizing.value) return
   speakIndex.value = index
   text.value = content
   ssmlToSpeak(content)
@@ -137,15 +144,16 @@ const recognize = async () => {
   try {
     console.log('isRecognizing', isRecognizing.value)
     if (isRecognizing.value) {
-      await stopRecognizeSpeech((textSlice) => {
-        message.value += textSlice || ''
-      })
+      await stopRecognizeSpeech()
       onSubmit()
       console.log('submit', message.value)
       return
     }
     message.value = ''
-    startRecognizeSpeech()
+
+    startRecognizeSpeech((textSlice) => {
+      message.value += textSlice || ''
+    })
   }
   catch (error) {
     alert(error)
@@ -179,7 +187,8 @@ const translate = async (text: string, i: number) => {
         <div
           v-for="item, i in chatMessages"
           :key="i"
-          center-y odd:flex-row-reverse
+          center-y
+          :class="item.role === 'user' ? 'flex-row-reverse' : ''"
         >
           <div class="w-10 h-10">
             <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
@@ -248,7 +257,8 @@ const translate = async (text: string, i: number) => {
         type="text"
         placeholder="Type your message here..."
         input-box
-        p-3 flex-1 @keyup.enter="onSubmit"
+        p-3 flex-1
+        @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)" @keyup.enter="onSubmit"
       >
       <div v-else class="loading-btn">
         AI Is Thinking

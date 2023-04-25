@@ -33,12 +33,16 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
       <div class="section-item">
         <div center-y>
           <label mr-1 for="">OpenAI API 密钥</label>
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            content="兼容api2d的密钥格式"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
         </div>
-        <input
-          v-model="openKey"
-          type="password"
-          placeholder="sk-xxxxxxxxxx"
-        >
+        <Password v-model:value="openKey" placeholder="sk-xxxxxxxxxx" />
       </div>
       <div class="section-item">
         <div center-y>
@@ -63,7 +67,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
     </section>
 
     <section class="main-section">
-      <div m-2 p2>
+      <div class="m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid">
         <div center-y>
           <label mr-1 my-1 for="">联系上下文次数</label>
           <el-tooltip
@@ -78,7 +82,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
           </span>
         </div>
         <div>
-          <input v-model="chatRememberCount" class="w-full! " min="1" max="100" type="range">
+          <input v-model="chatRememberCount" class="w-full! " min="1" max="50" type="range">
         </div>
       </div>
       <div m-2 p2>
@@ -96,7 +100,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
           </span>
         </div>
         <div>
-          <input v-model="openMaxTokens" class="w-full! " step="50" min="100" max="32000" type="range">
+          <input v-model="openMaxTokens" class="w-full! " step="10" min="50" max="4096" type="range">
         </div>
       </div>
     </section>
@@ -113,7 +117,7 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
             <i icon-btn i-carbon:information-square />
           </el-tooltip>
           <span ml-auto>
-            <Avatar v-model:image-url="selfAvatar" />
+            <Avatar v-model:image-url="selfAvatar" w-9 h-9 />
           </span>
         </div>
       </div>
@@ -128,7 +132,6 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
   .main-section .section-item{
     @apply rounded center-y justify-between m-2 p2 border-0 border-gray-500/20 border-b-1 border-style-solid
   }
-
   .main-section input {
    @apply w-180px py-1 px-2  box-border rounded border-gray-500 border-1 block
   }
@@ -137,3 +140,4 @@ const { openKey, openProxy, openModel, chatApiName, chatRememberCount, selfAvata
 
   }
 </style>
+

@@ -2,13 +2,32 @@
 import { ipcRenderer } from 'electron'
 import NewChat from './NewChat.vue'
 import Setting from '@/pages/Setting/Setting.vue'
+import { useConversationStore } from '@/stores'
 
 const addVisible = ref(false)
 const settingVisible = ref(false)
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
-const { allVoices } = useSpeechService()
+const { allVoices, getVoices } = useSpeechService()
+const store = useConversationStore()
+const debounceFn = useDebounceFn(() => getVoices(), 1500)
+
+const openNewChat = () => {
+  addVisible.value = true
+  store.changeMainActive(false)
+}
+const closeNewChat = () => {
+  addVisible.value = false
+  store.changeMainActive(true)
+}
+
+const tempAllVoices = computed(() => allVoices.value)
+const { azureKey, azureRegion, ttsPassword } = useGlobalSetting()
+watch([azureKey, azureRegion, ttsPassword], () => {
+  if (!tempAllVoices.value.length)
+    debounceFn()
+}, { immediate: true })
 </script>
 
 <template>
@@ -23,7 +42,7 @@ const { allVoices } = useSpeechService()
     </div>
     <div
       nav-item
-      @click="addVisible = true"
+      @click="openNewChat()"
     >
       <i icon-btn i-ic:baseline-person-add-alt />
       <span>New Chat</span>
@@ -36,9 +55,8 @@ const { allVoices } = useSpeechService()
       <span>Setting</span>
     </div>
   </div>
-
-  <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6>
-    <NewChat :all-voices="allVoices as any" @close="addVisible = false" />
+  <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6 @close="closeNewChat()">
+    <NewChat :all-voices="tempAllVoices as any" @close="addVisible = false" />
   </Modal>
 
   <Modal v-model:visible="settingVisible" class="dark:bg-[#111111] bg-white" center p6>

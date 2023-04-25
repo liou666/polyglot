@@ -5,6 +5,7 @@ const defaultConversations = [{
   key: uuid(),
   name: 'Jenny',
   desc: '美国',
+  isDefault: true,
   language: 'en-US',
   voice: 'en-US-JennyMultilingualNeural',
   avatar: getAvatarUrl('en.jpg'),
@@ -12,14 +13,6 @@ const defaultConversations = [{
   chatMessages: [{
     role: 'system',
     content: generatePrompt('English'),
-  },
-  {
-    role: 'user',
-    content: generatePrompt('English'),
-  },
-  {
-    role: 'assistant',
-    content: 'hello world',
   }],
 },
 ] as const
@@ -36,12 +29,14 @@ export interface Conversation {
   voice: string // 参考 https://aka.ms/speech/tts-languages
   avatar: string // 用户头像
   rate: number // 语速
+  isDefault?: boolean // 系统默认不允许删除
 }
 
 export interface State{
   conversations: Conversation[]
   currentKey: Conversation['key']
   loading: boolean
+  isMainActive: boolean // 是否在主窗口聊天界面, 用于判断是否开启空格键语音识别
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -50,6 +45,7 @@ export const useConversationStore = defineStore('conversation', {
       currentKey: defaultConversations[0].key,
       conversations: defaultConversations as unknown as Conversation[],
       loading: false,
+      isMainActive: true,
     }
   },
   persist: {
@@ -60,7 +56,7 @@ export const useConversationStore = defineStore('conversation', {
       return (key: Key) => state.conversations.find(x => x.key === key)
     },
     allPeople(state) {
-      return state.conversations.map(x => ({ key: x.key, desc: x.desc, avatar: x.avatar, name: x.name }))
+      return state.conversations.map(x => ({ key: x.key, desc: x.desc, avatar: x.avatar, name: x.name, isDefault: x.isDefault }))
     },
     allLanguage(state) {
       return state.conversations.map(x => (x.language))
@@ -90,6 +86,9 @@ export const useConversationStore = defineStore('conversation', {
           content: generatePrompt(conversation.language),
         }],
       })
+    },
+    changeMainActive(isMainActive: boolean) {
+      this.isMainActive = isMainActive
     },
     deleteConversation(key: Key) {
       if (this.conversations.length === 1)

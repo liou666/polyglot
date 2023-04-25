@@ -59,6 +59,7 @@ export const generatTranslate = async (text: string) => {
     n: 1,
     stream: false,
   })
+  console.log(completion)
   clearTimeout(timer)
   return completion as any
 }

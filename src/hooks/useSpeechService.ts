@@ -10,17 +10,38 @@ import {
 
 const defaultAzureRegion = import.meta.env.VITE_REGION
 const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
+const accessPassword = import.meta.env.VITE_TTS_ACCESS_PASSWORD
+
 interface Config {
   langs?: readonly['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE']
   isFetchAllVoice?: boolean
 }
 export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE'], isFetchAllVoice = true }: Config = {}) => {
-  const { azureKey, azureRegion } = useGlobalSetting()
+  const { azureKey, azureRegion, ttsPassword } = useGlobalSetting()
+
+  const resultAzureKey = computed(() => {
+    if (!azureKey.value) {
+      if (accessPassword !== ttsPassword.value)
+        return 'error'
+
+      else return defaultAzureKey || 'error'
+    }
+    return azureKey.value
+  })
+  const resultAzureRegion = computed(() => {
+    if (!azureRegion.value) {
+      if (accessPassword !== ttsPassword.value)
+        return 'error'
+      else
+        return defaultAzureRegion || 'eastasia'
+    }
+    return azureRegion.value
+  })
+
   const languages = ref(langs)
   const language = ref<typeof langs[number]>(langs[0])
-  const languageMap = ref<Partial<Record<typeof langs[number], VoiceInfo[]>>>({})
   const voiceName = ref('en-US-JennyMultilingualNeural')
-  const speechConfig = ref(SpeechConfig.fromSubscription(azureKey.value || defaultAzureKey, azureRegion.value || defaultAzureRegion))
+  const speechConfig = ref(SpeechConfig.fromSubscription(resultAzureKey.value, resultAzureRegion.value))
   const isRecognizing = ref(false) // 语音识别中
   const isSynthesizing = ref(false) // 语音合成中
   const isSynthesError = ref(false) // 语音失败
@@ -28,7 +49,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const isPlaying = ref(false) // 语音播放中
   const isPlayend = ref(false) // 语音播放结束
 
-  const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
+  // const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
   const rate = ref(1) // 语速 (0,2]
 
   const allVoices = ref<VoiceInfo[]>([])
@@ -40,10 +61,11 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const count = ref(0)
 
   watch([language, voiceName, count, azureKey, azureRegion], ([lang, voice]) => {
-    speechConfig.value = SpeechConfig.fromSubscription(azureKey.value || defaultAzureKey, azureRegion.value || defaultAzureRegion)
+    speechConfig.value = SpeechConfig.fromSubscription(resultAzureKey.value, resultAzureRegion.value)
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
+    console.log(lang, voice)
     // 通过playback结束事件来判断播放结束
     const player = new SpeakerAudioDestination()
     player.onAudioStart = function (_) {
@@ -66,31 +88,15 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     immediate: true,
   })
 
-  // 语音识别
-  const startRecognizeSpeech = () => {
-    isRecognizReadying.value = true
-    recognizer.value.canceled = (s, e) => {
-      if (e.errorCode === CancellationErrorCode.AuthenticationFailure)
-        console.error('Invalid or incorrect subscription key')
-      else
-        console.log(`Canceled: ${e.errorDetails}`)
-      isRecognizReadying.value = false
-      isRecognizing.value = false
-    }
-    recognizer.value.startContinuousRecognitionAsync(() => {
-      isRecognizing.value = true
-      isRecognizReadying.value = false
-      console.log('Recognize...')
-    },
-    (error) => {
-      isRecognizing.value = false
-      console.error(`Error: ${error}`)
-      recognizer.value.stopContinuousRecognitionAsync()
-    })
-  }
+  // watch([azureKey, azureRegion], () => {
+  //   if (isFetchAllVoice && allVoices.value.length === 0)
+  //     getVoices()
+  // })
 
-  // 停止语音识别
-  const stopRecognizeSpeech = (cb?: (result: string) => unknown): Promise<void> => {
+  // 语音识别
+  const startRecognizeSpeech = (cb?: (text: string) => void) => {
+    isRecognizReadying.value = true
+
     recognizer.value.canceled = () => {
       console.log('Recognize canceled')
     }
@@ -98,11 +104,47 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       console.log('Recognize result: ', e.result.text)
       cb && cb(e.result.text)
     }
+    recognizer.value.recognizing = (s, e) => {
+      console.log('Recognize recognizing', e.result.text)
+    }
+    recognizer.value.sessionStopped = (s, e) => {
+      console.log('\n    Session stopped event.')
+      recognizer.value.stopContinuousRecognitionAsync()
+    }
+
+    recognizer.value.canceled = (s, e) => {
+      if (e.errorCode === CancellationErrorCode.AuthenticationFailure)
+        console.error('Invalid or incorrect subscription key')
+      else
+        console.error(`Canceled: ${e.errorDetails}`)
+      isRecognizReadying.value = false
+      isRecognizing.value = false
+    }
+
+    recognizer.value.startContinuousRecognitionAsync(() => {
+      isRecognizing.value = true
+      isRecognizReadying.value = false
+      console.log('Recognize...')
+    },
+    (error) => {
+      isRecognizing.value = false
+      isRecognizReadying.value = false
+      console.error(`Error: ${error}`)
+      recognizer.value.stopContinuousRecognitionAsync()
+    })
+  }
+
+  // 停止语音识别
+  const stopRecognizeSpeech = (): Promise<void> => {
+    isRecognizReadying.value = false
     return new Promise((resolve, reject) => {
       recognizer.value.stopContinuousRecognitionAsync(() => {
-        console.log('Recognize End:')
         isRecognizing.value = false
         resolve()
+      }, (err) => {
+        isRecognizing.value = false
+        console.log('stopRecognizeSpeech error', err)
+        reject(err)
       })
     })
   }
@@ -160,7 +202,8 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     </speak>`
     synthesizer.value.SynthesisCanceled = (s, e) => {
       isSynthesError.value = true
-      console.error('语音合成失败', e.result.errorDetails)
+      alert(`语音合成失败,请检查语音配置：${e.result.errorDetails}, `)
+      // console.error(`语音合成失败,请检查语音配置：${e.result.errorDetails}`)
     }
 
     console.log('isSynthesizing')
@@ -182,31 +225,30 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }
 
   // 获取语音列表
-  const getVoices = async (): Promise<VoiceInfo[]> => {
-    const res = await synthesizer.value.getVoicesAsync()
-    return res.voices
-  }
-
-  onMounted(async () => {
+  async function getVoices(): Promise<VoiceInfo[]> {
     if (isFetchAllVoice) {
       try {
-        isFetchAllVoices.value = true
-        allVoices.value = await getVoices()
-        // fr-FR 法语 ja-JP 日语 en-US 英语 zh-CN 中文 zh-HK 粤语 ko-KR 韩语 de-DE 德语
-        for (const lang of languages.value)
-          languageMap.value[lang] = allVoices.value.filter(x => lang === x.locale)
-        console.log(languageMap)
-        isFetchAllVoices.value = false
+        const res = await synthesizer.value.getVoicesAsync()
+
+        if (res.errorDetails)
+          console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
+
+        allVoices.value = res.voices || []
       }
       catch (error) {
-        isFetchAllVoices.value = false
         allVoices.value = []
       }
     }
-  })
+
+    const res = await synthesizer.value.getVoicesAsync()
+    if (res.errorDetails) {
+      console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
+      return []
+    }
+    return res.voices
+  }
 
   return {
-    languageMap,
     languages,
     language,
     voiceName,
@@ -223,7 +265,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     getVoices,
     allVoices,
     isSynthesizing,
-    isFetchAllVoices,
     rate,
   }
 }

@@ -1,6 +1,7 @@
 import { release } from 'node:os'
 import { join } from 'node:path'
-import { BrowserWindow, app, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import { autoUpdater } from 'electron-updater'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
@@ -116,7 +117,10 @@ app.on('second-instance', () => {
     win.focus()
   }
 })
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow()
+  autoUpdater.checkForUpdates()
+})
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length)
@@ -125,19 +129,38 @@ app.on('activate', () => {
     createWindow()
 })
 
-// New window example arg: new windows url
-ipcMain.handle('open-win', (_, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
+// Global exception handler
+process.on('uncaughtException', (err) => {
+  console.log(err)
+})
 
-  if (process.env.VITE_DEV_SERVER_URL)
-    childWindow.loadURL(`${url}#${arg}`)
-  else
-    childWindow.loadFile(indexHtml, { hash: arg })
+/* New Update Available */
+autoUpdater.on('update-available', (info) => {
+  const pth = autoUpdater.downloadUpdate()
+  console.log(pth)
+})
+
+autoUpdater.on('update-available', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: '发现新版本',
+    message: '是否立即下载更新?',
+    buttons: ['是', '否'],
+  }).then(({ response }) => {
+    if (response === 0)
+      autoUpdater.downloadUpdate() // 下载更新
+  })
+})
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: '更新已下载',
+    message: '是否立即安装并重新启动应用?',
+    buttons: ['是', '否'],
+  }).then(({ response }) => {
+    if (response === 0)
+      autoUpdater.quitAndInstall() // 退出并安装更新
+  })
 })
 
