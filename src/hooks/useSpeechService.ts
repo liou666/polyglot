@@ -49,7 +49,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const isPlaying = ref(false) // 语音播放中
   const isPlayend = ref(false) // 语音播放结束
 
-  const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
+  // const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
   const rate = ref(1) // 语速 (0,2]
 
   const allVoices = ref<VoiceInfo[]>([])
@@ -87,6 +87,11 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }, {
     immediate: true,
   })
+
+  // watch([azureKey, azureRegion], () => {
+  //   if (isFetchAllVoice && allVoices.value.length === 0)
+  //     getVoices()
+  // })
 
   // 语音识别
   const startRecognizeSpeech = (cb?: (text: string) => void) => {
@@ -220,7 +225,21 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }
 
   // 获取语音列表
-  const getVoices = async (): Promise<VoiceInfo[]> => {
+  async function getVoices(): Promise<VoiceInfo[]> {
+    if (isFetchAllVoice) {
+      try {
+        const res = await synthesizer.value.getVoicesAsync()
+
+        if (res.errorDetails)
+          console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
+
+        allVoices.value = res.voices || []
+      }
+      catch (error) {
+        allVoices.value = []
+      }
+    }
+
     const res = await synthesizer.value.getVoicesAsync()
     if (res.errorDetails) {
       console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
@@ -228,21 +247,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     }
     return res.voices
   }
-
-  onMounted(async () => {
-    if (isFetchAllVoice) {
-      try {
-        isFetchAllVoices.value = true
-        allVoices.value = await getVoices()
-        console.log(allVoices)
-        isFetchAllVoices.value = false
-      }
-      catch (error) {
-        isFetchAllVoices.value = false
-        allVoices.value = []
-      }
-    }
-  })
 
   return {
     languages,
@@ -261,7 +265,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     getVoices,
     allVoices,
     isSynthesizing,
-    isFetchAllVoices,
     rate,
   }
 }

@@ -9,8 +9,9 @@ const settingVisible = ref(false)
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
-const { allVoices } = useSpeechService()
+const { allVoices, getVoices } = useSpeechService()
 const store = useConversationStore()
+const debounceFn = useDebounceFn(() => getVoices(), 1500)
 
 const openNewChat = () => {
   addVisible.value = true
@@ -20,6 +21,13 @@ const closeNewChat = () => {
   addVisible.value = false
   store.changeMainActive(true)
 }
+
+const tempAllVoices = computed(() => allVoices.value)
+const { azureKey, azureRegion, ttsPassword } = useGlobalSetting()
+watch([azureKey, azureRegion, ttsPassword], () => {
+  if (!tempAllVoices.value.length)
+    debounceFn()
+}, { immediate: true })
 </script>
 
 <template>
@@ -47,9 +55,8 @@ const closeNewChat = () => {
       <span>Setting</span>
     </div>
   </div>
-
   <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6 @close="closeNewChat()">
-    <NewChat :all-voices="allVoices as any" @close="addVisible = false" />
+    <NewChat :all-voices="tempAllVoices as any" @close="addVisible = false" />
   </Modal>
 
   <Modal v-model:visible="settingVisible" class="dark:bg-[#111111] bg-white" center p6>
