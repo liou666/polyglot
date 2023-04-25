@@ -5,6 +5,7 @@
   "description": "Spoken language generation based on OpenAI",
   "author": "Liou666 <liou666@126.com>",
   "license": "MIT",
+  "repository": "https://github.com/liou666/polyglot",
   "keywords": [
     "ChatGPT",
     "AI",
@@ -15,6 +16,10 @@
     "env": {
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
     }
+  },
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
   },
   "scripts": {
     "dev": "vite",
@@ -33,6 +38,7 @@
     "@vueuse/core": "^9.13.0",
     "api2d": "^0.1.18",
     "dexie": "^3.2.3",
+    "electron-updater": "^5.3.0",
     "element-plus": "^2.3.3",
     "eventsource-parser": "^0.1.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.26.0",
