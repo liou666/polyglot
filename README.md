@@ -89,7 +89,7 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 
 ## 捐赠
-如果觉的项目有用的话，欢迎请我喝杯奶茶😊。
+如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
 
 <p>
 <img width="200" height="300" alt="" src="./public/donate/weixin.jpg">
