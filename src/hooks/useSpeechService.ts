@@ -66,6 +66,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
     console.log(lang, voice)
+
     // 通过playback结束事件来判断播放结束
     const player = new SpeakerAudioDestination()
     player.onAudioStart = function (_) {

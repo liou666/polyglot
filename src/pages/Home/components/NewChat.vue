@@ -21,7 +21,7 @@ const selectVoiceName = ref('')
 const desc = ref('')
 const name = ref('')
 const rate = ref('1.0')
-const previewText = ref('hello wrold')
+const previewText = ref('polyglot is awesome!')
 
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
