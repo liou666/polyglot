@@ -88,6 +88,13 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 </details>
 
 
+## 捐赠
+如果觉的项目有用的话，欢迎请我喝杯奶茶😊。
+
+<img width="200" height="300" alt="" src="./public/donate/weixin.jpg">
+<img width="200" height="300"  alt="" src="./public/donate/zhifubao.jpg">
+
+
 ## 讨论与交流
 
 <img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG">
