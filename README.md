@@ -91,8 +91,10 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 ## 捐赠
 如果觉的项目有用的话，欢迎请我喝杯奶茶😊。
 
+<p>
 <img width="200" height="300" alt="" src="./public/donate/weixin.jpg">
 <img width="200" height="300"  alt="" src="./public/donate/zhifubao.jpg">
+</p>
 
 
 ## 讨论与交流
