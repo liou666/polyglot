@@ -5,11 +5,11 @@ import { getAvatarUrl } from '@/utils'
 export const useGlobalSetting = () => {
   const openKey = useLocalStorage(OPEN_KEY, '')
   const openProxy = useLocalStorage(OPEN_PROXY, '')
-  const azureRegion = useLocalStorage(AZURE_REGION, '')
+  const azureRegion = useLocalStorage(AZURE_REGION, 'eastasia')
   const azureKey = useLocalStorage(AZURE_KEY, '')
   const openModel = useLocalStorage(OPEN_MODEL, 'gpt-3.5-turbo')
   const selfAvatar = useLocalStorage(SELF_AVATAR_URL, getAvatarUrl('self.png'))
-  const chatApiName = useLocalStorage(CHAT_API_NAME, 'openai')
+  const chatApiName = useLocalStorage(CHAT_API_NAME, 'openAI')
   const chatRememberCount = useLocalStorage(CHAT_REMEMBER_COUNT, '10')
   const openMaxTokens = useLocalStorage(OPEN_MAX_TOKEN, '2000')
 

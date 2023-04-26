@@ -60,12 +60,13 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   // 引入变量，触发 SpeechSynthesizer 实例的重新创建
   const count = ref(0)
 
-  watch([language, voiceName, count, azureKey, azureRegion], ([lang, voice]) => {
+  watch([language, voiceName, count, azureKey, azureRegion, ttsPassword], ([lang, voice]) => {
     speechConfig.value = SpeechConfig.fromSubscription(resultAzureKey.value, resultAzureRegion.value)
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
     console.log(lang, voice)
+
     // 通过playback结束事件来判断播放结束
     const player = new SpeakerAudioDestination()
     player.onAudioStart = function (_) {

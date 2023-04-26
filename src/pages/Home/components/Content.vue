@@ -68,6 +68,7 @@ useEventListener(document, 'keyup', async (e) => {
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
 watch(currentKey, () => {
+  isPlaying.value = false
   language.value = currentLanguage.value as any
   voiceName.value = currentVoice.value
   rate.value = currentRate.value
