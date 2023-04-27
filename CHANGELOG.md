@@ -1,3 +1,28 @@
+# [0.2.0](https://github.com/liou666/polyglot/compare/v0.1.1...v0.2.0) (2023-04-27)
+
+
+### Bug Fixes
+
+* 播放期间不允许再次点击语音 ([7e51d57](https://github.com/liou666/polyglot/commit/7e51d578489185965e99f46d74123aaf6da7a825))
+* 默认角色不允许删除 ([14e2765](https://github.com/liou666/polyglot/commit/14e2765638968c3fb0741fd14bd916a6141749ab))
+* 切换角色时语音播放异常 ([ae7dc9e](https://github.com/liou666/polyglot/commit/ae7dc9e1da90848cdd381d49d30ed3d9684f178e))
+* 语音识别不完整 ([d4a4083](https://github.com/liou666/polyglot/commit/d4a4083194ee8fae5a94ccd76d2c8e0c98d6bf8e))
+* debounce getvoice ([73d13dd](https://github.com/liou666/polyglot/commit/73d13ddf95371fdc6d4db9f345fd508281155631))
+
+
+### Features
+
+* 兼容api2d接口 close [#11](https://github.com/liou666/polyglot/issues/11) ([b458d35](https://github.com/liou666/polyglot/commit/b458d35483f3c3b01159c51e94cb57797b4d9fcf))
+* 数据持久化，头像支持自定义 ([#10](https://github.com/liou666/polyglot/issues/10)) ([09c66c1](https://github.com/liou666/polyglot/commit/09c66c17373f73c99273e691bc99ec10ee72c542))
+* 头像自定义上传 ([ad9854e](https://github.com/liou666/polyglot/commit/ad9854e7df9a8129447d6f6f9199ef0b3387a160))
+* 语音增加预览功能 ([#12](https://github.com/liou666/polyglot/issues/12)) ([a663a6b](https://github.com/liou666/polyglot/commit/a663a6bee6149a1af6f1966a7ea46173c6be6686))
+* 增加语音识别快捷键 ([#9](https://github.com/liou666/polyglot/issues/9)) ([42a0d02](https://github.com/liou666/polyglot/commit/42a0d0253bc4109fceeffa619bcd3a04ab3d6b33))
+* about page ([fb10ff0](https://github.com/liou666/polyglot/commit/fb10ff005fab597b2ce494b9443951266b01852d))
+* autoupdate ([3657933](https://github.com/liou666/polyglot/commit/3657933a07d55d86d3bb507a29f2cb585ecdbde4))
+* **wip:** 头像上传 ([16cb505](https://github.com/liou666/polyglot/commit/16cb5050b3cf3f6451f116908160ff8cbc9f79d5))
+
+
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.

@@ -26,7 +26,7 @@ import { shell } from 'electron'
           <label mr-1 for="">版本号</label>
         </div>
         <span>
-          V0.1.1
+          V0.2.0
         </span>
       </div>
     </section>
