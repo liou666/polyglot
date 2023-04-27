@@ -33,7 +33,7 @@ import { shell } from 'electron'
     <section class="main-section p2">
       <div flex>
         <div center-y>
-          如果觉得项目对你有帮助的话，欢迎给作者一些支持😊
+          开源不易，如果觉得项目对你有帮助的话，欢迎给作者一些支持😊
         </div>
       </div>
     </section>
