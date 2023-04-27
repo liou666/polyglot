@@ -8,8 +8,8 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 </p>
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.1.1/Polyglot_0.1.1.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.1.1/Polyglot_0.1.1.exe)
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.exe)
 
 
 ## 功能
@@ -19,9 +19,12 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 - [x] 支持暗黑模式
 - [x] 接入文字翻译功能
 - [x] 支持用户自定义语种和AI人物
+- [x] 用户自定义配置Azure key
+- [x] 自定义头像
+- [x] 语音识别支持快捷键操作
 - [ ] 支持用户配置自定义对话场景
 - [ ] 支持Azure openai api服务
-- [ ] 用户自定义配置Azure key
+
 ## 使用方法
 + 设置OpenAI Key
 + 设置代理（非必须）
@@ -60,7 +63,7 @@ pnpm dev
 <details>
 <summary>1. 我所在的地区有网络限制，怎么正常使用？</summary>
 
-应用支持使用代理，具体代理搭建过程google一下
+v0.2.0版本已兼容了api2d的接口，可以考虑使用[api2d](https://api2d.com/)的国内接口。另外项目支持设置代理，也可以通过自己搭建国内代理进行使用。
 
 </details>
 
@@ -100,3 +103,11 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 ## 讨论与交流
 
 <img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG">
+
+
+# 贡献者
+<div>
+  <a href="https://github.com/liou666/polyglot/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=liou666/polyglot" />
+  </a>
+</div>
