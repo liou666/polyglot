@@ -25,6 +25,9 @@ if (!app.requestSingleInstanceLock()) {
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
+
 let win: BrowserWindow | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
@@ -135,16 +138,16 @@ process.on('uncaughtException', (err) => {
 })
 
 /* New Update Available */
-autoUpdater.on('update-available', (info) => {
-  const pth = autoUpdater.downloadUpdate()
-  console.log(pth)
+
+autoUpdater.on('error', (err) => {
+  dialog.showErrorBox('AutoUpdater Error', err.message)
 })
 
-autoUpdater.on('update-available', () => {
+autoUpdater.on('update-available', (info) => {
   dialog.showMessageBox({
     type: 'info',
-    title: '发现新版本',
-    message: '是否立即下载更新?',
+    title: `发现新版本：${info.version}`,
+    message: '是否立即后台下载更新?',
     buttons: ['是', '否'],
   }).then(({ response }) => {
     if (response === 0)
@@ -164,3 +167,6 @@ autoUpdater.on('update-downloaded', () => {
   })
 })
 
+autoUpdater.on('error', (err) => {
+  dialog.showErrorBox('AutoUpdater Error', err.message)
+})
