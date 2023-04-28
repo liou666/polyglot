@@ -1,7 +1,7 @@
 # <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
 >  AI语言练习应用
 
-Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV1sM411L7cU/?share_source=copy_web&vd_source=da2f1bfceb26ae614cbaa8d4453a6c80)
+Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
 
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.1.0.png">
@@ -14,7 +14,7 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 
 ## 功能
 - [x] 多国语言口语练习 （~~目前内置四个不同国家的AI人物，分别来自美国、日本、韩国和法国。后续将考虑增加更多的语种。~~）（内置了英语，其他语言现在支持自定义）
-- [x] 智能语音合成（基于Azure TTS服务）
+- [x] 智能语音合成（目前基于Azure TTS服务，后续考虑接入可以本地部署的语音模型）
 - [x] 智能对话功能（基于chatGPT服务）
 - [x] 支持暗黑模式
 - [x] 接入文字翻译功能
@@ -23,15 +23,14 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 - [x] 自定义头像
 - [x] 语音识别支持快捷键操作
 - [ ] 支持用户配置自定义对话场景
-- [ ] 支持Azure openai api服务
+- [ ] 支持Azure openai api、claude api服务
 
 ## 使用方法
-+ 设置OpenAI Key
++ 设置[OpenAI Key](https://platform.openai.com/account/api-keys)（兼容api2d格式） 
 + 设置代理（非必须）
-+ 选择喜欢的AI人物进行对话；
++ 设置[azure key](https://portal.azure.com/)
++ 新建AI角色进行对话；
 + 与AI人物进行对话练习口语。
-
-
 
 ## 本地启动
 ```bash
@@ -55,8 +54,16 @@ pnpm dev
 ## 贡献
 如果您有任何建议或意见，欢迎提出 [Issues](https://github.com/liou666/polyglot/issues) 或 [ Pull Request](https://github.com/liou666/polyglot/pulls)。
 
+
 ## 协议
 [MIT License](./LICENSE)
+
+# 贡献者
+<div>
+  <a href="https://github.com/liou666/polyglot/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=liou666/polyglot" />
+  </a>
+</div>
 
 ## 常见问题
 
@@ -89,7 +96,18 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 运行命令后，应用程序将被添加到白名单中，Gatekeeper 将不再阻止其运行。
 </details>
+<details>
+<summary>3. azure语音服务如何申请？</summary>
 
+要申请 Azure 语音服务的 API 密钥，可以按照以下步骤进行：
+
++ 登录 Azure 门户 （https://portal.azure.com/）
++ 转到“Azure 语音服务”页面并单击“添加”按钮
++ 在“创建 Azure 语音服务”窗口中，选择订阅、资源组、区域，并为新服务指定名称
++ 选择“F0”价格层，并单击“创建”
++ 创建完成后，转到新服务的“概述”页面，即可查看密钥和终结点
+
+</details>
 
 ## 捐赠
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
@@ -105,9 +123,4 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 <img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG">
 
 
-# 贡献者
-<div>
-  <a href="https://github.com/liou666/polyglot/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=liou666/polyglot" />
-  </a>
-</div>
+
