@@ -259,7 +259,7 @@ const translate = async (text: string, i: number) => {
         placeholder="Type your message here..."
         input-box
         p-3 flex-1
-        @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)" @keyup.enter="onSubmit"
+        @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)" @keypress.enter="onSubmit"
       >
       <div v-else class="loading-btn">
         AI Is Thinking
