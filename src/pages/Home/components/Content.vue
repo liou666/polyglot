@@ -20,6 +20,7 @@ const {
   language,
   voiceName,
   rate,
+  style,
   isRecognizing,
   isPlaying,
   startRecognizeSpeech,
@@ -46,6 +47,7 @@ const currentAvatar = computed(() => store.getConversationsByCurrentProps('avata
 const currentLanguage = computed(() => store.getConversationsByCurrentProps('language'))
 const currentVoice = computed(() => store.getConversationsByCurrentProps('voice'))
 const currentRate = computed(() => store.getConversationsByCurrentProps('rate'))
+const currentVoiceStyle = computed(() => store.getConversationsByCurrentProps('voiceStyle'))
 
 useTitle(currentName)
 
@@ -72,6 +74,7 @@ watch(currentKey, () => {
   language.value = currentLanguage.value as any
   voiceName.value = currentVoice.value
   rate.value = currentRate.value
+  style.value = currentVoiceStyle.value
 }, {
   immediate: true,
 })

@@ -51,6 +51,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
   // const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
   const rate = ref(1) // 语速 (0,2]
+  const style = ref('Neural') // 情感
 
   const allVoices = ref<VoiceInfo[]>([])
 
@@ -186,18 +187,22 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     })
   }
 
-  const ssmlToSpeak = async (text: string, { voice, voiceRate, lang }: { voice?: string; voiceRate?: number; lang?: string } = {}) => {
+  const ssmlToSpeak = async (text: string, { voice, voiceRate, lang, voiceStyle }: { voice?: string; voiceRate?: number; lang?: string; voiceStyle?: string } = {}) => {
     isSynthesizing.value = true
     isSynthesError.value = false
     const targetLang = lang || speechConfig.value.speechSynthesisLanguage
     const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
     const targetRate = voiceRate || rate.value
+    const targetFeel = voiceStyle || style.value
+    console.log(voiceRate, rate.value)
 
     const ssml = `
-    <speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
+    <speak version="1.0"  xmlns:mstts="https://www.w3.org/2001/mstts" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
       <voice name="${targetVoice}">
         <prosody rate="${targetRate}">
-          ${text}
+          <mstts:express-as style="${targetFeel}" styledegree="1.5">
+            ${text}
+          </mstts:express-as>
         </prosody>
       </voice>
     </speak>`
@@ -267,5 +272,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     allVoices,
     isSynthesizing,
     rate,
+    style,
   }
 }

@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import Avatar from '@/components/Avatar.vue'
 
-import { supportLanguageMap } from '@/config'
+import { supportLanguageMap, voiceStyleMap } from '@/config'
 import { useConversationStore } from '@/stores'
 import { getAvatarUrl } from '@/utils'
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
@@ -22,6 +22,8 @@ const desc = ref('')
 const name = ref('')
 const rate = ref('1.0')
 const previewText = ref('polyglot is awesome!')
+const filterStyles = ref<string[]>([])
+const selectStyle = ref('Neural')
 
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
@@ -36,6 +38,12 @@ function changeSelectLanguage(newSelectLanguage: string) {
   filterVoices.value = allVoices.filter(v => v.locale === newSelectLanguage)
   selectVoiceName.value = filterVoices.value[0]?.shortName
 }
+
+watch(selectVoiceName, (n) => {
+  filterStyles.value = filterVoices.value.filter(v => v.shortName === n)[0]?.styleList || []
+  selectStyle.value = filterStyles.value[0] || 'Neural'
+})
+
 const randomAvatar = getAvatarUrl(avatarList.value[Math.random() * avatarList.value.length | 0]) // 随机默认选择一个头像
 const imageUrl = ref(randomAvatar)
 
@@ -51,6 +59,7 @@ const addChat = (event: any) => {
     avatar: imageUrl.value,
     rate: +rate.value,
     isDefault: false,
+    voiceStyle: selectStyle.value,
   })
   store.changeCurrentKey(uid)
   emits('close')
@@ -61,7 +70,7 @@ const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 const previewSpeech = () => {
-  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value })
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value })
 }
 </script>
 
@@ -99,6 +108,18 @@ const previewSpeech = () => {
       <select v-model="selectVoiceName">
         <option v-for="item in filterVoices" :key="item.shortName" :value="item.shortName">
           {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
+        </option>
+      </select>
+    </div>
+    <div flex>
+      <label for="">风格</label>
+      <select v-model="selectStyle">
+        <option value="Neural">
+          正常
+        </option>
+
+        <option v-for="item in filterStyles" :key="item" :value="item">
+          {{ voiceStyleMap[item] }}
         </option>
       </select>
     </div>

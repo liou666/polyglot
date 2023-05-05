@@ -29,6 +29,7 @@ export interface Conversation {
   voice: string // 参考 https://aka.ms/speech/tts-languages
   avatar: string // 用户头像
   rate: number // 语速
+  voiceStyle: string // 情感
   isDefault?: boolean // 系统默认不允许删除
 }
 
