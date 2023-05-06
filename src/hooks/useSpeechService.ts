@@ -2,7 +2,6 @@ import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
   CancellationErrorCode,
-  ResultReason,
   SpeakerAudioDestination,
   SpeechConfig,
   SpeechRecognizer,
@@ -62,35 +61,15 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
   const recognizer = ref<SpeechRecognizer>(new SpeechRecognizer(speechConfig.value))
   const synthesizer = ref<SpeechSynthesizer>(new SpeechSynthesizer(speechConfig.value))
-
   // 引入变量，触发 SpeechSynthesizer 实例的重新创建
   const count = ref(0)
-
+  const player = ref(new SpeakerAudioDestination())
   watch([language, voiceName, count, azureKey, azureRegion, ttsPassword], ([lang, voice]) => {
     speechConfig.value = SpeechConfig.fromSubscription(resultAzureKey.value, resultAzureRegion.value)
     speechConfig.value.speechRecognitionLanguage = lang
     speechConfig.value.speechSynthesisLanguage = lang
     speechConfig.value.speechSynthesisVoiceName = voice
     console.log(lang, voice)
-
-    // 通过playback结束事件来判断播放结束
-    const player = new SpeakerAudioDestination()
-    player.onAudioStart = function (_) {
-      if (isSynthesError.value) return
-      isPlaying.value = true
-      isPlayend.value = false
-      console.log('playback started')
-    }
-    player.onAudioEnd = function (_) {
-      console.log('playback finished')
-      isPlaying.value = false
-      isPlayend.value = true
-    }
-
-    const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
-    const audioConfiga = AudioConfig.fromSpeakerOutput(player)
-    recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)
-    synthesizer.value = new SpeechSynthesizer(speechConfig.value, audioConfiga)
   }, {
     immediate: true,
   })
@@ -118,6 +97,9 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }
 
   const startRecognizeSpeech = async (cb?: (text: string) => void) => {
+    const audioConfig = AudioConfig.fromDefaultMicrophoneInput()
+    recognizer.value = new SpeechRecognizer(speechConfig.value, audioConfig)
+
     isRecognizReadying.value = true
 
     recognizer.value.canceled = () => {
@@ -144,7 +126,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       isRecognizReadying.value = false
       isRecognizing.value = false
     }
-
     recognizer.value.startContinuousRecognitionAsync(async () => {
       await audioRecorder()
       isRecognizing.value = true
@@ -161,8 +142,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
   // 停止语音识别
   const stopRecognizeSpeech = (): Promise<void> => {
-    mediaRecorder!.stop()
-
+    mediaRecorder?.stop()
     isRecognizReadying.value = false
     return new Promise((resolve, reject) => {
       recognizer.value.stopContinuousRecognitionAsync(() => {
@@ -213,13 +193,14 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }
 
   const ssmlToSpeak = async (text: string, { voice, voiceRate, lang, voiceStyle }: { voice?: string; voiceRate?: number; lang?: string; voiceStyle?: string } = {}) => {
+    applySynthesizerConfiguration()
+
     isSynthesizing.value = true
     isSynthesError.value = false
     const targetLang = lang || speechConfig.value.speechSynthesisLanguage
     const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
     const targetRate = voiceRate || rate.value
     const targetFeel = voiceStyle || style.value
-    console.log(voiceRate, rate.value)
 
     const ssml = `
     <speak version="1.0"  xmlns:mstts="https://www.w3.org/2001/mstts" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
@@ -279,6 +260,25 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     return res.voices
   }
 
+  function applySynthesizerConfiguration() {
+    // 通过playback结束事件来判断播放结束
+    player.value = new SpeakerAudioDestination()
+    player.value.onAudioStart = function (_) {
+      if (isSynthesError.value) return
+      isPlaying.value = true
+      isPlayend.value = false
+      console.log('playback started.....')
+    }
+    player.value.onAudioEnd = function (_) {
+      console.log('playback finished....')
+      isPlaying.value = false
+      isPlayend.value = true
+    }
+
+    const speakConfig = AudioConfig.fromSpeakerOutput(player.value)
+    synthesizer.value = new SpeechSynthesizer(speechConfig.value, speakConfig)
+  }
+
   return {
     languages,
     language,
@@ -299,5 +299,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     rate,
     style,
     audioBlob,
+    player,
   }
 }

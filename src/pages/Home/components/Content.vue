@@ -29,6 +29,7 @@ const {
   ssmlToSpeak,
   isSynthesizing,
   audioBlob,
+  player,
 } = useSpeechService({ langs: store.allLanguage as any, isFetchAllVoice: false })
 
 // states
@@ -56,6 +57,7 @@ useTitle(currentName)
 useEventListener(document, 'keydown', (e) => {
   if (store.loading || isRecognizing.value || isRecognizReadying.value || e.code !== 'Space' || !store.isMainActive) return
   message.value = ''
+  stopAllSpeaker() // 开启语音识别时停止所有语音播放
   startRecognizeSpeech((textSlice) => {
     message.value += textSlice || ''
   })
@@ -130,7 +132,7 @@ async function onSubmit() {
       },
     ])
     if (autoPlay.value)
-      speak(content, chatMessages.value.length - 1)
+      speakByAI(content, chatMessages.value.length - 1)
   }
   else {
     store.changeConversations(currentChatMessages.value.slice(0, -1))
@@ -139,27 +141,34 @@ async function onSubmit() {
   store.changeLoading(false)
 }
 
-// assistant speak
-function speak(content: string, index: number) {
-  restartAudio()
-  if (isPlaying.value || isSynthesizing.value) return
-  speakIndex.value = index
-  text.value = content
-  ssmlToSpeak(content)
-}
-
 // user speak
 let audio = new Audio()
 
-function restartAudio() {
+// 停止AI的语音播放
+function stopUserSpeaker() {
   audio.pause()
   audio.currentTime = 0
   isPlaying.value = false
-  // audio.play()
 }
 
-function userSpeak(audioData: string, index: number) {
-  if (isPlaying.value || isSynthesizing.value) return
+// 停止User的语音播放
+function stopAISpeaker() {
+  player.value.pause()
+  isPlaying.value = false
+  isSynthesizing.value = false
+}
+
+function stopAllSpeaker() {
+  stopUserSpeaker()
+  stopAISpeaker()
+}
+
+// user speak
+function speakByUser(audioData: string, index: number) {
+  if (isPlaying.value || isSynthesizing.value) {
+    stopAllSpeaker()
+    if (speakIndex.value === index) return // 点击同一个按钮,则不再重复播放
+  }
   speakIndex.value = index
   audio = new Audio(URL.createObjectURL(base64ToBlob(audioData)))
   audio.play()
@@ -173,6 +182,17 @@ function userSpeak(audioData: string, index: number) {
   }
 }
 
+// assistant speak
+function speakByAI(content: string, index: number) {
+  if (isPlaying.value || isSynthesizing.value) {
+    stopAllSpeaker()
+    if (speakIndex.value === index) return // 点击同一个按钮,则不再重复播放
+  }
+  speakIndex.value = index
+  text.value = content
+  ssmlToSpeak(content)
+}
+
 const recognize = async () => {
   try {
     console.log('isRecognizing', isRecognizing.value)
@@ -184,6 +204,7 @@ const recognize = async () => {
     }
     message.value = ''
 
+    stopAllSpeaker() // 开启语音识别时停止所有语音播放
     startRecognizeSpeech((textSlice) => {
       message.value += textSlice || ''
     })
@@ -237,15 +258,15 @@ const translate = async (text: string, i: number) => {
             <!-- assistant -->
             <p v-if="item.role === 'assistant'" mt-2 flex>
               <template v-if="speakIndex !== i">
-                <span class="chat-btn" @click="speak(item.content, i)">
+                <span class="chat-btn" @click="speakByAI(item.content, i)">
                   <i icon-btn rotate-90 i-ic:sharp-wifi />
                 </span>
               </template>
               <template v-else>
-                <span v-if="isSynthesizing || isPlaying" class="chat-btn">
+                <span v-if="isSynthesizing || isPlaying" class="chat-btn" @click="stopAISpeaker()">
                   <i icon-btn rotate-90 i-svg-spinners:wifi-fade />
                 </span>
-                <span v-else class="chat-btn" @click="speak(item.content, i)">
+                <span v-else class="chat-btn" @click="speakByAI(item.content, i)">
                   <i icon-btn rotate-90 i-ic:sharp-wifi />
                 </span>
               </template>
@@ -258,26 +279,26 @@ const translate = async (text: string, i: number) => {
             </p>
 
             <!-- user -->
-            <p v-else mt-2 flex>
+            <p v-else justify-end mt-2 flex>
               <template v-if="item.audioBlob">
                 <template v-if="speakIndex !== i">
-                  <span class="chat-btn" @click="userSpeak(item.audioBlob, i)">
+                  <span class="chat-btn mr-1" @click="speakByUser(item.audioBlob, i)">
                     <i icon-btn rotate-270 i-ic:sharp-wifi />
                   </span>
                 </template>
                 <template v-else>
-                  <span v-if="isPlaying" class="chat-btn" @click="restartAudio()">
+                  <span v-if="isPlaying" class="chat-btn mr-1" @click="stopUserSpeaker()">
                     <i icon-btn rotate-270 i-svg-spinners:wifi-fade />
                   </span>
-                  <span v-else class="chat-btn" @click="userSpeak(item.audioBlob, i)">
+                  <span v-else class="chat-btn mr-1" @click="speakByUser(item.audioBlob, i)">
                     <i icon-btn rotate-270 i-ic:sharp-wifi />
                   </span>
                 </template>
               </template>
-              <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
+              <span v-if="!isTranslating || translateIndex !== i" class="chat-btn" @click="translate(item.content, i)">
                 <i icon-btn i-carbon:ibm-watson-language-translator />
               </span>
-              <span v-else ml-1 class="chat-btn">
+              <span v-else class="chat-btn">
                 <i icon-btn i-eos-icons:bubble-loading />
               </span>
             </p>
