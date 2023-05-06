@@ -2,6 +2,7 @@ import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
   CancellationErrorCode,
+  ResultReason,
   SpeakerAudioDestination,
   SpeechConfig,
   SpeechRecognizer,
@@ -52,6 +53,10 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   // const isFetchAllVoices = ref(false) // 是否在请求所有语音列表
   const rate = ref(1) // 语速 (0,2]
 
+  let mediaRecorder: MediaRecorder | null
+  const chunks: Blob[] = []
+  const audioBlob = ref<Blob>(new Blob())
+
   const allVoices = ref<VoiceInfo[]>([])
 
   const recognizer = ref<SpeechRecognizer>(new SpeechRecognizer(speechConfig.value))
@@ -89,13 +94,29 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     immediate: true,
   })
 
-  // watch([azureKey, azureRegion], () => {
-  //   if (isFetchAllVoice && allVoices.value.length === 0)
-  //     getVoices()
-  // })
-
   // 语音识别
-  const startRecognizeSpeech = (cb?: (text: string) => void) => {
+
+  const audioRecorder = async () => {
+    // 暂时通过 mediaRecorder 方式实现录音保存，后续可能会改为直接通过 SpeechRecognizer 实现保存
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    mediaRecorder = new MediaRecorder(stream)
+
+    mediaRecorder.ondataavailable = (e) => {
+      chunks.push(e.data)
+    }
+
+    mediaRecorder.onstop = (e) => {
+      const blob = new Blob(chunks, { type: 'audio/wav' })
+      audioBlob.value = blob
+      mediaRecorder = null
+      chunks.length = 0
+    }
+
+    mediaRecorder.start()
+  }
+
+  const startRecognizeSpeech = async (cb?: (text: string) => void) => {
     isRecognizReadying.value = true
 
     recognizer.value.canceled = () => {
@@ -105,9 +126,10 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       console.log('Recognize result: ', e.result.text)
       cb && cb(e.result.text)
     }
-    recognizer.value.recognizing = (s, e) => {
-      console.log('Recognize recognizing', e.result.text)
+    recognizer.value.recognizing = (s, event) => {
+      console.log('Recognize recognizing', event.result.text)
     }
+
     recognizer.value.sessionStopped = (s, e) => {
       console.log('\n    Session stopped event.')
       recognizer.value.stopContinuousRecognitionAsync()
@@ -122,7 +144,8 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       isRecognizing.value = false
     }
 
-    recognizer.value.startContinuousRecognitionAsync(() => {
+    recognizer.value.startContinuousRecognitionAsync(async () => {
+      await audioRecorder()
       isRecognizing.value = true
       isRecognizReadying.value = false
       console.log('Recognize...')
@@ -137,6 +160,8 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
   // 停止语音识别
   const stopRecognizeSpeech = (): Promise<void> => {
+    mediaRecorder!.stop()
+
     isRecognizReadying.value = false
     return new Promise((resolve, reject) => {
       recognizer.value.stopContinuousRecognitionAsync(() => {
@@ -267,5 +292,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     allVoices,
     isSynthesizing,
     rate,
+    audioBlob,
   }
 }
