@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/Button.vue'
 import { generatTranslate, generateText } from '@/server/api'
-import { verifyOpenKey } from '@/utils'
+import { base64ToBlob, blobToBase64, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
 interface Translates {
@@ -28,6 +28,7 @@ const {
   stopRecognizeSpeech,
   ssmlToSpeak,
   isSynthesizing,
+  audioBlob,
 } = useSpeechService({ langs: store.allLanguage as any, isFetchAllVoice: false })
 
 // states
@@ -109,10 +110,11 @@ async function onSubmit() {
 
   store.changeConversations([
     ...currentChatMessages.value,
-    { content: message.value, role: 'user' },
+    { content: message.value, role: 'user', audioBlob: await blobToBase64(audioBlob.value) },
   ])
+  const tempCurrentChatMessages = currentChatMessages.value.map(x => ({ content: x.content, role: x.role })) // 发送的请求中需去除audioBlob
   const systemMessage = currentChatMessages.value[0]
-  const relativeMessage = [...chatMessages.value, { content: message.value, role: 'user' }].slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
+  const relativeMessage = [...tempCurrentChatMessages, { content: message.value, role: 'user' }].slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
   const prompts = [systemMessage, ...relativeMessage] as ChatMessage[]
 
   message.value = ''
@@ -137,11 +139,38 @@ async function onSubmit() {
   store.changeLoading(false)
 }
 
+// assistant speak
 function speak(content: string, index: number) {
+  restartAudio()
   if (isPlaying.value || isSynthesizing.value) return
   speakIndex.value = index
   text.value = content
   ssmlToSpeak(content)
+}
+
+// user speak
+let audio = new Audio()
+
+function restartAudio() {
+  audio.pause()
+  audio.currentTime = 0
+  isPlaying.value = false
+  // audio.play()
+}
+
+function userSpeak(audioData: string, index: number) {
+  if (isPlaying.value || isSynthesizing.value) return
+  speakIndex.value = index
+  audio = new Audio(URL.createObjectURL(base64ToBlob(audioData)))
+  audio.play()
+  audio.onplay = () => {
+    isPlaying.value = true
+  }
+
+  audio.onended = () => {
+    isPlaying.value = false
+    speakIndex.value = -1
+  }
 }
 
 const recognize = async () => {
@@ -197,15 +226,15 @@ const translate = async (text: string, i: number) => {
           <div class="w-10 h-10">
             <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
           </div>
-
           <div style="flex-basis:fit-content" mx-2>
             <p p-2 my-2 chat-box>
               {{ item.content }}
             </p>
-            <p v-show="item.role === 'assistant' && translates[item.content + i]?.isShow " p-2 my-2 chat-box>
+            <p v-show=" translates[item.content + i]?.isShow " p-2 my-2 chat-box>
               {{ translates[item.content + i]?.result }}
             </p>
 
+            <!-- assistant -->
             <p v-if="item.role === 'assistant'" mt-2 flex>
               <template v-if="speakIndex !== i">
                 <span class="chat-btn" @click="speak(item.content, i)">
@@ -219,6 +248,31 @@ const translate = async (text: string, i: number) => {
                 <span v-else class="chat-btn" @click="speak(item.content, i)">
                   <i icon-btn rotate-90 i-ic:sharp-wifi />
                 </span>
+              </template>
+              <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
+                <i icon-btn i-carbon:ibm-watson-language-translator />
+              </span>
+              <span v-else ml-1 class="chat-btn">
+                <i icon-btn i-eos-icons:bubble-loading />
+              </span>
+            </p>
+
+            <!-- user -->
+            <p v-else mt-2 flex>
+              <template v-if="item.audioBlob">
+                <template v-if="speakIndex !== i">
+                  <span class="chat-btn" @click="userSpeak(item.audioBlob, i)">
+                    <i icon-btn rotate-270 i-ic:sharp-wifi />
+                  </span>
+                </template>
+                <template v-else>
+                  <span v-if="isPlaying" class="chat-btn" @click="restartAudio()">
+                    <i icon-btn rotate-270 i-svg-spinners:wifi-fade />
+                  </span>
+                  <span v-else class="chat-btn" @click="userSpeak(item.audioBlob, i)">
+                    <i icon-btn rotate-270 i-ic:sharp-wifi />
+                  </span>
+                </template>
               </template>
               <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
                 <i icon-btn i-carbon:ibm-watson-language-translator />

@@ -27,3 +27,7 @@ interface ImagePayload {
   n?: number
   size?: string
 }
+
+interface ChatMessageWithAudioUrl extends ChatMessage {
+  audioBlob?: string //base64
+}

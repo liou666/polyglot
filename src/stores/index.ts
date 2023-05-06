@@ -24,7 +24,7 @@ export interface Conversation {
   key: Key // 名称 唯一标识
   name: string // 名称
   desc: string
-  chatMessages: ChatMessage[] // 聊天信息
+  chatMessages: ChatMessageWithAudioUrl[] // 聊天信息
   language: string // tts stt
   voice: string // 参考 https://aka.ms/speech/tts-languages
   avatar: string // 用户头像
@@ -67,7 +67,7 @@ export const useConversationStore = defineStore('conversation', {
     },
   },
   actions: {
-    changeConversations(chatMessages: ChatMessage[]) {
+    changeConversations(chatMessages: ChatMessageWithAudioUrl[]) {
       this.chatMessages(this.currentKey)!.chatMessages = chatMessages
     },
     changeCurrentKey(key: Key) {
