@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid'
-import { generatePrompt, getAvatarUrl } from '@/utils'
+import { basePrompt, generatePrompt, getAvatarUrl } from '@/utils'
 
 const defaultConversations = [{
   key: uuid(),
@@ -79,12 +79,12 @@ export const useConversationStore = defineStore('conversation', {
     cleanCurrentConversations() {
       this.chatMessages(this.currentKey)!.chatMessages.length = 1
     },
-    addConversation(conversation: Omit<Conversation, 'chatMessages'>) {
+    addConversation(conversation: Omit<Conversation, 'chatMessages'>, systemPrompt?: string) {
       this.conversations.push({
         ...conversation,
         chatMessages: [{
           role: 'system',
-          content: generatePrompt(conversation.language),
+          content: systemPrompt ? basePrompt(conversation.language, systemPrompt) : generatePrompt(conversation.language),
         }],
       })
     },

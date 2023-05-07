@@ -15,33 +15,46 @@ const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
 const store = useConversationStore()
 const { ssmlToSpeak, isSynthesizing, isPlaying } = useSpeechService({ isFetchAllVoice: false })
 const allLanguages = computed(() => [...new Set(allVoices.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
-const selectLanguage = ref('')
-const filterVoices = ref<VoiceInfo[]>([])
-const selectVoiceName = ref('')
 const desc = ref('')
 const name = ref('')
 const rate = ref('1.0')
 const previewText = ref('polyglot is awesome!')
-const filterStyles = ref<string[]>([])
-const selectStyle = ref('Neural')
+const presets = ref('Act as if you are meeting someone for the first time. How would you introduce yourself and start a conversation?')
 
+const voiceValue = ref<string[]>(['en-US', 'en-US-JennyNeural', 'chat'])
+
+const selectLanguage = computed(() => voiceValue.value[0])
+const selectVoiceName = computed(() => voiceValue.value[1])
+const selectStyle = computed(() => voiceValue.value[2])
 const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
-onBeforeMount(() => {
-  selectLanguage.value = allLanguages.value[0]
-  changeSelectLanguage(selectLanguage.value)
-})
-
-watch(selectLanguage, changeSelectLanguage)
-
-function changeSelectLanguage(newSelectLanguage: string) {
-  filterVoices.value = allVoices.filter(v => v.locale === newSelectLanguage)
-  selectVoiceName.value = filterVoices.value[0]?.shortName
+interface Option {
+  label: string
+  value: string
+  children?: Option[]
 }
 
-watch(selectVoiceName, (n) => {
-  filterStyles.value = filterVoices.value.filter(v => v.shortName === n)[0]?.styleList || []
-  selectStyle.value = filterStyles.value[0] || 'Neural'
+const options = ref<Option[] >([])
+
+onMounted(() => {
+  allLanguages.value.forEach((item) => {
+    const children: Option[] = []
+    allVoices.forEach((v) => {
+      if (v.locale === item) {
+        children.push({
+          value: v.shortName,
+          label: `${v.gender === 1 ? '🧒🏻' : '👦🏻'} ${v.localName}`,
+          children: v.styleList?.map(x => ({ label: voiceStyleMap[x], value: x })) || [],
+        })
+      }
+    })
+
+    options.value.push({
+      value: item,
+      label: supportLanguageMap[item],
+      children,
+    })
+  })
 })
 
 const randomAvatar = getAvatarUrl(avatarList.value[Math.random() * avatarList.value.length | 0]) // 随机默认选择一个头像
@@ -60,7 +73,7 @@ const addChat = (event: any) => {
     rate: +rate.value,
     isDefault: false,
     voiceStyle: selectStyle.value,
-  })
+  }, presets.value)
   store.changeCurrentKey(uid)
   emits('close')
 }
@@ -74,16 +87,8 @@ const previewSpeech = () => {
 }
 </script>
 
-<script>
-
-</script>
-
 <template>
-  <div flex="~ col gap-3" items-center>
-    <!-- <div text-lg font-bold>
-      自定义对话
-    </div> -->
-
+  <div class="wrapper" flex="~ col gap-3" items-center>
     <div flex>
       <Avatar v-model:image-url="imageUrl" />
     </div>
@@ -96,32 +101,17 @@ const previewSpeech = () => {
       <input v-model="desc" type="text">
     </div>
     <div flex>
-      <label for="">语言</label>
-      <select v-model="selectLanguage">
-        <option v-for="item in allLanguages" :key="item" :value="item">
-          {{ supportLanguageMap[item] }}
-        </option>
-      </select>
+      <label for="">语音</label>
+      <div w-55 flex>
+        <ElCascader v-model="voiceValue" style="width: 220px;" :options="options" />
+      </div>
     </div>
     <div flex>
-      <label for="">音色</label>
-      <select v-model="selectVoiceName">
-        <option v-for="item in filterVoices" :key="item.shortName" :value="item.shortName">
-          {{ `${item.locale} / ${item.gender === 1 ? 'Female' : 'Male'} / ${item.localName}` }}
-        </option>
-      </select>
-    </div>
-    <div flex>
-      <label for="">风格</label>
-      <select v-model="selectStyle">
-        <option value="Neural">
-          正常
-        </option>
-
-        <option v-for="item in filterStyles" :key="item" :value="item">
-          {{ voiceStyleMap[item] }}
-        </option>
-      </select>
+      <label for="">语速</label>
+      <div w-55 flex>
+        <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
+        <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
+      </div>
     </div>
     <div relative center-y>
       <div flex>
@@ -137,18 +127,12 @@ const previewSpeech = () => {
         </button>
       </div>
     </div>
-    <div flex>
-      <label for="">语速</label>
-      <div w-55 flex>
-        <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
-        <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
-      </div>
-    </div>
+
     <!-- todo -->
-    <!-- <div flex>
-        <label center-y justify-end mr-2 for="">预设</label>
-        <textarea id="message" resize-none w-50 block p-2 text-sm placeholder="Write your thoughts here..." />
-      </div> -->
+    <div flex>
+      <label for="">场景预设</label>
+      <textarea v-model="presets" :rows="3" placeholder="system prompt" />
+    </div>
     <div center-y text-sm text-gray-500>
       <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />
       点击头像可更换头像
@@ -162,12 +146,30 @@ const previewSpeech = () => {
 
 <style scoped>
   label{
-    @apply center-y justify-end mr-2 w-20
+    @apply center-y justify-center  w-20
   }
   input{
-    @apply w-50 p-2
+    @apply w-50 p-2 text-[#222]
   }
   select{
-    @apply w-55 select-settings
+    @apply w-55 select-settings text-[#222]
+  }
+  textarea{
+    @apply resize-none w-50 font-sans block p-2  text-[#222]
+  }
+  textArea::-webkit-scrollbar{
+    width: 0;
+    height: 0;
+  }
+  .wrapper :deep(.el-input__wrapper){
+    box-shadow: 0 0 0 1px #777 inset;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  .wrapper :deep(.el-input__inner){
+    color: #222;
+  }
+  .wrapper :deep(.el-input__wrapper):hover {
+    box-shadow: 0 0 0 1px #777 inset;
   }
 </style>

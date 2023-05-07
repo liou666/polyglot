@@ -55,7 +55,7 @@ watch([azureKey, azureRegion, ttsPassword], () => {
       <span>Setting</span>
     </div>
   </div>
-  <Modal v-model:visible="addVisible" :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6 @close="closeNewChat()">
+  <Modal v-model:visible="addVisible" h-80vh :z-index="2" class="dark:bg-[#111111] bg-white" center max-w-120 p6 @close="closeNewChat()">
     <NewChat :all-voices="tempAllVoices as any" @close="addVisible = false" />
   </Modal>
 

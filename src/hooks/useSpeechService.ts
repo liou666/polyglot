@@ -83,7 +83,6 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     mediaRecorder = new MediaRecorder(stream)
 
     mediaRecorder.ondataavailable = (e) => {
-      console.log(chunks, 'c')
       chunks.push(e.data)
     }
 
@@ -103,12 +102,10 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
     isRecognizReadying.value = true
 
-    recognizer.value.canceled = () => {
-      console.log('Recognize canceled')
-    }
     recognizer.value.recognized = (s, e) => {
       console.log('Recognize result: ', e.result.text)
       cb && cb(e.result.text)
+      // isRecognizing.value = false
     }
     recognizer.value.recognizing = (s, event) => {
       console.log('Recognize recognizing', event.result.text)
@@ -128,9 +125,9 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       isRecognizing.value = false
     }
     recognizer.value.startContinuousRecognitionAsync(async () => {
-      await audioRecorder()
       isRecognizing.value = true
       isRecognizReadying.value = false
+      await audioRecorder()
       console.log('Recognize...')
     },
     (error) => {

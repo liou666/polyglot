@@ -114,9 +114,9 @@ async function onSubmit(fromRecognize = false) {
     ...currentChatMessages.value,
     { content: message.value, role: 'user', audioBlob: fromRecognize ? await blobToBase64(audioBlob.value) : '' },
   ])
-  const tempCurrentChatMessages = currentChatMessages.value.map(x => ({ content: x.content, role: x.role })) // 发送的请求中需去除audioBlob
+  const tempCurrentChatMessages = chatMessages.value.map(x => ({ content: x.content, role: x.role })) // 发送的请求中需去除audioBlob
   const systemMessage = currentChatMessages.value[0]
-  const relativeMessage = [...tempCurrentChatMessages, { content: message.value, role: 'user' }].slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
+  const relativeMessage = tempCurrentChatMessages.slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
   const prompts = [systemMessage, ...relativeMessage] as ChatMessage[]
 
   message.value = ''

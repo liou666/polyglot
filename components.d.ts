@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Avatar: typeof import('./src/components/Avatar.vue')['default']
     Button: typeof import('./src/components/Button.vue')['default']
+    ElCascader: typeof import('element-plus/es')['ElCascader']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     InputKit: typeof import('./src/components/InputKit.vue')['default']
