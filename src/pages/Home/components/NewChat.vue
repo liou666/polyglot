@@ -113,12 +113,12 @@ const previewSpeech = () => {
         <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
       </div>
     </div>
-    <div relative center-y>
+    <div class="ml-[-30px] relative center-y">
       <div flex>
         <label for="">语音预览</label>
         <input v-model="previewText" placeholder="输入文字预览语音" type="text">
       </div>
-      <div absolute left-77>
+      <div absolute left-73>
         <button v-if="!isSynthesizing && !isPlaying " cursor-pointer :disabled="!previewText" center-y ml-2 @click="previewSpeech()">
           <i icon-btn rotate-90 i-ic:sharp-wifi />
         </button>
@@ -129,8 +129,11 @@ const previewSpeech = () => {
     </div>
 
     <!-- todo -->
-    <div flex>
-      <label for="">场景预设</label>
+    <div
+      class="flex ml-[-30px]"
+    >
+      <label for="">
+        场景预设</label>
       <textarea v-model="presets" :rows="3" placeholder="system prompt" />
     </div>
     <div center-y text-sm text-gray-500>
@@ -146,7 +149,7 @@ const previewSpeech = () => {
 
 <style scoped>
   label{
-    @apply center-y justify-center  w-20
+    @apply center-y justify-center mr-2
   }
   input{
     @apply w-50 p-2 text-[#222]
