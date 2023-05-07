@@ -134,7 +134,7 @@ const previewSpeech = () => {
     >
       <label for="">
         场景预设</label>
-      <textarea v-model="presets" :rows="3" placeholder="system prompt" />
+      <textarea v-model="presets" :rows="4" placeholder="system prompt..." />
     </div>
     <div center-y text-sm text-gray-500>
       <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />

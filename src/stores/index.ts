@@ -12,7 +12,7 @@ const defaultConversations = [{
   rate: 1,
   chatMessages: [{
     role: 'system',
-    content: generatePrompt('English'),
+    content: generatePrompt('English', 'Jenny'),
   }],
 },
 ] as const
@@ -84,7 +84,7 @@ export const useConversationStore = defineStore('conversation', {
         ...conversation,
         chatMessages: [{
           role: 'system',
-          content: systemPrompt ? basePrompt(conversation.language, systemPrompt) : generatePrompt(conversation.language),
+          content: systemPrompt ? basePrompt(conversation.language, systemPrompt, conversation.name) : generatePrompt(conversation.language, conversation.name),
         }],
       })
     },
