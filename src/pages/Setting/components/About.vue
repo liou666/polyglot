@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { shell } from 'electron'
+import { version } from '@/../package.json'
 </script>
 
 <template>
@@ -26,7 +27,7 @@ import { shell } from 'electron'
           <label mr-1 for="">版本号</label>
         </div>
         <span>
-          V0.2.0
+          V{{ version }}
         </span>
       </div>
     </section>
