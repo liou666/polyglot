@@ -1,3 +1,22 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.2.1](https://github.com/liou666/polyglot/compare/v0.2.0...v0.2.1) (2023-05-08)
+
+
+### Features
+
+* audio support record ([#29](https://github.com/liou666/polyglot/issues/29)) ([1235b52](https://github.com/liou666/polyglot/commit/1235b529817d1ac4900262d87f2add5892e6888f))
+* custom system prompt ([#21](https://github.com/liou666/polyglot/issues/21)) ([31c2e9b](https://github.com/liou666/polyglot/commit/31c2e9bc93261cca4b50291a819516c9a0063e61))
+
+
+### Bug Fixes
+
+* 新建角色后语音识别快捷键失效 ([9ec0a4b](https://github.com/liou666/polyglot/commit/9ec0a4b39af2e5b887ff45308cadf4e22b887750))
+* change input keyup to keypress ([#37](https://github.com/liou666/polyglot/issues/37)) ([0674a39](https://github.com/liou666/polyglot/commit/0674a398bd61036d0caf47bc35dc0a482cd58dd8))
+* tap voice in play to end playback ([#14](https://github.com/liou666/polyglot/issues/14)) ([#38](https://github.com/liou666/polyglot/issues/38)) ([6d6cf10](https://github.com/liou666/polyglot/commit/6d6cf108659f4330f07b5bc9c629d355c6e2eadd))
+
 # [0.2.0](https://github.com/liou666/polyglot/compare/v0.1.1...v0.2.0) (2023-04-27)
 
 
