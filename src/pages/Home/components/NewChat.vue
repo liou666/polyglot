@@ -100,19 +100,20 @@ const previewSpeech = () => {
       <label for="">备注</label>
       <input v-model="desc" type="text">
     </div>
+    <div
+      class="flex ml-[-30px]"
+    >
+      <label for="">
+        场景预设</label>
+      <textarea v-model="presets" :rows="4" placeholder="system prompt..." />
+    </div>
     <div flex>
       <label for="">语音</label>
       <div w-55 flex>
-        <ElCascader v-model="voiceValue" style="width: 220px;" :options="options" />
+        <ElCascader v-model="voiceValue" filterable placeholder="select voice" style="width: 220px;" :options="options" />
       </div>
     </div>
-    <div flex>
-      <label for="">语速</label>
-      <div w-55 flex>
-        <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
-        <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
-      </div>
-    </div>
+
     <div class="ml-[-30px] relative center-y">
       <div flex>
         <label for="">语音预览</label>
@@ -127,15 +128,15 @@ const previewSpeech = () => {
         </button>
       </div>
     </div>
-
-    <!-- todo -->
-    <div
-      class="flex ml-[-30px]"
-    >
-      <label for="">
-        场景预设</label>
-      <textarea v-model="presets" :rows="4" placeholder="system prompt..." />
+    <div flex>
+      <label for="">语速</label>
+      <div w-55 flex>
+        <input v-model="rate" flex-1 type="range" step="0.1" min="0.1" max="2.0">
+        <span w-4 ml-1>{{ Number(rate).toFixed(1) }}</span>
+      </div>
     </div>
+    <!-- todo -->
+
     <div center-y text-sm text-gray-500>
       <i inline-block w-4 h-4 m-1 cursor-auto i-ic:baseline-lightbulb />
       点击头像可更换头像

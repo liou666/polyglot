@@ -113,6 +113,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
 
     recognizer.value.sessionStopped = (s, e) => {
       console.log('\n    Session stopped event.')
+      isRecognizing.value = false
       recognizer.value.stopContinuousRecognitionAsync()
     }
 
