@@ -1,16 +1,34 @@
 # <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
 >  AI语言练习应用
 
-Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
+Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.1.0.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.2.1.png">
 </p>
 
 ## 下载
 - **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.dmg)
 - **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.exe)
 
+## 软件截图
+
+<details>
+<summary>展开</summary>
+
+<p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new_chat.png">
+</p>
+
+<p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/voice.png">
+</p>
+
+<p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting.png">
+</p>
+
+</details>
 
 ## 功能
 - [x] 多国语言口语练习 （~~目前内置四个不同国家的AI人物，分别来自美国、日本、韩国和法国。后续将考虑增加更多的语种。~~）（内置了英语，其他语言现在支持自定义）
@@ -21,8 +39,8 @@ Polyglot是一款桌面端应用程序。基于ChatGPT和Azure人工智能语言
 - [x] 支持用户自定义语种和AI人物
 - [x] 用户自定义配置Azure key
 - [x] 自定义头像
-- [x] 语音识别支持快捷键操作
-- [ ] 支持用户配置自定义对话场景
+- [x] 语音识别支持快捷键操作(按住空格键开始语音识别，放开空格键结束语音识别)
+- [x] 支持用户配置自定义对话场景
 - [ ] 支持Azure openai api、claude api服务
 
 ## 使用方法
@@ -112,10 +130,16 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 ## 捐赠
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
 
-<p>
-<img width="200" height="300" alt="" src="./public/donate/weixin.jpg">
-<img width="200" height="300"  alt="" src="./public/donate/zhifubao.jpg">
-</p>
+<table>
+  <tr>
+    <th>微信</th>
+    <th>支付宝</th>
+  </tr>
+  <tr>
+    <td><img width="200" height="300" alt="" src="./public/donate/weixin.jpg"></td>
+    <td><img width="200" height="300"  alt="" src="./public/donate/zhifubao.jpg"></td>
+  </tr>
+</table>
 
 
 ## 讨论与交流
