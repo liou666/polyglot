@@ -16,7 +16,7 @@
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
-    "target": ["dmg"],
+    "target": ["default"],
     "entitlements": "entitlements.mac.plist",
     "hardenedRuntime": true,
     "extendInfo": {
