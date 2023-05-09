@@ -8,8 +8,8 @@ Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工
 </p>
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.0/Polyglot_0.2.0.exe)
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.1/Polyglot_0.2.1.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.1/Polyglot_0.2.1.exe)
 
 ## 软件截图
 
@@ -41,6 +41,7 @@ Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工
 - [x] 自定义头像
 - [x] 语音识别支持快捷键操作(按住空格键开始语音识别，放开空格键结束语音识别)
 - [x] 支持用户配置自定义对话场景
+- [x] 自身语音支持回听
 - [ ] 支持Azure openai api、claude api服务
 
 ## 使用方法
