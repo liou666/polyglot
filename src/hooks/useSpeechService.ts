@@ -29,11 +29,11 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     return azureKey.value
   })
   const resultAzureRegion = computed(() => {
-    if (!azureRegion.value) {
+    if (!azureKey.value) {
       if (accessPassword !== ttsPassword.value)
         return 'error'
       else
-        return defaultAzureRegion || 'eastasia'
+        return defaultAzureRegion || 'error'
     }
     return azureRegion.value
   })
@@ -239,7 +239,8 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   async function getVoices(): Promise<VoiceInfo[]> {
     if (isFetchAllVoice) {
       try {
-        const res = await synthesizer.value.getVoicesAsync()
+        const synthesizer = new SpeechSynthesizer(speechConfig.value)
+        const res = await synthesizer.getVoicesAsync()
 
         if (res.errorDetails)
           console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
