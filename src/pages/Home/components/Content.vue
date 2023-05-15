@@ -242,7 +242,7 @@ const translate = async (text: string, i: number) => {
           v-for="item, i in chatMessages"
           :key="i"
           center-y
-          :class="item.role === 'user' ? 'flex-row-reverse' : ''"
+          :class="item.role === 'user' ? 'flex-row-reverse w-[75%] ml-[25%]' : 'w-[75%]'"
         >
           <div class="w-10 h-10">
             <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
