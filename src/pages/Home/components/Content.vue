@@ -70,6 +70,12 @@ useEventListener(document, 'keyup', async (e) => {
   onSubmit(true)
 })
 
+onMounted(() => {
+  setTimeout(() => {
+    scrollToBottom()
+  }, 1000)
+})
+
 // effects
 watch(messageLength, () => nextTick(() => scrollToBottom()))
 watch(currentKey, () => {
@@ -78,6 +84,7 @@ watch(currentKey, () => {
   voiceName.value = currentVoice.value
   rate.value = currentRate.value
   style.value = currentVoiceStyle.value
+  nextTick(scrollToBottom)
 }, {
   immediate: true,
 })
