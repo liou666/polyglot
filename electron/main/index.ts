@@ -166,7 +166,3 @@ autoUpdater.on('update-downloaded', () => {
       autoUpdater.quitAndInstall() // 退出并安装更新
   })
 })
-
-autoUpdater.on('error', (err) => {
-  dialog.showErrorBox('AutoUpdater Error', err.message)
-})
