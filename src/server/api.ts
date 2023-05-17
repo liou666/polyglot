@@ -64,3 +64,27 @@ export const generatTranslate = async (text: string) => {
   return completion as any
 }
 
+export const generatAnalysis = async (text: string) => {
+  const api = new Api2d(openKey.value, openProxy.value)
+  const timer = setTimeout(() => {
+    api.abort()
+    clearTimeout(timer)
+    throw new Error('timeout')
+  }, timeout)
+
+  const system = '我想让gpt扮演我的语法老师，不论我说什么语言你都需要用中文纠正我语法的错误，如果语法没有错误，则回复\'无语法错误\''
+  const assistantPrompt = `'${text}'`
+  const completion = await api.completion({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: assistantPrompt },
+    ],
+    temperature: 1,
+    n: 1,
+    stream: false,
+  })
+  console.log(completion)
+  clearTimeout(timer)
+  return completion as any
+}

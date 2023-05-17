@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/Button.vue'
-import { generatTranslate, generateText } from '@/server/api'
+import { generatAnalysis, generatTranslate, generateText } from '@/server/api'
 import { base64ToBlob, blobToBase64, verifyOpenKey } from '@/utils'
 import { useConversationStore } from '@/stores'
 
@@ -36,9 +36,13 @@ const {
 const message = ref('') // input message
 const text = ref('') // current select message
 const translates = ref<Translates>({}) // translate result
+const analysisResults = ref<Translates>({}) // analysis result
 const isTranslating = ref(false) // translate loading
+const analysisLoading = ref(false) // analysis loading
+
 const speakIndex = ref(0) // record speak
 const translateIndex = ref(0) // record translate
+const analysisIndex = ref(0) // record analysis
 
 const messageLength = computed(() => store.getConversationsByCurrentProps('chatMessages').length)
 const chatMessages = computed(() => store.getConversationsByCurrentProps('chatMessages').slice(1))// 除去第一条系统设置的消息
@@ -89,17 +93,26 @@ watch(currentKey, () => {
   immediate: true,
 })
 
+enum FetchType {
+  chat = 'chat',
+  translate = 'translate',
+  analysis = 'analysis'
+}
 // methods
-const fetchResponse = async (prompt: ChatMessage[] | string) => {
+const fetchResponse = async (prompt: ChatMessage[] | string, type: FetchType = FetchType.chat) => {
   let content
   try {
     let result
-    if (typeof prompt === 'string') { // 翻译
-      result = await generatTranslate(prompt) as any
+    if (type === FetchType.translate) { // 翻译
+      result = await generatTranslate(prompt as string) as any
     }
-    else { // chat
-      result = await generateText(prompt) as any
+    else if (type === FetchType.chat) { // chat
+      result = await generateText(prompt as ChatMessage[]) as any
     }
+    else if (type === FetchType.analysis) { // analysis
+      result = await generatAnalysis(prompt as string) as any
+    }
+
     if (result.error) alert(result.error?.message)
     else if (result?.object === 'error') alert(result?.message) // 兼容 api2d
     else content = result.choices[0].message.content
@@ -229,7 +242,7 @@ const translate = async (text: string, i: number) => {
 
   isTranslating.value = true
 
-  const content = await fetchResponse(text)
+  const content = await fetchResponse(text, FetchType.translate)
 
   if (!content) return (isTranslating.value = false)
 
@@ -238,6 +251,25 @@ const translate = async (text: string, i: number) => {
     [key]: { result: content, isShow: true },
   }
   isTranslating.value = false
+}
+
+async function grammarAnalysis(text: string, i: number) {
+  analysisIndex.value = i
+  const key = text + i
+  if (analysisResults.value[key])
+    return analysisResults.value[key].isShow = !analysisResults.value[key].isShow
+
+  analysisLoading.value = true
+
+  const content = await fetchResponse(text, FetchType.analysis)
+
+  if (!content) return (analysisLoading.value = false)
+
+  analysisResults.value = {
+    ...analysisResults.value,
+    [key]: { result: content, isShow: true },
+  }
+  analysisLoading.value = false
 }
 </script>
 
@@ -260,6 +292,10 @@ const translate = async (text: string, i: number) => {
             </p>
             <p v-show=" translates[item.content + i]?.isShow " p-2 my-2 chat-box>
               {{ translates[item.content + i]?.result }}
+            </p>
+
+            <p v-show="item.role === 'user' && analysisResults[item.content + i]?.isShow " p-2 my-2 chat-box>
+              {{ analysisResults[item.content + i]?.result }}
             </p>
 
             <!-- assistant -->
@@ -302,8 +338,8 @@ const translate = async (text: string, i: number) => {
                   </span>
                 </template>
               </template>
-              <span v-if="!isTranslating || translateIndex !== i" class="chat-btn" @click="translate(item.content, i)">
-                <i icon-btn i-carbon:ibm-watson-language-translator />
+              <span v-if="!analysisLoading || analysisIndex !== i" class="chat-btn" @click="grammarAnalysis(item.content, i)">
+                <i icon-btn i-ic:outline-lightbulb />
               </span>
               <span v-else class="chat-btn">
                 <i icon-btn i-eos-icons:bubble-loading />
