@@ -9,14 +9,7 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
       <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">语音服务</label>
-          <el-tooltip
-            class="box-item"
-            effect="dark"
-            content="目前仅支持Azure服务"
-            placement="bottom"
-          >
-            <i icon-btn i-carbon:information-square />
-          </el-tooltip>
+          <!-- <Tooltip content="设置越高，回复的准确率也高，同时也会消耗更多的token" /> -->
         </div>
         <select
           v-model="voiceApiName"
@@ -27,6 +20,9 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           </option>
         </select>
       </div>
+    </section>
+
+    <section class="main-section">
       <div class="section-item">
         <label my-1 block for="">Azure 区域</label>
         <select
@@ -40,26 +36,14 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
       <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">Azure Access Key</label>
-          <el-tooltip
-            effect="dark"
-            content="填写后将绕过访问密码，使用自己的Azure Access Key"
-            placement="bottom"
-          >
-            <i icon-btn i-carbon:information-square />
-          </el-tooltip>
+          <Tooltip content="填写后将绕过访问密码，使用自己的Azure Access Key" />
         </div>
         <Password v-model:value="azureKey" placeholder="azure key" />
       </div>
       <div class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">访问密码</label>
-          <el-tooltip
-            effect="dark"
-            content="输入访问密码后无需填写Azure Access Key"
-            placement="bottom"
-          >
-            <i icon-btn i-carbon:information-square />
-          </el-tooltip>
+          <Tooltip content="输入访问密码后无需填写Azure Access Key" />
         </div>
         <Password v-model:value="ttsPassword" placeholder="access password" />
       </div>

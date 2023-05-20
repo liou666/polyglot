@@ -13,3 +13,4 @@ export const OPEN_MAX_TOKEN = 'openMaxToken'
 export const TTS_PASSWORD = 'ttsPassword'
 export const AUTO_PLAY = 'autoPlay'
 
+export const CHAT_CONFIG = 'chatConfig'

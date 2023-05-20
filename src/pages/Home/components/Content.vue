@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
+const { chatConfig, autoPlay } = useGlobalSetting()
 
 const {
   language,
@@ -104,30 +104,24 @@ const fetchResponse = async (prompt: ChatMessage[] | string, type: FetchType = F
   try {
     let result
     if (type === FetchType.translate) { // 翻译
-      result = await generatTranslate(prompt as string) as any
+      result = await generatTranslate(prompt as string, chatConfig.value) as any
     }
     else if (type === FetchType.chat) { // chat
-      result = await generateText(prompt as ChatMessage[]) as any
+      result = await generateText(prompt as ChatMessage[], chatConfig.value) as any
     }
     else if (type === FetchType.analysis) { // analysis
-      result = await generatAnalysis(prompt as string) as any
+      result = await generatAnalysis(prompt as string, currentLanguage.value, chatConfig.value) as any
     }
-
-    if (result.error) alert(result.error?.message)
-    else if (result?.object === 'error') alert(result?.message) // 兼容 api2d
-    else content = result.choices[0].message.content
+    content = result.choices[0]?.message?.content
   }
   catch (error: any) {
-    if (error.code === 20)
-      alert('[Error] 请求超时，请检查网络连接或代理')
-    else
-      alert(error.message)
+    alert(error.message)
   }
   return content
 }
 
 async function onSubmit(fromRecognize = false) {
-  if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
+  // if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
   if (!message.value) return
 
   store.changeConversations([
@@ -136,7 +130,7 @@ async function onSubmit(fromRecognize = false) {
   ])
   const tempCurrentChatMessages = chatMessages.value.map(x => ({ content: x.content, role: x.role })) // 发送的请求中需去除audioBlob
   const systemMessage = currentChatMessages.value[0]
-  const relativeMessage = tempCurrentChatMessages.slice(-(Number(chatRememberCount.value))) // 保留最近的几条消息
+  const relativeMessage = tempCurrentChatMessages.slice(-(Number(chatConfig.value.apiRememberCount))) // 保留最近的几条消息
   const prompts = [systemMessage, ...relativeMessage] as ChatMessage[]
 
   message.value = ''
@@ -284,7 +278,7 @@ async function grammarAnalysis(text: string, i: number) {
           :class="item.role === 'user' ? 'flex-row-reverse w-[75%] ml-[25%]' : 'w-[75%]'"
         >
           <div class="w-10 h-10">
-            <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
+            <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? chatConfig.selfAvatarUrl : currentAvatar" alt="">
           </div>
           <div style="flex-basis:fit-content" mx-2>
             <p p-2 my-2 chat-box>
