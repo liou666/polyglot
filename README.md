@@ -1,11 +1,26 @@
 # <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
 >  AI语言练习应用
 
-Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，使用Vue3+TS技术栈构建，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
+
+<p align="left">
+<a href="https://github.com/liou666/polyglot/releases" target="_blank">
+<img alt="macOS" src="https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple&logoColor=white" />
+</a>
+<a href="https://github.com/liou666/polyglot/releases" target="_blank">
+<img alt="Windows" src="https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows&logoColor=white" />
+</a>
+<a href="https://github.com/liou666/polyglot/releases" target="_blank">
+<img alt="Downloads" src="https://img.shields.io/github/downloads/liou666/polyglot/total.svg?style=flat" />
+</a>
+</p>
+
+Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
+
 
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.2.1.png">
 </p>
+
 
 ## 下载
 - **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.1/Polyglot_0.2.1.dmg)
@@ -75,7 +90,7 @@ pnpm dev
 
 
 ## 协议
-[MIT License](./LICENSE)
+[GNU General Public License v3.0](./LICENSE)
 
 # 贡献者
 <div>
