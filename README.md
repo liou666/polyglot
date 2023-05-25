@@ -148,12 +148,14 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 <table>
   <tr>
+    <th>爱发电</th>
     <th>微信</th>
     <th>支付宝</th>
   </tr>
   <tr>
-    <td><img width="200" height="300" alt="" src="./public/donate/weixin.jpg"></td>
-    <td><img width="200" height="300"  alt="" src="./public/donate/zhifubao.jpg"></td>
+   <td><a target="_blank" href="https://afdian.net/a/liou666">爱发电</a</td>
+    <td><img width="300" height="300" alt="" src="./public/donate/zsm.jpg"></td>
+    <td><img width="300" height="300"  alt="" src="./public/donate/alipay.jpg"></td>
   </tr>
 </table>
 
