@@ -144,7 +144,7 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 </details>
 
-## 捐赠
+<!-- ## 捐赠
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
 
 <table>
@@ -159,11 +159,17 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
     <td><img width="300" height="300"  alt="" src="./public/donate/alipay.jpg"></td>
   </tr>
 </table>
-
+ -->
 
 ## 讨论与交流
 
-<img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG">
 
 
+
+<table>
+  <tr>
+    <td><img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG"></td>
+    <td><img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.png"></td>
+  </tr>
+</table>
 
