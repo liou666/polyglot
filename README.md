@@ -17,7 +17,7 @@
 </a>
 </p>
 
-Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 
+Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 ( [📺 B站视频链接](https://www.bilibili.com/video/BV1Ym4y1a7et) )
 
 
 <p align="center">
