@@ -10,37 +10,42 @@
 <img alt="Windows" src="https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows&logoColor=white" />
 </a>
 <a href="https://github.com/liou666/polyglot/releases" target="_blank">
+<img alt="Linux" src="https://img.shields.io/badge/-linux-red?style=flat-square&logo=linux&logoColor=white" />
+</a>
+<a href="https://github.com/liou666/polyglot/releases" target="_blank">
 <img alt="Downloads" src="https://img.shields.io/github/downloads/liou666/polyglot/total.svg?style=flat" />
 </a>
 </p>
 
-Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 [（📺B站链接）](https://www.bilibili.com/video/BV16L411h7kS/)
+Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 
 
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.2.1.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.3.0-1.png">
 </p>
 
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.1/Polyglot_0.2.1.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.2.1/Polyglot_0.2.1.exe)
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.0/Polyglot_0.3.0.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.0/Polyglot_0.3.0.exe)
+- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/untagged-0e09e40839f5a5e15a14/Polyglot_0.3.0.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
 ## 软件截图
 
 <details>
 <summary>展开</summary>
 
+
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new_chat.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/voice-1.png">
 </p>
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/voice.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new_chat1.png">
 </p>
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting1.png">
 </p>
 
 </details>
@@ -57,7 +62,7 @@ Polyglot是一款多平台的桌面端应用程序。基于ChatGPT和Azure人工
 - [x] 语音识别支持快捷键操作(按住空格键开始语音识别，放开空格键结束语音识别)
 - [x] 支持用户配置自定义对话场景
 - [x] 自身语音支持回听
-- [ ] 支持Azure openai api、claude api服务
+- [ ] 支持Azure openai api、claude api服务（Azure openai api已支持）
 - [x] [Web版本](https://polyglotai.xyz)
 
 ## 使用方法
@@ -102,15 +107,9 @@ pnpm dev
 
 ## 常见问题
 
-<details>
-<summary>1. 我所在的地区有网络限制，怎么正常使用？</summary>
-
-v0.2.0版本已兼容了api2d的接口，可以考虑使用[api2d](https://api2d.com/)的国内接口。另外项目支持设置代理，也可以通过自己搭建国内代理进行使用。
-
-</details>
 
 <details>
-<summary>2. MacOS 提示无法打开“Polyglot”，因为Apple无法检查其是否包含恶意软件。</summary>
+<summary>1. MacOS 提示无法打开“Polyglot”，因为Apple无法检查其是否包含恶意软件。</summary>
 
 这个错误因为 macOS 操作系统中的 Gatekeeper 安全功能阻止了应用程序的运行。
 要解决此问题，请按照以下步骤操作：
@@ -132,7 +131,7 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 运行命令后，应用程序将被添加到白名单中，Gatekeeper 将不再阻止其运行。
 </details>
 <details>
-<summary>3. azure语音服务如何申请？</summary>
+<summary>2. azure语音服务如何申请？</summary>
 
 要申请 Azure 语音服务的 API 密钥，可以按照以下步骤进行：
 
