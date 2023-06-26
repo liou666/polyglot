@@ -2,16 +2,17 @@
 import { v4 as uuid } from 'uuid'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import Avatar from '@/components/Avatar.vue'
-
 import { supportLanguageMap, voiceStyleMap } from '@/config'
 import { useConversationStore } from '@/stores'
 import { getAvatarUrl } from '@/utils'
+import {spawn} from "child_process";
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
+const say = require('say')
 const modules = import.meta.glob(['../../../assets/avatars/*', '!../../../assets/avatars/self.png'])
 const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../../../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
-
+const { voiceApiName } = useGlobalSetting()
 const store = useConversationStore()
 const { ssmlToSpeak, isSynthesizing, isPlaying } = useSpeechService({ isFetchAllVoice: false })
 const allLanguages = computed(() => [...new Set(allVoices.map(v => v.locale))].filter(l => Object.keys(supportLanguageMap).includes(l)))
@@ -26,7 +27,15 @@ const voiceValue = ref<string[]>(['en-US', 'en-US-JennyNeural', 'chat'])
 const selectLanguage = computed(() => voiceValue.value[0])
 const selectVoiceName = computed(() => voiceValue.value[1])
 const selectStyle = computed(() => voiceValue.value[2])
-const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
+const canAdd = computed(() => {
+      if (voiceApiName.value === 'Azure') {
+        return !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value)
+      }
+      if (voiceApiName.value === 'Windows TTS') {
+        return !!(selectLanguage.value && desc.value && name.value)
+      }
+      return false
+})
 
 interface Option {
   label: string
@@ -37,24 +46,41 @@ interface Option {
 const options = ref<Option[] >([])
 
 onMounted(() => {
-  allLanguages.value.forEach((item) => {
-    const children: Option[] = []
-    allVoices.forEach((v) => {
-      if (v.locale === item) {
-        children.push({
-          value: v.shortName,
-          label: `${v.gender === 1 ? '🧒🏻' : '👦🏻'} ${v.localName}`,
-          children: v.styleList?.map(x => ({ label: voiceStyleMap[x], value: x })) || [],
+  if (voiceApiName.value === 'Azure') {
+    allLanguages.value.forEach((item) => {
+      const children: Option[] = []
+      allVoices.forEach((v) => {
+        if (v.locale === item) {
+          children.push({
+            value: v.shortName,
+            label: `${v.gender === 1 ? '🧒🏻' : '👦🏻'} ${v.localName}`,
+            children: v.styleList?.map(x => ({ label: voiceStyleMap[x], value: x })) || [],
+          })
+        }
+      })
+
+      options.value.push({
+        value: item,
+        label: supportLanguageMap[item],
+        children,
+      })
+    })
+  }
+  if (voiceApiName.value === 'Windows TTS') {
+    say.getInstalledVoices(<errorCallback>(err: any, res: any) => {
+      if (res.length > 0) {
+        res.forEach((item: any) => {
+          options.value.push({
+            value: item,
+            label: item,
+          })
         })
+        voiceValue.value = [options.value[0].value, '', '']
+      } else {
+        alert('请检查windows语音配置')
       }
     })
-
-    options.value.push({
-      value: item,
-      label: supportLanguageMap[item],
-      children,
-    })
-  })
+  }
 })
 
 const randomAvatar = getAvatarUrl(avatarList.value[Math.random() * avatarList.value.length | 0]) // 随机默认选择一个头像
@@ -62,7 +88,19 @@ const imageUrl = ref(randomAvatar)
 
 const addChat = (event: any) => {
   event.preventDefault()
+  debugger
   const uid = uuid()
+  console.log({
+    language: selectLanguage.value,
+    voice: selectVoiceName.value,
+    desc: desc.value,
+    name: name.value,
+    key: uid,
+    avatar: imageUrl.value,
+    rate: +rate.value,
+    isDefault: false,
+    voiceStyle: selectStyle.value,
+  })
   store.addConversation({
     language: selectLanguage.value,
     voice: selectVoiceName.value,
@@ -83,8 +121,9 @@ const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 const previewSpeech = () => {
-  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value })
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value },voiceApiName.value)
 }
+
 </script>
 
 <template>
@@ -110,6 +149,16 @@ const previewSpeech = () => {
     <div flex>
       <label for="">语音</label>
       <div w-55 flex>
+        <el-tooltip
+            v-if="'Windows TTS' === voiceApiName"
+            class="box-item"
+            effect="dark"
+            content="使用 Windows TTS 时, 语音风格无效且需要自己判断当前语音语种
+            添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音]"
+            placement="bottom"
+        >
+          <i icon-btn i-carbon:information-square />
+        </el-tooltip>
         <ElCascader v-model="voiceValue" filterable placeholder="select voice" style="width: 220px;" :options="options" />
       </div>
     </div>

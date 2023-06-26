@@ -7,6 +7,7 @@ import {
   SpeechRecognizer,
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
+import {spawn} from "child_process";
 
 const defaultAzureRegion = import.meta.env.VITE_REGION
 const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
@@ -191,17 +192,17 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     })
   }
 
-  const ssmlToSpeak = async (text: string, { voice, voiceRate, lang, voiceStyle }: { voice?: string; voiceRate?: number; lang?: string; voiceStyle?: string } = {}) => {
-    applySynthesizerConfiguration()
+  const ssmlToSpeak = async (text: string, { voice, voiceRate, lang, voiceStyle }: { voice?: string; voiceRate?: number; lang?: string; voiceStyle?: string } = {}, voiceApiName = 'Azure') => {
+    if (voiceApiName === 'Azure') {
+      applySynthesizerConfiguration()
 
-    isSynthesizing.value = true
-    isSynthesError.value = false
-    const targetLang = lang || speechConfig.value.speechSynthesisLanguage
-    const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
-    const targetRate = voiceRate || rate.value
-    const targetFeel = voiceStyle || style.value
-
-    const ssml = `
+      isSynthesizing.value = true
+      isSynthesError.value = false
+      const targetLang = lang || speechConfig.value.speechSynthesisLanguage
+      const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
+      const targetRate = voiceRate || rate.value
+      const targetFeel = voiceStyle || style.value
+      const ssml = `
     <speak version="1.0"  xmlns:mstts="https://www.w3.org/2001/mstts" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
       <voice name="${targetVoice}">
         <prosody rate="${targetRate}">
@@ -211,21 +212,39 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
         </prosody>
       </voice>
     </speak>`
-    synthesizer.value.SynthesisCanceled = (s, e) => {
-      isSynthesError.value = true
-      alert(`语音合成失败,请检查语音配置：${e.result.errorDetails}, `)
-      // console.error(`语音合成失败,请检查语音配置：${e.result.errorDetails}`)
+      synthesizer.value.SynthesisCanceled = (s, e) => {
+        isSynthesError.value = true
+        alert(`语音合成失败,请检查语音配置：${e.result.errorDetails}, `)
+        // console.error(`语音合成失败,请检查语音配置：${e.result.errorDetails}`)
+      }
+
+      console.log('isSynthesizing')
+      synthesizer.value.speakSsmlAsync(ssml, () => {
+        console.log('isSynthesiz end')
+
+        stopTextToSpeak()
+      }, (err) => {
+        console.error('播放失败', err)
+        stopTextToSpeak()
+      })
     }
-
-    console.log('isSynthesizing')
-    synthesizer.value.speakSsmlAsync(ssml, () => {
-      console.log('isSynthesiz end')
-
-      stopTextToSpeak()
-    }, (err) => {
-      console.error('播放失败', err)
-      stopTextToSpeak()
-    })
+    if (voiceApiName === 'Windows TTS') {
+      isSynthesizing.value = true
+      isSynthesError.value = false
+      const childProcess = spawn('powershell.exe', [
+        '-command',
+        `Add-Type -AssemblyName System.speech; $synth = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer;$synth.Rate=${voiceRate};$synth.SelectVoice('${lang}');$synth.Speak('${text}');`,
+      ])
+      childProcess.on('error', (err) => {
+        isSynthesError.value = true
+        stopTextToSpeak()
+        alert(`语音合成失败,请检查语音配置：${err}, `)
+      })
+      childProcess.on('close', (code) => {
+        stopTextToSpeak()
+        console.log(`子进程已退出，返回代码 ${code}`)
+      })
+    }
   }
 
   // 停止语音合成
