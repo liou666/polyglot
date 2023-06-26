@@ -70,16 +70,26 @@ onMounted(() => {
         res.forEach((item: string[]) => {
           // 0 - Chinese DisplayName 1 - zh-CN 2 - Gender 3 - Age 4 - Name
           const name = item[4].split(' ')[1]
-          options.value.push({
-            value: item[1],
-            label: supportLanguageMap[item[1]],
-            children: [
-              {
-                value: item[4],
-                label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
-              },
-            ],
-          })
+          // 合并同一语言的不同声音
+          const index = options.value.findIndex(x => x.value === item[1])
+          if (index === -1) {
+            options.value.push({
+              value: item[1],
+              label: supportLanguageMap[item[1]],
+              children: [
+                {
+                  value: item[4],
+                  label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+                },
+              ],
+            })
+          }
+          else {
+            options.value[index].children.push({
+              value: item[4],
+              label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+            })
+          }
         })
         voiceValue.value = [options.value[0].value, options.value[0].children[0].value, '']
       }
