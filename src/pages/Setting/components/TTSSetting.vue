@@ -27,12 +27,12 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           <option value="Azure">
             Azure
           </option>
-          <option value="Windows TTS" v-if="os.type().indexOf('Windows') >= 0">
+          <option v-if="os.type().indexOf('Windows') >= 0" value="Windows TTS">
             Windows TTS
           </option>
         </select>
       </div>
-      <div class="section-item" v-if="'Azure' === voiceApiName">
+      <div v-if="'Azure' === voiceApiName" class="section-item">
         <label my-1 block for="">Azure 区域</label>
         <select
           v-model="azureRegion"
@@ -42,7 +42,7 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           </option>
         </select>
       </div>
-      <div class="section-item" v-if="'Azure' === voiceApiName">
+      <div v-if="'Azure' === voiceApiName" class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">Azure Access Key</label>
           <el-tooltip
@@ -55,7 +55,7 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
         </div>
         <Password v-model:value="azureKey" placeholder="azure key" />
       </div>
-      <div class="section-item" v-if="'Azure' === voiceApiName">
+      <div v-if="'Azure' === voiceApiName" class="section-item">
         <div center-y>
           <label mr-1 my-1 block for="">访问密码</label>
           <el-tooltip

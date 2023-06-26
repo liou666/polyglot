@@ -1,3 +1,7 @@
+import childProcess from 'child_process'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const once = require('one-time')
+
 export const getAvatarUrl = (filename: string) => {
   return new URL(`../assets/avatars/${filename}`, import.meta.url).href
 }
@@ -50,4 +54,34 @@ export function base64ToBlob(dataUrl: string) {
   while (n--)
     u8arr[n] = bstr.charCodeAt(n)
   return new Blob([u8arr], { type: mime })
+}
+
+export function getInstalledVoices(callback = (voices: string[][]) => {}) {
+  if (typeof callback !== 'function')
+    callback = () => {}
+  callback = once(callback)
+  let child = null
+  const args = [
+    'Add-Type -AssemblyName System.speech;$speak = New-Object System.Speech.Synthesis.SpeechSynthesizer;$speak.GetInstalledVoices() | %   {$_.VoiceInfo.Culture.displayName , $_.VoiceInfo.Culture.Name, $_.VoiceInfo.Gender,$_.VoiceInfo.Age,$_.VoiceInfo.Name}',
+  ]
+  let outputs = ''
+  let voices: string[] = []
+  let splitVoices: string[][] = []
+  child = childProcess.spawn('powershell', args)
+  child.stdout.on('data', (data) => {
+    outputs += data
+  })
+  child.addListener('exit', (code, signal) => {
+    if (outputs.length > 0) {
+      voices = outputs.split('\r\n')
+      voices = (voices[voices.length - 1] === '') ? voices.slice(0, voices.length - 1) : voices
+      splitVoices = Array.from({ length: Math.ceil(voices.length / 5) }, (value, index) =>
+        voices.slice(index * 5, index * 5 + 5),
+      )
+    }
+    child = null
+    callback(splitVoices)
+  })
+
+  child.stdin.end()
 }

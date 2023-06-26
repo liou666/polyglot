@@ -1,3 +1,4 @@
+import { spawn } from 'child_process'
 import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import {
   AudioConfig,
@@ -7,8 +8,6 @@ import {
   SpeechRecognizer,
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
-import {spawn} from "child_process";
-
 const defaultAzureRegion = import.meta.env.VITE_REGION
 const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
 const accessPassword = import.meta.env.VITE_TTS_ACCESS_PASSWORD
@@ -193,15 +192,15 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   }
 
   const ssmlToSpeak = async (text: string, { voice, voiceRate, lang, voiceStyle }: { voice?: string; voiceRate?: number; lang?: string; voiceStyle?: string } = {}, voiceApiName = 'Azure') => {
+    const targetLang = lang || speechConfig.value.speechSynthesisLanguage
+    const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
+    const targetRate = voiceRate || rate.value
+    const targetFeel = voiceStyle || style.value
     if (voiceApiName === 'Azure') {
       applySynthesizerConfiguration()
 
       isSynthesizing.value = true
       isSynthesError.value = false
-      const targetLang = lang || speechConfig.value.speechSynthesisLanguage
-      const targetVoice = voice || speechConfig.value.speechSynthesisVoiceName
-      const targetRate = voiceRate || rate.value
-      const targetFeel = voiceStyle || style.value
       const ssml = `
     <speak version="1.0"  xmlns:mstts="https://www.w3.org/2001/mstts" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="${targetLang}">
       <voice name="${targetVoice}">
@@ -233,15 +232,16 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       isSynthesError.value = false
       const childProcess = spawn('powershell.exe', [
         '-command',
-        `Add-Type -AssemblyName System.speech; $synth = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer;$synth.Rate=${voiceRate};$synth.SelectVoice('${lang}');$synth.Speak('${text}');`,
+        `Add-Type -AssemblyName System.speech; $synth = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer;$synth.Rate=${targetRate};$synth.SelectVoice('${targetVoice}');$synth.Speak('${text}');`,
       ])
       childProcess.on('error', (err) => {
         isSynthesError.value = true
-        stopTextToSpeak()
-        alert(`语音合成失败,请检查语音配置：${err}, `)
+        isSynthesizing.value = false
+        alert(`语音合成失败,请检查语音配置：${err}`)
       })
       childProcess.on('close', (code) => {
-        stopTextToSpeak()
+        isSynthesizing.value = false
+        count.value++ // 触发实例的重新创建
         console.log(`子进程已退出，返回代码 ${code}`)
       })
     }

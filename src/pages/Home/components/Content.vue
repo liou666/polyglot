@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar,voiceApiName, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
+const { selfAvatar, voiceApiName, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
 
 const {
   language,
@@ -210,7 +210,7 @@ function speakByAI(content: string, index: number) {
   }
   speakIndex.value = index
   text.value = content
-  ssmlToSpeak(content, { voice: currentVoice.value, lang: currentLanguage.value, voiceRate: +currentRate.value, voiceStyle: currentVoiceStyle.value },voiceApiName.value)
+  ssmlToSpeak(content, { voice: currentVoice.value, lang: currentLanguage.value, voiceRate: +currentRate.value, voiceStyle: currentVoiceStyle.value }, voiceApiName.value)
 }
 
 const recognize = async () => {

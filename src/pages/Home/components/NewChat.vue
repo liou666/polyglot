@@ -4,11 +4,9 @@ import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import Avatar from '@/components/Avatar.vue'
 import { supportLanguageMap, voiceStyleMap } from '@/config'
 import { useConversationStore } from '@/stores'
-import { getAvatarUrl } from '@/utils'
-import {spawn} from "child_process";
+import { getAvatarUrl, getInstalledVoices } from '@/utils'
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
-const say = require('say')
 const modules = import.meta.glob(['../../../assets/avatars/*', '!../../../assets/avatars/self.png'])
 const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../../../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
@@ -28,13 +26,13 @@ const selectLanguage = computed(() => voiceValue.value[0])
 const selectVoiceName = computed(() => voiceValue.value[1])
 const selectStyle = computed(() => voiceValue.value[2])
 const canAdd = computed(() => {
-      if (voiceApiName.value === 'Azure') {
-        return !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value)
-      }
-      if (voiceApiName.value === 'Windows TTS') {
-        return !!(selectLanguage.value && desc.value && name.value)
-      }
-      return false
+  if (voiceApiName.value === 'Azure')
+    return !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value)
+
+  if (voiceApiName.value === 'Windows TTS')
+    return !!(selectLanguage.value && desc.value && name.value)
+
+  return false
 })
 
 interface Option {
@@ -67,17 +65,26 @@ onMounted(() => {
     })
   }
   if (voiceApiName.value === 'Windows TTS') {
-    say.getInstalledVoices(<errorCallback>(err: any, res: any) => {
+    getInstalledVoices((res) => {
       if (res.length > 0) {
-        res.forEach((item: any) => {
+        res.forEach((item: string[]) => {
+          // 0 - Chinese DisplayName 1 - zh-CN 2 - Gender 3 - Age 4 - Name
+          const name = item[4].split(' ')[1]
           options.value.push({
-            value: item,
-            label: item,
+            value: item[1],
+            label: supportLanguageMap[item[1]],
+            children: [
+              {
+                value: item[4],
+                label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+              },
+            ],
           })
         })
-        voiceValue.value = [options.value[0].value, '', '']
-      } else {
-        alert('请检查windows语音配置')
+        voiceValue.value = [options.value[0].value, options.value[0].children[0].value, '']
+      }
+      else {
+        alert('请检查Windows语音配置')
       }
     })
   }
@@ -88,19 +95,7 @@ const imageUrl = ref(randomAvatar)
 
 const addChat = (event: any) => {
   event.preventDefault()
-  debugger
   const uid = uuid()
-  console.log({
-    language: selectLanguage.value,
-    voice: selectVoiceName.value,
-    desc: desc.value,
-    name: name.value,
-    key: uid,
-    avatar: imageUrl.value,
-    rate: +rate.value,
-    isDefault: false,
-    voiceStyle: selectStyle.value,
-  })
   store.addConversation({
     language: selectLanguage.value,
     voice: selectVoiceName.value,
@@ -121,9 +116,8 @@ const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 const previewSpeech = () => {
-  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value },voiceApiName.value)
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value }, voiceApiName.value)
 }
-
 </script>
 
 <template>
@@ -150,12 +144,11 @@ const previewSpeech = () => {
       <label for="">语音</label>
       <div w-55 flex>
         <el-tooltip
-            v-if="'Windows TTS' === voiceApiName"
-            class="box-item"
-            effect="dark"
-            content="使用 Windows TTS 时, 语音风格无效且需要自己判断当前语音语种
-            添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音]"
-            placement="bottom"
+          v-if="'Windows TTS' === voiceApiName"
+          class="box-item"
+          effect="dark"
+          content="使用 Windows TTS 时，语音风格无效。添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音]"
+          placement="bottom"
         >
           <i icon-btn i-carbon:information-square />
         </el-tooltip>
