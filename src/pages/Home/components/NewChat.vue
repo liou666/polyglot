@@ -4,9 +4,11 @@ import type { VoiceInfo } from 'microsoft-cognitiveservices-speech-sdk'
 import Avatar from '@/components/Avatar.vue'
 import { supportLanguageMap, voiceStyleMap } from '@/config'
 import { useConversationStore } from '@/stores'
-import { getAvatarUrl, getInstalledVoices } from '@/utils'
+import { getAvatarUrl, getInstalledVoices, getMacInstalledVoices } from '@/utils'
 const { allVoices } = defineProps<{ allVoices: VoiceInfo[] }>()
 const emits = defineEmits(['close'])
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const os = require('os')
 const modules = import.meta.glob(['../../../assets/avatars/*', '!../../../assets/avatars/self.png'])
 const avatarList = ref<string[]>(Object.keys(modules).map(path => path.replace('../../../assets/avatars/', '')))
 const currentAvatarIndex = ref(Math.random() * avatarList.value.length | 0)
@@ -25,14 +27,10 @@ const voiceValue = ref<string[]>(['en-US', 'en-US-JennyNeural', 'chat'])
 const selectLanguage = computed(() => voiceValue.value[0])
 const selectVoiceName = computed(() => voiceValue.value[1])
 const selectStyle = computed(() => voiceValue.value[2])
+const selectPlatform = ref('Azure')
+
 const canAdd = computed(() => {
-  if (voiceApiName.value === 'Azure')
-    return !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value)
-
-  if (voiceApiName.value === 'Windows TTS')
-    return !!(selectLanguage.value && desc.value && name.value)
-
-  return false
+  return !!(selectLanguage.value && desc.value && name.value)
 })
 
 interface Option {
@@ -43,8 +41,9 @@ interface Option {
 
 const options = ref<Option[] >([])
 
-onMounted(() => {
-  if (voiceApiName.value === 'Azure') {
+const initOptions = () => {
+  console.log(selectPlatform.value)
+  if (selectPlatform.value === 'Azure') {
     allLanguages.value.forEach((item) => {
       const children: Option[] = []
       allVoices.forEach((v) => {
@@ -56,12 +55,44 @@ onMounted(() => {
           })
         }
       })
-
       options.value.push({
         value: item,
         label: supportLanguageMap[item],
         children,
       })
+    })
+  }
+  if (selectPlatform.value === 'MAC TTS') {
+    getMacInstalledVoices((res) => {
+      if (res.length > 0) {
+        res.forEach((item: string[]) => {
+          // 0 - Chinese DisplayName 1 - zh-CN 2 - Gender 3 - Age 4 - Name
+          const name = item[4]
+          // 合并同一语言的不同声音
+          const index = options.value.findIndex(x => x.value === item[1])
+          if (index === -1) {
+            options.value.push({
+              value: item[1],
+              label: supportLanguageMap[item[1]] ? supportLanguageMap[item[1]] : supportLanguageMap[item[1].split('-')[0]],
+              children: [
+                {
+                  value: item[4],
+                  label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+                },
+              ],
+            })
+          }
+          else {
+            options.value[index].children.push({
+              value: item[4],
+              label: `${item[2] === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+            })
+          }
+        })
+      }
+      else {
+        alert('请检查Mac语音配置')
+      }
     })
   }
   if (voiceApiName.value === 'Windows TTS') {
@@ -91,13 +122,21 @@ onMounted(() => {
             })
           }
         })
-        voiceValue.value = [options.value[0].value, options.value[0].children[0].value, '']
       }
       else {
         alert('请检查Windows语音配置')
       }
     })
   }
+}
+
+onMounted(() => {
+  initOptions()
+})
+
+
+watch(selectPlatform, () => {
+  initOptions()
 })
 
 const randomAvatar = getAvatarUrl(avatarList.value[Math.random() * avatarList.value.length | 0]) // 随机默认选择一个头像
@@ -116,6 +155,7 @@ const addChat = (event: any) => {
     rate: +rate.value,
     isDefault: false,
     voiceStyle: selectStyle.value,
+    voicePlatform: selectPlatform.value,
   }, presets.value)
   store.changeCurrentKey(uid)
   emits('close')
@@ -126,7 +166,7 @@ const changeAvatar = () => {
   currentAvatarIndex.value = avatarList.value.length - 1 === currentAvatarIndex.value ? 0 : currentAvatarIndex.value + 1
 }
 const previewSpeech = () => {
-  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value }, voiceApiName.value)
+  ssmlToSpeak(previewText.value, { voice: selectVoiceName.value, lang: selectLanguage.value, voiceRate: +rate.value, voiceStyle: selectStyle.value }, selectPlatform.value)
 }
 </script>
 
@@ -149,6 +189,24 @@ const previewSpeech = () => {
       <label for="">
         场景预设</label>
       <textarea v-model="presets" :rows="4" placeholder="system prompt..." />
+    </div>
+    <div class="flex ml-[-30px]">
+      <label for="">语音平台</label>
+      <div w-55 flex>
+        <select
+          v-model="selectPlatform"
+        >
+          <option value="Azure">
+            Azure
+          </option>
+          <option v-if="os.type().indexOf('Windows') >= 0" value="Windows TTS">
+            Windows TTS
+          </option>
+          <option v-if="os.type().indexOf('Darwin') >= 0" value="MAC TTS">
+            MAC TTS
+          </option>
+        </select>
+      </div>
     </div>
     <div flex>
       <label for="">语音</label>

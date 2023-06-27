@@ -227,19 +227,33 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
         stopTextToSpeak()
       })
     }
-    if (voiceApiName === 'Windows TTS') {
+    if (voiceApiName === 'Windows TTS' || voiceApiName === 'MAC TTS') {
       isSynthesizing.value = true
       isSynthesError.value = false
-      const childProcess = spawn('powershell.exe', [
-        '-command',
-        `Add-Type -AssemblyName System.speech; $synth = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer;$synth.Rate=${targetRate};$synth.SelectVoice('${targetVoice}');$synth.Speak('${text}');`,
-      ])
-      childProcess.on('error', (err) => {
+      let child = null
+      if (voiceApiName === 'Windows TTS') {
+        child = spawn('powershell.exe', [
+          '-command',
+          `Add-Type -AssemblyName System.speech; $synth = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer;$synth.Rate=${targetRate};$synth.SelectVoice('${targetVoice}');$synth.Speak('${text}');`,
+        ])
+      }
+      else {
+        child = spawn('say', [
+          '-v',
+          targetVoice,
+          '-r',
+          // @ts-ignore
+          targetRate,
+          text,
+        ])
+      }
+
+      child.on('error', (err) => {
         isSynthesError.value = true
         isSynthesizing.value = false
         alert(`语音合成失败,请检查语音配置：${err}`)
       })
-      childProcess.on('close', (code) => {
+      child.on('close', (code) => {
         isSynthesizing.value = false
         count.value++ // 触发实例的重新创建
         console.log(`子进程已退出，返回代码 ${code}`)

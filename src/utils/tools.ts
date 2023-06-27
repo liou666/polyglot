@@ -85,3 +85,49 @@ export function getInstalledVoices(callback = (voices: string[][]) => {}) {
 
   child.stdin.end()
 }
+
+export function getMacInstalledVoices(callback = (voices: string[][]) => {}) {
+  if (typeof callback !== 'function')
+    callback = () => {}
+  callback = once(callback)
+  let child = null
+  const args = [
+    '--v=?',
+  ]
+  let outputs = ''
+  let voices: string[] = []
+  const splitVoices: string[][] = []
+
+  child = childProcess.spawn('say', args)
+  child.stdout.on('data', (data) => {
+    outputs += data
+  })
+  child.addListener('exit', (code, signal) => {
+    if (outputs.length > 0) {
+      const temp = []
+      voices = outputs.split('\n')
+      voices = (voices[voices.length - 1] === '') ? voices.slice(0, voices.length - 1) : voices
+
+      voices.forEach((voice) => {
+        const prefix = voice.split('#')[0].trim()
+        const desc = voice.split('#')[1].trim()
+        const temp = prefix.split(' ')
+        const name = temp[0]
+        const lang = temp[temp.length - 1].replace('_', '-')
+
+        splitVoices.push([
+          lang,
+          lang,
+          'Unknown',
+          'Unknown',
+          name,
+        ])
+      })
+    }
+
+    child = null
+    callback(splitVoices)
+  })
+
+  child.stdin.end()
+}

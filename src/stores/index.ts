@@ -30,6 +30,7 @@ export interface Conversation {
   avatar: string // 用户头像
   rate: number // 语速
   voiceStyle: string // 情感
+  voicePlatform: string // 语音平台
   isDefault?: boolean // 系统默认不允许删除
 }
 
