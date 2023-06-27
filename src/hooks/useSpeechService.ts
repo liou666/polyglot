@@ -259,6 +259,18 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
         console.log(`子进程已退出，返回代码 ${code}`)
       })
     }
+    if (voiceApiName === 'Electron TTS') {
+      const speechInstance = new window.SpeechSynthesisUtterance(text)
+      speechInstance.lang = targetLang
+      speechInstance.rate = targetRate // 语速，数值，默认值是1，范围是0.1到10
+      const voices = speechSynthesis.getVoices()
+      const desiredVoice = voices.find(voice => voice.name === targetVoice)
+      if (desiredVoice)
+        speechInstance.voice = desiredVoice // 语音
+      // speechInstance.volume = 100 // 音量
+      // speechInstance.pitch = 1 // 音高 [0,2] 默认 1
+      window.speechSynthesis.speak(speechInstance)
+    }
   }
 
   // 停止语音合成

@@ -126,6 +126,33 @@ const initOptions = () => {
       }
     })
   }
+  if (selectPlatform.value === 'Electron TTS') {
+    const res = window.speechSynthesis.getVoices()
+
+    res.forEach((item) => {
+      const name = item.name.split('-')[0].trim().split(' ')[1]
+      item.gender = 'Unknown'
+      const index = options.value.findIndex(x => x.value === item.lang)
+      if (index === -1) {
+        options.value.push({
+          value: item.lang,
+          label: supportLanguageMap[item.lang],
+          children: [
+            {
+              value: item.name,
+              label: `${item.gender === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+            },
+          ],
+        })
+      }
+      else {
+        options.value[index].children.push({
+          value: item.name,
+          label: `${item.gender === 'Male' ? '🧒🏻' : '👦🏻'} ${name}`,
+        })
+      }
+    })
+  }
 }
 
 onMounted(() => {
@@ -193,6 +220,9 @@ const previewSpeech = () => {
         <select
           v-model="selectPlatform"
         >
+          <!--          Windows TTS ~ Electron 调用 powershell 命令实现 Text To Speech,添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音] -->
+          <!--          MAC TTS ~  Electron 调用 say 命令实现 Text To Speech -->
+          <!--          Electron TTS ~ Electron 调用 Html5 SpeechSynthesisUtterance 接口实现 Text To Speech -->
           <option value="Azure">
             Azure
           </option>
@@ -202,21 +232,15 @@ const previewSpeech = () => {
           <option v-if="os.type().indexOf('Darwin') >= 0" value="MAC TTS">
             MAC TTS
           </option>
+          <option value="Electron TTS">
+            Electron TTS
+          </option>
         </select>
       </div>
     </div>
     <div flex>
       <label for="">语音</label>
       <div w-55 flex>
-        <el-tooltip
-          v-if="'Windows TTS' === selectPlatform.value"
-          class="box-item"
-          effect="dark"
-          content="使用 Windows TTS 时，语音风格无效。添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音]"
-          placement="bottom"
-        >
-          <i icon-btn i-carbon:information-square />
-        </el-tooltip>
         <ElCascader v-model="voiceValue" filterable placeholder="select voice" style="width: 220px;" :options="options" />
       </div>
     </div>
