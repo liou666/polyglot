@@ -130,13 +130,17 @@ const initOptions = () => {
     const res = window.speechSynthesis.getVoices()
 
     res.forEach((item) => {
-      const name = item.name.split('-')[0].trim().split(' ')[1]
+      let name = ''
+      if (os.type().indexOf('Windows') >= 0)
+        name = item.name.split('-')[0].trim().split(' ')[1]
+      else
+        name = item.name
       item.gender = 'Unknown'
       const index = options.value.findIndex(x => x.value === item.lang)
       if (index === -1) {
         options.value.push({
           value: item.lang,
-          label: supportLanguageMap[item.lang],
+          label: supportLanguageMap[item.lang] ? supportLanguageMap[item.lang] : supportLanguageMap[item.lang.split('-')[0]],
           children: [
             {
               value: item.name,
