@@ -28,10 +28,7 @@ const selectLanguage = computed(() => voiceValue.value[0])
 const selectVoiceName = computed(() => voiceValue.value[1])
 const selectStyle = computed(() => voiceValue.value[2])
 const selectPlatform = ref('Azure')
-
-const canAdd = computed(() => {
-  return !!(selectLanguage.value && desc.value && name.value)
-})
+const canAdd = computed(() => !!(selectLanguage.value && selectVoiceName.value && desc.value && name.value))
 
 interface Option {
   label: string
@@ -42,7 +39,8 @@ interface Option {
 const options = ref<Option[] >([])
 
 const initOptions = () => {
-  console.log(selectPlatform.value)
+  options.value = []
+
   if (selectPlatform.value === 'Azure') {
     allLanguages.value.forEach((item) => {
       const children: Option[] = []
@@ -95,7 +93,7 @@ const initOptions = () => {
       }
     })
   }
-  if (voiceApiName.value === 'Windows TTS') {
+  if (selectPlatform.value === 'Windows TTS') {
     getInstalledVoices((res) => {
       if (res.length > 0) {
         res.forEach((item: string[]) => {
@@ -133,7 +131,6 @@ const initOptions = () => {
 onMounted(() => {
   initOptions()
 })
-
 
 watch(selectPlatform, () => {
   initOptions()
@@ -212,7 +209,7 @@ const previewSpeech = () => {
       <label for="">语音</label>
       <div w-55 flex>
         <el-tooltip
-          v-if="'Windows TTS' === voiceApiName"
+          v-if="'Windows TTS' === selectPlatform.value"
           class="box-item"
           effect="dark"
           content="使用 Windows TTS 时，语音风格无效。添加更多语音请前往 [Windows设置]-[时间和语言]-[语言]-[添加语音]"

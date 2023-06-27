@@ -102,9 +102,8 @@ export function getMacInstalledVoices(callback = (voices: string[][]) => {}) {
   child.stdout.on('data', (data) => {
     outputs += data
   })
-  child.addListener('exit', (code, signal) => {
+  child.addListener('exit', () => {
     if (outputs.length > 0) {
-      const temp = []
       voices = outputs.split('\n')
       voices = (voices[voices.length - 1] === '') ? voices.slice(0, voices.length - 1) : voices
 
