@@ -17,7 +17,7 @@
 </a>
 </p>
 
-Polyglot是一款跨平台的桌面端应用程序。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 
+Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 ( [📺 B站视频链接](https://www.bilibili.com/video/BV1Ym4y1a7et) )
 
 
 <p align="center">
@@ -26,10 +26,10 @@ Polyglot是一款跨平台的桌面端应用程序。基于ChatGPT和Azure人工
 
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.0/Polyglot_0.3.0.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.0/Polyglot_0.3.0.exe)
-- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/untagged-0e09e40839f5a5e15a14/Polyglot_0.3.0.AppImage)
-<!-- - **Web版本**： [在线地址](https://polyglotai.xyz) -->
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.1/Polyglot_0.3.1.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.1/Polyglot_0.3.1.exe)
+- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/untagged-0e09e40839f5a5e15a14/Polyglot_0.3.1.AppImage)
+- **Web版本**： [在线地址](https://polyglotai.xyz)
 ## 软件截图
 
 <details>
@@ -90,9 +90,6 @@ mv .env.example .env
 pnpm dev
 ```
 
-
-## 贡献
-如果您有任何建议或意见，欢迎提出 [Issues](https://github.com/liou666/polyglot/issues) 或 [ Pull Request](https://github.com/liou666/polyglot/pulls)。
 
 
 ## 协议

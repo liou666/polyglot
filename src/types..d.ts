@@ -30,4 +30,5 @@ interface ImagePayload {
 
 interface ChatMessageWithAudioUrl extends ChatMessage {
   audioBlob?: string //base64
+  isBlur?:  boolean
 }
