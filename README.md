@@ -26,9 +26,9 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.1/Polyglot_0.3.1.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.1/Polyglot_0.3.1.exe)
-- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.1/Polyglot_0.3.1.AppImage)
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.exe)
+- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
 ## 软件截图
 <details>
@@ -62,7 +62,9 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 - [x] 支持用户配置自定义对话场景
 - [x] 自身语音支持回听
 - [ ] 支持Azure openai api、claude api服务（Azure openai api已支持）
-- [x] [Web版本](https://polyglotai.xyz)
+- [x] [Web版本](https://polyglotai1.xyz) (目前对手机移动端的适配兼容性不高！)
+- [x] 支持AI回复内容模糊处理
+- [x] 支持语音播放时根据播放进度高亮对应单词
 
 ## 使用方法
 + 设置[OpenAI Key](https://platform.openai.com/account/api-keys)
