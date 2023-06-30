@@ -21,7 +21,7 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/0.3.0-1.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/main1.png">
 </p>
 
 
@@ -36,15 +36,21 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/voice-1.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new.png">
 </p>
 
-<p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new_chat1.png">
-</p>
+<!-- <p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/main1-light.png">
+</p> -->
 
 <p align="center">
-  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting1.png">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting_chat.png">
+</p>
+<p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/setting_voice.png">
+</p>
+<p align="center">
+  <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/export.png">
 </p>
 
 </details>
