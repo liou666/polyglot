@@ -26,10 +26,11 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.exe)
-- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.2/Polyglot_0.3.2.AppImage)
+- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.3/Polyglot_0.3.3.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.3/Polyglot_0.3.3.exe)
+- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.3/Polyglot_0.3.3.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
+
 ## 软件截图
 <details>
 <summary>展开</summary>
