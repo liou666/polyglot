@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { azureRegions } from '@/config'
-const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voiceApiName } = useGlobalSetting()
+import { azureRegions, awsRegions } from '@/config'
+const { awsRegion,awsCognitoIdentityId,awsSecretKey, azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voiceApiName } = useGlobalSetting()
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           <el-tooltip
             class="box-item"
             effect="dark"
-            content="目前仅支持Azure服务"
+            content="目前仅支持Azure, AWS服务"
             placement="bottom"
           >
             <i icon-btn i-carbon:information-square />
@@ -25,9 +25,36 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           <option value="Azure">
             Azure
           </option>
+          <option value="AWS">
+            AWS
+          </option>
         </select>
       </div>
-      <div class="section-item">
+      <div class="section-item" v-show="voiceApiName=='AWS'">
+        <label my-1 block for="">AWS 区域</label>
+        <select
+          v-model="awsRegion"
+        >
+          <option v-for="item in awsRegions" :key="item" :value="item">
+            {{ item }}
+          </option>
+        </select>
+      </div>
+      <div class="section-item" v-show="voiceApiName=='AWS'">
+        <div center-y>
+          <label mr-1 my-1 block for="">AWS Cognito Identity Pool ID</label>
+          <el-tooltip
+            effect="dark"
+            content="使用自己的AWS Cognito Identity Pool ID"
+            placement="bottom"
+          >
+            <i icon-btn i-carbon:information-square />
+          </el-tooltip>
+        </div>
+        <Password v-model:value="awsCognitoIdentityId" placeholder="AWS Cognito Identity Pool ID" />
+      </div>
+       
+      <div class="section-item" v-show="voiceApiName=='Azure'">
         <label my-1 block for="">Azure 区域</label>
         <select
           v-model="azureRegion"
@@ -37,7 +64,7 @@ const { azureRegion, azureKey, isAlwaysRecognition, ttsPassword, autoPlay, voice
           </option>
         </select>
       </div>
-      <div class="section-item">
+      <div class="section-item" v-show="voiceApiName=='Azure'">
         <div center-y>
           <label mr-1 my-1 block for="">Azure Access Key</label>
           <el-tooltip
