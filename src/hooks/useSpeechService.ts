@@ -8,6 +8,16 @@ import {
   SpeechSynthesizer,
 } from 'microsoft-cognitiveservices-speech-sdk'
 
+import MicrophoneStream from 'microphone-stream';
+import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
+import {fromCognitoIdentityPool} from "@aws-sdk/credential-provider-cognito-identity";
+import { Polly,SynthesizeSpeechInput,DescribeVoicesCommand } from "@aws-sdk/client-polly";
+import {
+  TranscribeStreamingClient,
+  StartStreamTranscriptionCommand,
+} from '@aws-sdk/client-transcribe-streaming';
+
+
 const defaultAzureRegion = import.meta.env.VITE_REGION
 const defaultAzureKey = import.meta.env.VITE_SCRIPTION_KEY
 const accessPassword = import.meta.env.VITE_TTS_ACCESS_PASSWORD
@@ -17,8 +27,13 @@ interface Config {
   isFetchAllVoice?: boolean
 }
 export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'zh-CN', 'zh-HK', 'ko-KR', 'de-DE'], isFetchAllVoice = true }: Config = {}) => {
-  const { azureKey, azureRegion, ttsPassword } = useGlobalSetting()
+  const { azureKey, azureRegion, ttsPassword,voiceApiName } = useGlobalSetting()
+  const { awsCognitoIdentityId, awsRegion, } = useGlobalSetting()
 
+
+  if(voiceApiName.value==="AWS"){
+    isFetchAllVoice=false;
+  }
   const resultAzureKey = computed(() => {
     if (!azureKey.value) {
       if (accessPassword !== ttsPassword.value)
@@ -58,6 +73,7 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
   const audioBlob = ref<Blob>(new Blob())
 
   const allVoices = ref<VoiceInfo[]>([])
+  const allAWSVoices = ref<any[]>([])
 
   const recognizer = ref<SpeechRecognizer>(new SpeechRecognizer(speechConfig.value))
   const synthesizer = ref<SpeechSynthesizer>(new SpeechSynthesizer(speechConfig.value))
@@ -74,8 +90,28 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     immediate: true,
   })
 
-  // 语音识别
 
+  // AWS polly and transcribe SDK 初始化
+  const audioAWS = new Audio();
+  let micStream: MicrophoneStream | undefined = undefined
+  const polly = new Polly({
+    region: awsRegion.value ?? "us-east-1",
+    credentials: fromCognitoIdentityPool({
+      client: new CognitoIdentityClient({ region: awsRegion.value ?? "us-east-1" }),
+      identityPoolId: awsCognitoIdentityId.value
+    }),
+  });
+
+  const transcribe = new TranscribeStreamingClient({
+    region: awsRegion.value ?? "us-east-1",
+    credentials: fromCognitoIdentityPool({
+      client: new CognitoIdentityClient({ region: awsRegion.value ?? "us-east-1" }),
+      identityPoolId: awsCognitoIdentityId.value
+    }),
+  });
+
+
+  // AZure 语音识别
   const audioRecorder = async () => {
     // 暂时通过 mediaRecorder 方式实现录音保存，后续可能会改为直接通过 SpeechRecognizer 实现保存
 
@@ -250,15 +286,40 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
       catch (error) {
         allVoices.value = []
       }
-    }
-
-    const res = await synthesizer.value.getVoicesAsync()
-    if (res.errorDetails) {
-      console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
+      const res = await synthesizer.value.getVoicesAsync()
+      if (res.errorDetails) {
+        console.error(`获取语音列表失败：${res.errorDetails}, 请检查语音配置`)
+        return []
+      }
+      return res.voices
+    }else{
       return []
     }
-    return res.voices
+
+   
   }
+
+  // 获取AWS 语音列表
+  async function getAWSVoices() {
+    const params = {
+      LanguageCode: "en-US"
+    };
+  
+    try {
+      const data = await polly.describeVoices(params)
+      if(data.Voices){
+        allAWSVoices.value=data.Voices.map((item)=>{
+          return {"id":item.Id,"gender":item.Gender}
+        })
+      }  
+      return data.Voices??[];
+    } catch (error) {
+      console.error("Error retrieving AWS voices:", error);
+      return [];
+    }
+
+  }
+
 
   function applySynthesizerConfiguration() {
     // 通过playback结束事件来判断播放结束
@@ -279,6 +340,100 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     synthesizer.value = new SpeechSynthesizer(speechConfig.value, speakConfig)
   }
 
+  /* AWS Vocie service */
+  const startAWSRecognizeSpeech = async (cb?: (text: string) => void) => {
+
+    micStream = new MicrophoneStream();
+    // // this part should be put into an async function
+
+    micStream.setStream(
+      await window.navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+      })
+    );
+
+
+    //构造audioSream
+    isRecognizing.value = true
+    const MAX_AUDIO_CHUNK_SIZE = 48000
+
+    const audioStream = async function* () {
+      for await (const chunk of micStream as unknown as Iterable<Buffer>) {
+        if (chunk.length <= MAX_AUDIO_CHUNK_SIZE) {
+          yield {
+            AudioEvent: {
+              AudioChunk: pcmEncodeChunk(chunk),
+            },
+          }
+        }
+      }
+    };
+
+    //PCM 编码
+    const pcmEncodeChunk = (chunk: any) => {
+      const input = MicrophoneStream.toRaw(chunk);
+      var offset = 0;
+      var buffer = new ArrayBuffer(input.length * 2);
+      var view = new DataView(buffer);
+      for (var i = 0; i < input.length; i++, offset += 2) {
+        var s = Math.max(-1, Math.min(1, input[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      }
+      return Buffer.from(buffer);
+    };
+    //Transcribe stream command 初始化
+    const command = new StartStreamTranscriptionCommand({
+      LanguageCode: language.value,
+      MediaEncoding: "pcm",
+      MediaSampleRateHertz: 44100,
+      AudioStream: audioStream(),
+    });
+
+    const response = await transcribe.send(command);
+    let resultText = ""
+    if (response.TranscriptResultStream) {
+      for await (const event of response.TranscriptResultStream) {
+        if (event.TranscriptEvent) {
+          const results = event.TranscriptEvent?.Transcript?.Results;
+          results?.map((result: any) => {
+            (result.Alternatives || []).map((alternative: any) => {
+              const transcript = alternative.Items.map((item: any) => item.Content).join(" ");
+              resultText = transcript;
+              cb && cb(transcript)
+            });
+          });
+        }
+      }
+      isRecognizing.value = false
+    }
+    return resultText
+
+  }
+
+  const stopAWSRecognizeSpeech = () => {
+    micStream?.stop()
+  }
+
+
+   //语音合成
+   const awsTextToSpeak = async (text: string, voice?: string) => {
+    const params: SynthesizeSpeechInput = {
+      Text: text,
+      OutputFormat: 'mp3',
+      VoiceId: 'Joanna', // Replace with the desired voice ID (e.g., Joanna, Matthew, etc.)
+    };
+
+    const response = await polly.synthesizeSpeech(params);
+
+    if (response.AudioStream) {
+      const buffer = await response.AudioStream.transformToByteArray();
+      audioAWS.src = URL.createObjectURL(new Blob([buffer], { type: 'audio/mpeg' }));
+      audioAWS.play();
+    }
+  }
+  
+
   return {
     languages,
     language,
@@ -289,16 +444,23 @@ export const useSpeechService = ({ langs = <const>['fr-FR', 'ja-JP', 'en-US', 'z
     isRecognizReadying,
     startRecognizeSpeech,
     stopRecognizeSpeech,
+    startAWSRecognizeSpeech,
+    stopAWSRecognizeSpeech,
     recognizeSpeech,
     textToSpeak,
+    awsTextToSpeak,
     ssmlToSpeak,
     stopTextToSpeak,
     getVoices,
+    getAWSVoices,
     allVoices,
+    allAWSVoices,
     isSynthesizing,
     rate,
     style,
     audioBlob,
     player,
+    audioAWS,
+    
   }
 }

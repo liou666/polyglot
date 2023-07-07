@@ -190,6 +190,16 @@ export const supportLanguageMap = {
   'zh-TW': '中文(台湾普通话)',
 } as Record<string, string>
 
+export const awsRegions = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
+  'ap-east-1',
+  'ap-southeast-1',
+  'eu-central-1',
+]
+
 export const azureRegions = [
   'australiaeast',
   'australiasoutheast',

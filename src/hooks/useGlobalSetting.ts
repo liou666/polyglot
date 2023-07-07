@@ -1,4 +1,4 @@
-import { AUTO_PLAY, AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, IS_ALWAYS_RECOGNITION, OPEN_KEY, OPEN_MAX_TOKEN, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL, TTS_PASSWORD, VOICE_API_NAME } from '@/constant'
+import { AUTO_PLAY,AWS_COGNITO_IDENTITY_POOL_ID, AWS_KEY,AWS_REGION,AWS_SECRET_KEY,AZURE_KEY, AZURE_REGION, AZURE_TRANSLATE_KEY, CHAT_API_NAME, CHAT_REMEMBER_COUNT, IS_ALWAYS_RECOGNITION, OPEN_KEY, OPEN_MAX_TOKEN, OPEN_MODEL, OPEN_PROXY, SELF_AVATAR_URL, TTS_PASSWORD, VOICE_API_NAME } from '@/constant'
 
 import { getAvatarUrl } from '@/utils'
 
@@ -7,6 +7,9 @@ export const useGlobalSetting = () => {
   const openProxy = useLocalStorage(OPEN_PROXY, '')
   const azureRegion = useLocalStorage(AZURE_REGION, 'eastasia')
   const azureKey = useLocalStorage(AZURE_KEY, '')
+  const awsRegion = useLocalStorage(AWS_REGION, 'us-east-1')
+  const awsCognitoIdentityId = useLocalStorage(AWS_COGNITO_IDENTITY_POOL_ID, '')
+
   const openModel = useLocalStorage(OPEN_MODEL, 'gpt-3.5-turbo')
   const selfAvatar = useLocalStorage(SELF_AVATAR_URL, getAvatarUrl('self.png'))
   const chatApiName = useLocalStorage(CHAT_API_NAME, 'openAI')
@@ -22,6 +25,8 @@ export const useGlobalSetting = () => {
     openKey,
     openProxy,
     openModel,
+    awsRegion,
+    awsCognitoIdentityId,
     azureRegion,
     azureKey,
     selfAvatar,

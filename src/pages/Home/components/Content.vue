@@ -14,7 +14,7 @@ interface Translates {
 // hooks
 const store = useConversationStore()
 const { el, scrollToBottom } = useScroll()
-const { selfAvatar, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
+const { selfAvatar, voiceApiName, openKey, chatRememberCount, autoPlay } = useGlobalSetting()
 
 const {
   language,
@@ -26,11 +26,18 @@ const {
   startRecognizeSpeech,
   isRecognizReadying,
   stopRecognizeSpeech,
+  startAWSRecognizeSpeech,
+  stopAWSRecognizeSpeech,
   ssmlToSpeak,
+  awsTextToSpeak,
   isSynthesizing,
   audioBlob,
   player,
+  audioAWS,
 } = useSpeechService({ langs: store.allLanguage as any, isFetchAllVoice: false })
+
+
+
 
 // states
 const message = ref('') // input message
@@ -127,7 +134,13 @@ const fetchResponse = async (prompt: ChatMessage[] | string, type: FetchType = F
 }
 
 async function onSubmit(fromRecognize = false) {
-  if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
+  //增加OPENAPI Proxy 验证模式:  OPENAPI_KEY:PROXY_KEY 
+  if (openKey.value.indexOf(":") > -1) {
+    if (!verifyOpenKey(openKey.value.split(":")[0])) return alert('请输入正确的API-KEY')
+  } else {
+    if (!verifyOpenKey(openKey.value)) return alert('请输入正确的API-KEY')
+  }
+
   if (!message.value) return
 
   store.changeConversations([
@@ -210,24 +223,54 @@ function speakByAI(content: string, index: number) {
   }
   speakIndex.value = index
   text.value = content
-  ssmlToSpeak(content)
+  
+  if (voiceApiName.value === "AWS") {
+    awsTextToSpeak(content)
+  } else {
+    ssmlToSpeak(content)
+  }
+
 }
+
+
 
 const recognize = async () => {
   try {
     console.log('isRecognizing', isRecognizing.value)
-    if (isRecognizing.value) {
-      await stopRecognizeSpeech()
-      onSubmit(true)
-      console.log('submit', message.value)
-      return
+    if (voiceApiName.value === "AWS") {
+      if (isRecognizing.value){
+        //延迟关闭AWS Transcribe Stream Client ,避免语音未完整上传
+        setTimeout(()=>{
+            stopAWSRecognizeSpeech()
+        },2000)
+        isRecognizing.value=false
+      }else{
+        audioAWS.pause()
+        message.value = ''
+      
+   
+      stopAllSpeaker() // 开启语音识别时停止所有语音播放
+      startAWSRecognizeSpeech((textSlice:string) => {
+        message.value =textSlice || ''
+      });
+      
     }
-    message.value = ''
+     
+    } else {
+      if (isRecognizing.value) {
+        await stopRecognizeSpeech()
+        onSubmit(true)
+        console.log('submit', message.value)
+        return
+      }
+      message.value = ''
 
-    stopAllSpeaker() // 开启语音识别时停止所有语音播放
-    startRecognizeSpeech((textSlice) => {
-      message.value += textSlice || ''
-    })
+      stopAllSpeaker() // 开启语音识别时停止所有语音播放
+      startRecognizeSpeech((textSlice) => {
+        message.value += textSlice || ''
+      })
+    }
+
   }
   catch (error) {
     alert(error)
@@ -277,12 +320,8 @@ async function grammarAnalysis(text: string, i: number) {
   <div flex flex-col p-2 rounded-md bg-white dark="bg-#1e1e1e" shadow-sm>
     <div ref="el" class="hide-scrollbar flex-1 overflow-auto">
       <template v-if="chatMessages.length">
-        <div
-          v-for="item, i in chatMessages"
-          :key="i"
-          center-y
-          :class="item.role === 'user' ? 'flex-row-reverse w-[75%] ml-[25%]' : 'w-[75%]'"
-        >
+        <div v-for="item, i in chatMessages" :key="i" center-y
+          :class="item.role === 'user' ? 'flex-row-reverse w-[75%] ml-[25%]' : 'w-[75%]'">
           <div class="w-10 h-10">
             <img w-full h-full object-fill rounded-full :src="item.role === 'user' ? selfAvatar : currentAvatar" alt="">
           </div>
@@ -290,11 +329,11 @@ async function grammarAnalysis(text: string, i: number) {
             <p p-2 my-2 chat-box>
               {{ item.content }}
             </p>
-            <p v-show=" translates[item.content + i]?.isShow " p-2 my-2 chat-box>
+            <p v-show="translates[item.content + i]?.isShow" p-2 my-2 chat-box>
               {{ translates[item.content + i]?.result }}
             </p>
 
-            <p v-show="item.role === 'user' && analysisResults[item.content + i]?.isShow " p-2 my-2 chat-box>
+            <p v-show="item.role === 'user' && analysisResults[item.content + i]?.isShow" p-2 my-2 chat-box>
               {{ analysisResults[item.content + i]?.result }}
             </p>
 
@@ -313,7 +352,8 @@ async function grammarAnalysis(text: string, i: number) {
                   <i icon-btn rotate-90 i-ic:sharp-wifi />
                 </span>
               </template>
-              <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn" @click="translate(item.content, i)">
+              <span v-if="!isTranslating || translateIndex !== i" ml-1 class="chat-btn"
+                @click="translate(item.content, i)">
                 <i icon-btn i-carbon:ibm-watson-language-translator />
               </span>
               <span v-else ml-1 class="chat-btn">
@@ -338,7 +378,8 @@ async function grammarAnalysis(text: string, i: number) {
                   </span>
                 </template>
               </template>
-              <span v-if="!analysisLoading || analysisIndex !== i" class="chat-btn" @click="grammarAnalysis(item.content, i)">
+              <span v-if="!analysisLoading || analysisIndex !== i" class="chat-btn"
+                @click="grammarAnalysis(item.content, i)">
                 <i icon-btn i-ic:outline-lightbulb />
               </span>
               <span v-else class="chat-btn">
@@ -356,11 +397,8 @@ async function grammarAnalysis(text: string, i: number) {
     </div>
 
     <div class="flex h-10 w-[-webkit-fill-available] mt-1">
-      <Button
-        mr-1
-        :disabled="isRecognizReadying || store.loading"
-        @click="recognize()"
-      >
+      <!-- <audio id="player" controls></audio> -->
+      <Button mr-1 :disabled="isRecognizReadying || store.loading" @click="recognize()">
         <i v-if="isRecognizReadying" i-eos-icons:bubble-loading />
         <i v-else i-carbon:microphone />
       </Button>
@@ -373,30 +411,17 @@ async function grammarAnalysis(text: string, i: number) {
         录音设备准备中
         <i icon-btn i-eos-icons:three-dots-loading />
       </div>
-      <input
-        v-else-if="!store.loading"
-        v-model="message"
-        type="text"
-        placeholder="Type your message here..."
-        input-box
-        p-3 flex-1
-        @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)" @keypress.enter="() => onSubmit()"
-      >
+      <input v-else-if="!store.loading" v-model="message" type="text" placeholder="Type your message here..." input-box
+        p-3 flex-1 @blur="store.changeMainActive(true)" @focus="store.changeMainActive(false)"
+        @keypress.enter="() => onSubmit()">
       <div v-else class="loading-btn">
         AI Is Thinking
         <i icon-btn i-eos-icons:three-dots-loading />
       </div>
-      <Button
-        :disabled="store.loading"
-        mx-1
-        @click="onSubmit"
-      >
+      <Button :disabled="store.loading" mx-1 @click="onSubmit">
         <i i-carbon:send-alt />
       </Button>
-      <Button
-        :disabled="store.loading"
-        @click="store.cleanCurrentConversations()"
-      >
+      <Button :disabled="store.loading" @click="store.cleanCurrentConversations()">
         <i i-carbon:trash-can />
       </Button>
     </div>
