@@ -147,6 +147,17 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 + 创建完成后，转到新服务的“概述”页面，即可查看密钥和终结点
 
 </details>
+<details>
+<summary>3. aws语音服务如何申请？</summary>
+
+要申请 AWS 语音服务的 Identity Pool ID ，可以按照以下步骤进行：
+
++ 登录 AWS 门户 （https://console.aws.amazon.com/）
++ 转到“Cognito 认证服务”页面并单击“Create Identity Pool”按钮
++ 在“IAM Role”窗口中，创建Role, 添加Polly, Transcribe 权限即可
++ 创建完成后，转到“概述”页面，即可Identity Pool ID
+
+</details>
 
 <!-- ## 捐赠
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
