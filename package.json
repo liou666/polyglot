@@ -1,6 +1,6 @@
 {
   "name": "polyglot",
-  "version": "0.3.3",
+  "version": "0.3.5",
   "private": true,
   "description": "Spoken language generation based on OpenAI",
   "author": "Liou666 <liou666@126.com>",
