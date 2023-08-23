@@ -167,15 +167,5 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 </table>
  -->
 
-## 讨论与交流
 
-
-
-
-<table>
-  <tr>
-    <td><img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.JPG"></td>
-    <td><img width="200" alt="Screenshot: Polyglot App running" src="./screenshot/chat.png"></td>
-  </tr>
-</table>
 
