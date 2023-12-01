@@ -150,22 +150,22 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 </details>
 
-<!-- ## 捐赠
+## 捐赠
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
 
 <table>
   <tr>
-    <th>爱发电</th>
+    <!-- <th>爱发电</th> -->
     <th>微信</th>
     <th>支付宝</th>
   </tr>
   <tr>
-   <td><a target="_blank" href="https://afdian.net/a/liou666">爱发电</a</td>
+   <!-- <td><a target="_blank" href="https://afdian.net/a/liou666">爱发电</a</td> -->
     <td><img width="300" height="300" alt="" src="./public/donate/zsm.jpg"></td>
     <td><img width="300" height="300"  alt="" src="./public/donate/alipay.jpg"></td>
   </tr>
 </table>
- -->
+
 
 
 
