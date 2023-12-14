@@ -1,5 +1,5 @@
 # <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
->  AI语言练习应用
+>  跨平台AI语言练习应用
 
 
 <p align="left">
@@ -15,6 +15,17 @@
 <a href="https://github.com/liou666/polyglot/releases" target="_blank">
 <img alt="Downloads" src="https://img.shields.io/github/downloads/liou666/polyglot/total.svg?style=flat" />
 </a>
+
+</p>
+
+<p align="left">
+<a href="./README.md">
+简体中文
+</a>
+/
+<a href="./README-EN.md">
+English
+</a>
 </p>
 
 Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 ( [📺 B站视频链接](https://www.bilibili.com/video/BV1Ym4y1a7et) )
@@ -26,10 +37,11 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 
 
 ## 下载
-- **Mac**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.5/Polyglot_0.3.5.dmg)
-- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.5/Polyglot_0.3.5.exe)
-- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.5/Polyglot_0.3.5.AppImage)
+- **Mac**: [Apple](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_arm64_0.3.6.dmg) [Intel](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_x64_0.3.6.dmg)
+- **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.exe)
+- **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
+
 
 ## 软件截图
 <details>
