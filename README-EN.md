@@ -41,6 +41,7 @@ Polyglot is a cross-platform desktop application (currently supporting the [web 
 - **Linux**: [Download](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.AppImage)
 - **Web Version**： [Online Link](https://polyglotai.xyz)
 
+Visit the **[GitHub Releases](https://github.com/liou666/polyglot/releases)** to download the latest version or any previous release.
 
 ## Software Screenshots
 <details>

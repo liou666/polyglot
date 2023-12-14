@@ -18,6 +18,8 @@
 
 </p>
 
+
+
 <p align="left">
 <a href="./README.md">
 简体中文
@@ -42,7 +44,7 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 - **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
 
-
+访问 **[GitHub Releases](https://github.com/liou666/polyglot/releases)** 下载最新版本或任何以前的版本。
 ## 软件截图
 <details>
 <summary>展开</summary>
