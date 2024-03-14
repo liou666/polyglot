@@ -28,7 +28,7 @@ English
 </p>
 
 
-Polyglot is a cross-platform desktop application (currently supporting the [web version](https://polyglotai.xyz)). It is based on ChatGPT and Azure Artificial Intelligence language models as underlying services, aiming to provide an easy-to-use language practice platform for convenient multilingual oral exercises.
+Polyglot is a cross-platform desktop application (currently supporting the [web version](https://polyglotai.xyz)). It is based on ChatGPT and Azure Artificial Intelligence language models as underlying services, aiming to provide an easy-to-use language practice platform for convenient multilingual oral exercises. ( [📺 video link](https://doc.polyglotai.xyz/) )
 
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/main1.png">
