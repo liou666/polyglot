@@ -36,9 +36,9 @@ Polyglot is a cross-platform desktop application (currently supporting the [web 
 
 
 ## Download
-- **Mac**: [Apple](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_arm64_0.3.6.dmg) [Intel](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_x64_0.3.6.dmg)
-- **Windows**: [Download](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.exe)
-- **Linux**: [Download](https://github.com/liou666/polyglot/releases/download/v0.3.6/Polyglot_0.3.6.AppImage)
+- **Mac**: [Apple](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_arm64_0.3.7.dmg) [Intel](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_x64_0.3.7.dmg)
+- **Windows**: [Download](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_0.3.7.exe)
+- **Linux**: [Download](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_0.3.7.AppImage)
 - **Web Version**： [Online Link](https://polyglotai.xyz)
 
 Visit the **[GitHub Releases](https://github.com/liou666/polyglot/releases)** to download the latest version or any previous release.
