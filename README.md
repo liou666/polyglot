@@ -1,6 +1,6 @@
-# <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot 
->  跨平台AI语言练习应用
-
+# <img src="./public/favicon.ico" width="60px" align="center" alt="Polyglot icon"> Polyglot
+>
+> 跨平台AI语言练习应用
 
 <p align="left">
 <a href="https://github.com/liou666/polyglot/releases" target="_blank">
@@ -18,8 +18,6 @@
 
 </p>
 
-
-
 <p align="left">
 <a href="./README.md">
 简体中文
@@ -32,23 +30,23 @@ English
 
 Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](https://polyglotai.xyz)）。基于ChatGPT和Azure人工智能语言模型作为底层服务，旨在提供一个易于使用的语言练习平台，方便进行多语种的口语练习。 ( [📺 视频链接](https://doc.polyglotai.xyz/) )
 
-
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/main1.png">
 </p>
 
-
 ## 下载
+
 - **Mac**: [Apple](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_arm64_0.3.7.dmg) [Intel](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_x64_0.3.7.dmg)
 - **Windows**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_0.3.7.exe)
 - **Linux**: [点击下载](https://github.com/liou666/polyglot/releases/download/v0.3.7/Polyglot_0.3.7.AppImage)
 - **Web版本**： [在线地址](https://polyglotai.xyz)
 
 访问 **[GitHub Releases](https://github.com/liou666/polyglot/releases)** 下载最新版本或任何以前的版本。
+
 ## 软件截图
+
 <details>
 <summary>展开</summary>
-
 
 <p align="center">
   <img width="" alt="Screenshot: Polyglot App running" src="./screenshot/new.png">
@@ -71,6 +69,7 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 </details>
 
 ## 功能
+
 - [x] 多国语言口语练习 （~~目前内置四个不同国家的AI人物，分别来自美国、日本、韩国和法国。后续将考虑增加更多的语种。~~）（内置了英语，其他语言现在支持自定义）
 - [x] 智能语音合成（目前基于Azure TTS服务，后续考虑接入可以本地部署的语音模型）
 - [x] 智能对话功能（基于chatGPT服务）
@@ -88,15 +87,17 @@ Polyglot是一款跨平台的桌面端应用程序（目前已支持[web版本](
 - [x] 支持语音播放时根据播放进度高亮对应单词
 - [x] AI提供回复建议
 
-
 ## 使用方法
-+ 设置[OpenAI Key](https://platform.openai.com/account/api-keys)
-+ 设置代理（非必须）
-+ 设置[azure key](https://portal.azure.com/)
-+ 新建AI角色进行对话；
-+ 与AI人物进行对话练习口语。
+
+- 设置[OpenAI Key](https://platform.openai.com/account/api-keys)
+
+- 设置代理（非必须）
+- 设置[azure key](https://portal.azure.com/)
+- 新建AI角色进行对话；
+- 与AI人物进行对话练习口语。
 
 ## 本地启动
+
 ```bash
 # 1.克隆本仓库；
 git clone https://github.com/liou666/polyglot.git
@@ -114,12 +115,12 @@ mv .env.example .env
 pnpm dev
 ```
 
-
-
 ## 协议
+
 [GNU General Public License v3.0](./LICENSE)
 
 # 贡献者
+
 <div>
   <a href="https://github.com/liou666/polyglot/graphs/contributors">
     <img src="https://contrib.rocks/image?repo=liou666/polyglot" />
@@ -127,7 +128,6 @@ pnpm dev
 </div>
 
 ## 常见问题
-
 
 <details>
 <summary>1. MacOS 提示无法打开“Polyglot”，因为Apple无法检查其是否包含恶意软件。</summary>
@@ -147,6 +147,7 @@ pnpm dev
 ```sh
 xattr -rd com.apple.quarantine /path/to/Polyglot.app
 ```
+
 其中，/path/to/Polyglot.app 是你的应用程序的完整路径。
 
 运行命令后，应用程序将被添加到白名单中，Gatekeeper 将不再阻止其运行。
@@ -156,15 +157,16 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
 
 要申请 Azure 语音服务的 API 密钥，可以按照以下步骤进行：
 
-+ 登录 Azure 门户 （https://portal.azure.com/）
-+ 转到“Azure 语音服务”页面并单击“添加”按钮
-+ 在“创建 Azure 语音服务”窗口中，选择订阅、资源组、区域，并为新服务指定名称
-+ 选择“F0”价格层，并单击“创建”
-+ 创建完成后，转到新服务的“概述”页面，即可查看密钥和终结点
+- 登录 Azure 门户 （<https://portal.azure.com/）>
+- 转到“Azure 语音服务”页面并单击“添加”按钮
+- 在“创建 Azure 语音服务”窗口中，选择订阅、资源组、区域，并为新服务指定名称
+- 选择“F0”价格层，并单击“创建”
+- 创建完成后，转到新服务的“概述”页面，即可查看密钥和终结点
 
 </details>
 
 ## 捐赠
+
 如果觉的项目对你有帮助的话，欢迎请我喝杯奶茶😊。
 
 <table>
@@ -180,6 +182,4 @@ xattr -rd com.apple.quarantine /path/to/Polyglot.app
   </tr>
 </table>
 
-
-
-
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
